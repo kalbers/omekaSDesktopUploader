@@ -56,28 +56,25 @@ en:
       cds:
         title: Digital Scholar
         url: https://digitalscholar.org
+      tropy:
+        title: Tropy
+        url: https://tropy.org
       c2dh:
         title: Luxembourg Centre for Contemporary and Digital History
         url: https://www.c2dh.uni.lu
       text: >-
-        Tropy is designed by the {c2dh} and the {rrchnm}, labs that develop
-        historical teaching resources, digital exhibits, and
-        open-source software.
-      trademark: The Tropy name is a registered trademark of {cds}.
-      donate:
-        title: Donate to Tropy
-        url: https://tropy.org/donate
-      release:
-        title: Release Notes
-        url: https://github.com/tropy/tropy/releases/tag/v{version}
+        Omeka Desktop Upload sends files from your computer, with their
+        metadata, to an Omeka S site. It is based on {tropy}, designed by
+        the {c2dh} and the {rrchnm}.
+      trademark: The Omeka name is a registered trademark of {cds}.
       license:
-        title: Licensing Information
-        url: https://tropy.org/license
+        title: GNU Affero General Public License v3
+        url: https://www.gnu.org/licenses/agpl-3.0.html
       credits:
-        title: Credits
+        title: Tropy credits
         url: https://tropy.org/credits
   project:
-    empty: Drop your photos into Tropy to get started
+    empty: Drop your photos here to get started
     file:
       open: Open project {path}
       missing: Find missing project {path}
@@ -122,7 +119,7 @@ en:
           one {1 note}
           other {# notes}}
   prefs:
-    title: Tropy Preferences
+    title: Preferences
     omeka:
       label: Omeka S
       url: API URL
@@ -380,7 +377,7 @@ en:
           title: Conversion complete
           message: >-
             Your project was successfully converted and saved.
-            Tropy will now close the original project file
+            The app will now close the original project file
             and open the converted project in a new window.
           buttons:
             - "OK"
@@ -402,7 +399,7 @@ en:
       photo:
         consolidate:
           message: >-
-            Do you want Tropy to automatically check and resolve further
+            Do you want the app to automatically check and resolve further
             missing photos at this location?
           buttons:
             - "No"
@@ -429,11 +426,10 @@ en:
             - "OK"
     filter:
       csv: CSV
-      templates: Tropy Templates
+      templates: Templates
       images: Images
-      items: Tropy Items
       notes: Notes
-      projects: Tropy Projects
+      projects: Projects
       rdf: RDF Vocabularies
       jsonld: JSON-LD
 

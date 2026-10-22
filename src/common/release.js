@@ -13,7 +13,7 @@ const {
 const v = parse(version)
 const isLatest = !(v?.prerelease.length > 0)
 
-export const appId = 'org.tropy.Tropy'
+export const appId = 'org.omeka.DesktopUpload'
 
 export const channel = (isLatest) ?
   'latest' :
@@ -26,10 +26,6 @@ export const qualified = {
 }
 
 export const exe = qualified[(platform === 'linux') ? 'name' : 'product']
-
-export const feed = (platform === 'win32') ?
-  `https://tropy.org/update/${channel}/${platform}/${arch}` :
-  `https://tropy.org/update/${channel}/${platform}/${arch}/${version}`
 
 export {
   author,

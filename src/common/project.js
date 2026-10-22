@@ -19,7 +19,7 @@ import { Store } from '../asset/store.js'
  */
 export async function create(path, schema, appDir, {
   autoclose = true,
-  name = 'Tropy',
+  name = 'Omeka Desktop Upload',
   base = null,
   id = uuid(),
   overwrite = false

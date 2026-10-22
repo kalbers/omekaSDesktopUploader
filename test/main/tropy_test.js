@@ -1,5 +1,4 @@
 import { app } from 'electron'
-import { URL } from 'node:url'
 import { Tropy } from '#internal/main/tropy.js'
 
 const fakeWindow = () => ({
@@ -28,88 +27,6 @@ describe('Tropy', () => {
   it('is a singleton class', () => {
     expect(tropy).to.equal(Tropy.instance)
     expect(tropy).to.equal(new Tropy())
-  })
-
-  describe('handleProtocolRequest', () => {
-    describe('about', () => {
-      beforeEach(() => {
-        sinon.stub(tropy, 'showAboutWindow')
-      })
-
-      it('tropy://about shows the about window', async () => {
-        await tropy.handleProtocolRequest(new URL('tropy://about'))
-        expect(tropy.showAboutWindow).to.have.been.calledOnce
-      })
-
-      it('tropy://version shows the about window', async () => {
-        await tropy.handleProtocolRequest(new URL('tropy://version'))
-        expect(tropy.showAboutWindow).to.have.been.calledOnce
-      })
-    })
-
-    describe('prefs', () => {
-      beforeEach(() => {
-        sinon.stub(tropy, 'showPreferencesWindow')
-      })
-
-      it('tropy://prefs shows the prefs window', async () => {
-        await tropy.handleProtocolRequest(new URL('tropy://prefs'))
-        expect(tropy.showPreferencesWindow).to.have.been.calledOnce
-      })
-
-      it('tropy://preferences shows the prefs window', async () => {
-        await tropy.handleProtocolRequest(new URL('tropy://preferences'))
-        expect(tropy.showPreferencesWindow).to.have.been.calledOnce
-      })
-    })
-
-    describe('project', () => {
-      describe('with open window', () => {
-        beforeEach(() => {
-          sinon.stub(tropy.wm, 'current').callsFake(fakeWindow)
-          sinon.stub(tropy, 'openMostRecentProject')
-          sinon.stub(tropy, 'dispatch')
-        })
-
-        it('tropy://project shows the project window', async () => {
-          await tropy.handleProtocolRequest(new URL('tropy://project'))
-
-          expect(tropy.wm.current).to.have.been.calledOnce
-          expect(tropy.openMostRecentProject).not.to.have.been.called
-          expect(tropy.dispatch).not.to.have.been.called
-        })
-
-        it('tropy://project/current/items/41/3 opens item 41 in current project ',
-          async () => {
-            await tropy.handleProtocolRequest(new URL('tropy://project/current/items/41/3'))
-
-            expect(tropy.dispatch).to.have.been.calledOnce
-            expect(tropy.dispatch.args[0][0])
-              .to.have.a.nested.property('payload.id', 41)
-            expect(tropy.dispatch.args[0][0])
-              .to.have.a.nested.property('payload.photo').eql(3)
-          })
-      })
-
-      describe('without open window', () => {
-        beforeEach(() => {
-          sinon.stub(tropy.wm, 'current')
-          sinon.stub(tropy, 'openMostRecentProject').callsFake(() => {
-            setTimeout(() => { tropy.emit('project:opened') }, 250)
-            return fakeWindow()
-          })
-          sinon.stub(tropy, 'dispatch')
-        })
-
-        it('tropy://project shows the project window', async () => {
-          await tropy.handleProtocolRequest(new URL('tropy://project'))
-
-          expect(tropy.wm.current).to.have.been.calledOnce
-          expect(tropy.openMostRecentProject).to.have.been.calledOnce
-          expect(tropy.dispatch).not.to.have.been.called
-        })
-      })
-    })
   })
 
   describe('showProjectWindow', () => {

@@ -88,8 +88,6 @@ en:
         command: 'app:export-item'
       - label: 'Upload Item to Omeka S'
         command: 'app:omeka-upload'
-      - label: 'Copy Item Link'
-        command: 'app:copy-item-link'
       - label: 'Consolidate Item'
         command: 'app:consolidate-item'
     item-rotate: &item-rotate
@@ -131,8 +129,6 @@ en:
         command: 'app:show-in-folder'
       - label: 'Open in External Viewer…'
         command: 'app:open-path'
-      - label: 'Copy Photo Link'
-        command: 'app:copy-photo-link'
       - label: 'Export Photo'
         id: 'extract'
         submenu: &extract-submenu

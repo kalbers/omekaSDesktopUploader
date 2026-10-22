@@ -10,7 +10,6 @@ describe('AppMenu', () => {
       state: { recent: [], locale: 'en' },
       getHistory: () => ({}),
       wm: { windows: {} },
-      updater: {}
     })
   })
 

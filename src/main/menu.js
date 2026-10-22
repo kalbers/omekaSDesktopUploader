@@ -117,14 +117,6 @@ export class AppMenu extends Menu {
     })
   }
 
-  handleUpdaterChange = () => {
-    AppMenu
-      .getItems('updater-check', 'updater-is-checking', 'updater-install')
-      .forEach(item => {
-        Menu.ItemCompiler[item?.id]?.(item, this.app)
-      })
-  }
-
   handleWindowChange = () => {
     Menu.eachItem(AppMenu.instance, (item) => {
       if (item.window) {
@@ -351,20 +343,6 @@ Menu.ItemCompiler = {
         ...item.submenu
       ]
     }
-  },
-
-  'updater-check': (item, app) => {
-    item.enabled = app.updater.isSupported
-    item.visible = app.updater.canCheck
-  },
-
-  'updater-is-checking': (item, app) => {
-    item.visible = app.updater.isChecking
-  },
-
-  'updater-install': (item, app) => {
-    item.enabled = app.updater.isSupported
-    item.visible = app.updater.isUpdateReady
   },
 
   'dev': (item, app) => {

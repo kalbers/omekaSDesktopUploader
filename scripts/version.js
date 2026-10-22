@@ -4,7 +4,7 @@ import shx from 'shelljs'
 
 const VERSION = process.env.npm_package_version
 
-const METAINFO = 'res/linux/org.tropy.Tropy.metainfo.xml'
+const METAINFO = 'res/linux/org.omeka.DesktopUpload.metainfo.xml'
 const RELEASES = '  <releases>'
 
 function datestring(date = new Date) {
@@ -19,7 +19,6 @@ if (!semver.valid(VERSION)) {
 if (!semver.prerelease(VERSION)) {
   const release = [
     `    <release version="${VERSION}" date="${datestring()}">`,
-    `      <url>https://github.com/tropy/tropy/releases/tag/v${VERSION}</url>`,
     '    </release>'
   ]
   shx.sed('-i', RELEASES, [RELEASES, ...release].join('\n'), METAINFO)

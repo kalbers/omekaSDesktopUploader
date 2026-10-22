@@ -32,6 +32,7 @@ export const About = () => (
         <FormattedMessage
           id="about.text"
           values={{
+            tropy: <Link id="about.tropy"/>,
             c2dh: <Link id="about.c2dh"/>,
             rrchnm: <Link id="about.rrchnm"/>
           }}/>
@@ -41,11 +42,7 @@ export const About = () => (
           id="about.trademark"
           values={{ cds: <Link id="about.cds"/> }}/>
       </p>
-      <p className="donate">
-        <Link id="about.donate"/>
-      </p>
       <p className="links">
-        <Link id="about.release" version={version}/>
         <Link id="about.license"/>
         <Link id="about.credits"/>
       </p>

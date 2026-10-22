@@ -1,5 +1,5 @@
 import { app, dialog, powerMonitor, session } from 'electron'
-import { join, resolve } from 'node:path'
+import { join } from 'node:path'
 import { mkdirSync as mkdir } from 'node:fs'
 import { readdir } from 'node:fs/promises'
 import { pathToFileURL } from 'node:url'
@@ -62,14 +62,6 @@ if (!handlingSquirrelEvent) {
 
 
 if (!handlingSquirrelEvent && !isDuplicateInstance) {
-  if (process.defaultApp) {
-    app.setAsDefaultProtocolClient(
-      'tropy', process.execPath, [resolve(process.argv[1])]
-    )
-  } else {
-    app.setAsDefaultProtocolClient('tropy')
-  }
-
   if (opts.disableHardwareAcceleration)
     app.disableHardwareAcceleration()
 
@@ -156,15 +148,6 @@ if (!handlingSquirrelEvent && !isDuplicateInstance) {
         Tropy.instance.openFile(path)
       else
         args.push(pathToFileURL(path))
-
-      event.preventDefault()
-    })
-
-    app.on('open-url', (event, url) => {
-      if (Tropy.instance?.ready)
-        Tropy.instance.open(new URL(url))
-      else
-        args.push(new URL(url))
 
       event.preventDefault()
     })

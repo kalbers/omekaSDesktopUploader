@@ -81,31 +81,10 @@ function removeShortcut() {
 
 async function registerApplication() {
   let exe = process.execPath
-  let res = join(appFolder, 'resources')
-
   await ShellOption
     .forAppPath(exe)
     .register()
 
-  await ShellOption
-    .forApplication(exe, join(res, 'tropy.ico'), ['.tpy'])
-    .register()
-
-  await ShellOption
-    .forProgId('Tropy.Project', exe, join(res, 'tpy.ico'))
-    .register()
-
-  await ShellOption
-    .forProgId('Tropy.Template', exe, join(res, 'ttp.ico'))
-    .register()
-
-  await ShellOption
-    .forFileExtension('.tpy', 'Tropy.Project', 'application/vnd.tropy.tpy')
-    .register()
-
-  await ShellOption
-    .forFileExtension('.ttp', 'Tropy.Template', 'application/vnd.tropy.ttp')
-    .register()
 }
 
 async function clearAppRegistration() {
@@ -113,8 +92,6 @@ async function clearAppRegistration() {
 
   await ShellOption.forAppPath(exe).clear()
   await ShellOption.forApplication(exe).clear()
-  await ShellOption.forProgId('Tropy.Project').clear()
-  await ShellOption.forProgId('Tropy.Template').clear()
 }
 
 

@@ -1,23 +1,23 @@
 en:
   dialog:
     file:
-      project: Tropy Projects
+      project: Projects
     crashed:
       buttons:
         - Close Window
-        - Restart Tropy
+        - Restart
         - Show Logs
-      message: Tropy has crashed
+      message: Omeka Desktop Upload has crashed
       detail: >
-        Unfortunately, this Tropy window has crashed.
-        You can help by reporting this issue at https://github.com/tropy/tropy
+        Unfortunately, this window has crashed.
+        Please report this issue to the developers and include the log files.
     unresponsive:
       buttons:
         - Close Window
         - Keep Waiting
-      message: Tropy is not responding
+      message: Omeka Desktop Upload is not responding
       detail: >
-        This Tropy window is not responding.
+        This window is not responding.
         Would you like to close it or keep waiting?
     unhandled:
       buttons:
@@ -25,19 +25,12 @@ en:
         - Copy Error
         - Show Logs
       message: Unhandled Error
-    addrinuse:
-      message: Address in Use
-      detail: >
-        The Developer API failed to start because the requested port is already in use.
-        You can set the port via the command line or in the user data directory.
-      buttons:
-        - "OK"
   window:
     prefs:
-      title: Tropy Preferences
+      title: Preferences
     wizard:
-      title: Welcome to Tropy
+      title: Welcome to Omeka Desktop Upload
     about:
-      title: About Tropy
+      title: About Omeka Desktop Upload
     project:
       readOnly: ' — Locked'

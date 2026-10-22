@@ -198,16 +198,6 @@ en:
     - &help
       label: 'Help'
       submenu:
-        - &docs
-          label: 'User Guide'
-          command: 'app:open-docs'
-        - &forums
-          label: 'Support Forums'
-          command: 'app:open-forums'
-        - &license
-          label: 'Software License'
-          command: 'app:open-license'
-        - type: 'separator'
         - &logs
           label: 'Show Log Files'
           command: 'app:open-logs'
@@ -217,23 +207,6 @@ en:
         - &cache
           label: 'Show Cache Folder'
           command: 'app:open-cache-folder'
-        - type: 'separator'
-        - &updaterCheck
-          id: 'updater-check'
-          label: 'Check for Updates…'
-          command: 'app:check-for-updates'
-          enabled: false
-        - &updaterIsChecking
-          id: 'updater-is-checking'
-          label: 'Fetching Latest Updates…'
-          enabled: false
-          visible: false
-        - &updaterInstall
-          id: 'updater-install'
-          label: 'Install Updates…'
-          command: 'app:install-updates'
-          enabled: false
-          visible: false
         - type: 'separator'
         - label: 'About %name'
           command: 'app:about'
@@ -317,18 +290,9 @@ en:
     - label: 'Help'
       role: 'help'
       submenu:
-        - *docs
-        - *forums
-        - *license
-        - type: 'separator'
-        - type: 'separator'
         - *logs
         - *userData
         - *cache
-        - type: 'separator'
-        - *updaterCheck
-        - *updaterIsChecking
-        - *updaterInstall
 
   win32:
     - *file

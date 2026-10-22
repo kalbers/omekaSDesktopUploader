@@ -3,32 +3,17 @@
 <plist version="1.0">
 <dict>
   <key>NSDesktopFolderUsageDescription</key>
-  <string>Tropy requests access to project and image files in the Desktop folder</string>
+  <string>Omeka Desktop Upload requests access to project and image files in the Desktop folder</string>
   <key>NSDocumentsFolderUsageDescription</key>
-  <string>Tropy requests access to project and image files in the Documents folder</string>
+  <string>Omeka Desktop Upload requests access to project and image files in the Documents folder</string>
   <key>NSDownloadsFolderUsageDescription</key>
-  <string>Tropy requests access to project and image files in the Downloads folder</string>
+  <string>Omeka Desktop Upload requests access to project and image files in the Downloads folder</string>
   <key>NSNetworkVolumesUsageDescription</key>
-  <string>Tropy requests access to project and image files on a network volume</string>
+  <string>Omeka Desktop Upload requests access to project and image files on a network volume</string>
   <key>NSRemovableVolumesUsageDescription</key>
-  <string>Tropy requests access to project and image files on a removable volume</string>
+  <string>Omeka Desktop Upload requests access to project and image files on a removable volume</string>
   <key>LSMinimumSystemVersion</key>
   <string>10.13.0</string>
-  <key>CFBundleURLTypes</key>
-  <array>
-    <dict>
-      <key>CFBundleTypeRole</key>
-      <string>Editor</string>
-      <key>CFBundleURLIconFile</key>
-      <string>tropy.icns</string>
-      <key>CFBundleURLName</key>
-      <string>Tropy Protocol</string>
-      <key>CFBundleURLSchemes</key>
-      <array>
-        <string>tropy</string>
-      </array>
-    </dict>
-  </array>
   <key>CFBundleDocumentTypes</key>
   <array>
     <dict>

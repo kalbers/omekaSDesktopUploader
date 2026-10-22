@@ -106,15 +106,9 @@ program
           say('make shared icons')
           copyIcons(`${resources}/icons`)
 
-          say('copy mime-db')
-          await mkdir(`${resources}/mime/packages`, { recursive: true })
-          await copyFile(
-            `${ROOT}/res/mime/tropy.xml`,
-            `${resources}/mime/packages/${appId}.xml`)
-
           say('copy metainfo.xml')
           await copyFile(
-            `${ROOT}/res/linux/org.tropy.Tropy.metainfo.xml`,
+            `${ROOT}/res/linux/org.omeka.DesktopUpload.metainfo.xml`,
             `${dest}/${appId}.metainfo.xml`)
 
           say('copy INSTALL instructions')
@@ -353,13 +347,7 @@ async function copyIcons(dst, theme = 'hicolor') {
 
 export function desktop({
   icon = qualified.appId,
-  mimetypes = [
-    'application/vnd.tropy.tropy',
-    'application/vnd.tropy.mtpy',
-    'application/vnd.tropy.tpy',
-    'application/vnd.tropy.ttp',
-    'x-scheme-handler/tropy'
-  ]
+  mimetypes = []
 } = {}) {
   return `#!/usr/bin/env xdg-open
 [Desktop Entry]
@@ -367,11 +355,10 @@ Version=1.0
 Terminal=false
 Type=Application
 Name=${qualified.product}
-Comment=Research photo management
+Comment=Upload local files to Omeka S
 Exec=${exe} %U
 Icon=${icon}
-MimeType=${mimetypes.join(';')};
-Categories=Graphics;Viewer;Photography;OCR;`
+${mimetypes.length ? `MimeType=${mimetypes.join(';')};\n` : ''}Categories=Graphics;Archiving;Utility;`
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

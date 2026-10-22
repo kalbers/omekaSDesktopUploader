@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.omeka.DesktopUpload</id>
+  <launchable type="desktop-id">org.omeka.DesktopUpload.desktop</launchable>
+  <developer id="org.omeka">
+    <name>Omeka</name>
+  </developer>
+  <name>Omeka Desktop Upload</name>
+  <summary>Upload local files and their metadata to an Omeka S site</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>AGPL-3.0-or-later</project_license>
+  <description>
+    <p>
+      Organize local files and describe them with metadata, then send them
+      to an Omeka S installation through its API.
+    </p>
+    <p>
+      Based on Tropy, an open-source project designed and produced by an
+      international team of historians and software developers.
+    </p>
+  </description>
+  <releases>
+  </releases>
+</component>

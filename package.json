@@ -1,19 +1,12 @@
 {
-  "name": "tropy",
-  "productName": "Tropy",
+  "name": "omeka-desktop-upload",
+  "productName": "Omeka Desktop Upload",
   "version": "1.17.2",
   "private": true,
   "author": "The Tropy Developers and Contributors",
-  "description": "Explore your research photos",
+  "description": "Upload local files and their metadata to an Omeka S site",
   "license": "AGPL-3.0-or-later",
-  "homepage": "https://tropy.org",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/tropy/tropy"
-  },
-  "bugs": {
-    "url": "https://github.com/tropy/tropy/issues"
-  },
+  "homepage": "https://omeka.org/s/",
   "engines": {
     "node": ">=20",
     "npm": ">=10"

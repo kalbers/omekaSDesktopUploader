@@ -1,4 +1,3 @@
-import assert from 'node:assert'
 import fs from 'node:fs'
 import { EventEmitter } from 'node:events'
 import { extname, join } from 'node:path'
@@ -24,7 +23,6 @@ import {
 } from '../common/log.js'
 
 import { darwin, linux } from '../common/os.js'
-import { delay, once } from '../common/util.js'
 import { channel, product, version } from '../common/release.js'
 import { Cache } from '../common/cache.js'
 import { OmekaSettings } from './omeka.js'
@@ -33,7 +31,6 @@ import { defaultLocale, isRightToLeft, getLocale } from './locale.js'
 import { Strings } from './res.js'
 import { AppMenu, ContextMenu } from './menu.js'
 import { Storage } from './storage.js'
-import { Updater } from './updater.js'
 import dialog from './dialog.js'
 import { WindowManager } from './wm.js'
 import * as shell from './shell.js'
@@ -43,7 +40,7 @@ import * as act from './actions.js'
 import { setProjectFolderIcon } from './project.js'
 
 import {
-  FLASH, HISTORY, PROJECT, CONTEXT
+  HISTORY, PROJECT, CONTEXT
 } from '../constants/index.js'
 
 const H = new WeakMap()
@@ -59,7 +56,6 @@ export class Tropy extends EventEmitter {
     recent: [],
     rendererPreference: null,
     win: {},
-    updater: true,
     zoom: 1.0
   }
 
@@ -81,10 +77,6 @@ export class Tropy extends EventEmitter {
     this.omeka = new OmekaSettings(opts.data)
     this.projects = new Map()
     this.store = new Storage(opts.data)
-    this.updater = new Updater({
-      enable: process.env.NODE_ENV === 'production' && opts.autoUpdates
-    })
-
     this.wm = new WindowManager({
       contextIsolation: opts.contextIsolation
     })
@@ -100,7 +92,6 @@ export class Tropy extends EventEmitter {
 
   async stop() {
     shell.stop()
-    this.updater.stop()
     this.persist()
   }
 
@@ -109,9 +100,6 @@ export class Tropy extends EventEmitter {
       switch (url.protocol) {
         case 'file:':
           await this.showProjectWindow(fileURLToPath(url), null)
-          break
-        case 'tropy:':
-          await this.handleProtocolRequest(url)
           break
         default:
           throw new Error(`protocol not supported: ${url}`)
@@ -198,7 +186,7 @@ export class Tropy extends EventEmitter {
 
       return this.wm.open('project', args, {
         show: 'init',
-        title: 'Tropy',
+        title: product,
         fixedSize,
         ...bounds
       })
@@ -317,10 +305,6 @@ export class Tropy extends EventEmitter {
       this.load(),
       this.cache.init()
     ])
-
-    if (this.state.updater) {
-      this.updater.start()
-    }
 
     nativeTheme.themeSource = this.state.theme
     dialog.lastDefaultPath = this.state.lastDefaultPath
@@ -526,18 +510,6 @@ export class Tropy extends EventEmitter {
     this.on('app:delete-note', (win, { target }) =>
       this.dispatch(act.note.delete(target.notes), win))
 
-    this.on('app:copy-item-link', (win, { target }) =>
-      this.copyProtocolURL(this.getProject(win), {
-        item: target.id,
-        photo: target.photos[0]
-      }))
-
-    this.on('app:copy-photo-link', (win, { target }) =>
-      this.copyProtocolURL(this.getProject(win), {
-        item: target.item,
-        photo: target.id
-      }))
-
     this.on('app:toggle-line-wrap', (win, { target }) =>
       this.dispatch(act.notepad.update({
         [target.id]: { wrap: !target.wrap }
@@ -597,14 +569,6 @@ export class Tropy extends EventEmitter {
     })
 
 
-    this.on('app:check-for-updates', () => {
-      this.updater.check()
-    })
-
-    this.on('app:install-updates', () => {
-      this.updater.install()
-    })
-
     this.on('app:reload-menu', () => {
       // Note: there may be Electron issues when reloading
       // the main menu. But since we cannot remove items
@@ -636,26 +600,6 @@ export class Tropy extends EventEmitter {
 
     this.on('app:open-preferences', () => {
       this.showPreferencesWindow()
-    })
-
-    this.on('app:open-license', () => {
-      shell.open('https://tropy.org/license')
-    })
-
-    this.on('app:donate', () => {
-      shell.open('https://tropy.org/donate')
-    })
-
-    this.on('app:search-issues', () => {
-      shell.open('https://github.com/tropy/tropy/issues')
-    })
-
-    this.on('app:open-docs', () => {
-      shell.open('https://docs.tropy.org')
-    })
-
-    this.on('app:open-forums', () => {
-      shell.open('https://forums.tropy.org')
     })
 
     this.on('app:open-logs', () => {
@@ -755,12 +699,6 @@ export class Tropy extends EventEmitter {
       this.clearRecentProjects([project.path])
     })
 
-    ipc.on(FLASH.HIDE, (_, { id, confirm }) => {
-      if (id === 'update.ready' && confirm) {
-        this.updater.install()
-      }
-    })
-
     ipc.on(PROJECT.UPDATE, (event, project) => {
       let win = BrowserWindow.fromWebContents(event.sender)
       if (this.wm.is(win, 'project')) {
@@ -848,14 +786,6 @@ export class Tropy extends EventEmitter {
         })
     })
 
-    this.updater
-      .on('checking-for-updates', this.menu.handleUpdaterChange)
-      .on('update-not-available', this.menu.handleUpdaterChange)
-      .on('update-ready', (release) => {
-        this.menu.handleUpdaterChange()
-        this.wm.broadcast('dispatch', act.flash.show(release))
-      })
-
     app.whenReady().then(() => {
       addIdleObserver((_, type, time) => {
         this.wm.broadcast('idle', { type, time })
@@ -863,69 +793,6 @@ export class Tropy extends EventEmitter {
     })
 
     return this
-  }
-
-  copyProtocolURL(project, { item, photo }) {
-    let alias = 'current'
-
-    clipboard.write({
-      text: `tropy://project/${alias}/items/${item}/${photo}`
-    })
-  }
-
-  async handleProtocolRequest(url) {
-    info(`opening url ${url}`)
-
-    switch (url.host) {
-      case 'prefs':
-      case 'preferences':
-        await this.showPreferencesWindow()
-        break
-
-      case 'about':
-      case 'version':
-        await this.showAboutWindow()
-        break
-
-      case 'project': {
-        // tropy://project(/:alias)/items/:id(/:photo)
-        let [, alias = 'current', type, id, photo] =
-          url.pathname.split('/')
-
-        assert.equal(alias, 'current',
-          `bad request: project alias '${alias}' unknown`)
-
-        let win = this.wm.current()
-
-        if (!win) {
-          win = await this.openMostRecentProject()
-
-          await Promise.race([
-            once(this, 'project:opened'),
-            delay(5000)
-          ])
-        }
-
-        win.show()
-
-        if (type) {
-          assert.equal(type, 'items',
-            `bad request: action type '${type}' unknown`)
-
-          assert.ok(id, 'bad request: missing id')
-          assert.ok(photo, 'bad request: missing photo')
-
-          this.dispatch(act.item.open({
-            id: parseInt(id, 10),
-            photo: parseInt(photo, 10)
-          }), win)
-        }
-        break
-      }
-
-      default:
-        throw new Error(`bad request: host unknown: ${url}`)
-    }
   }
 
   handleUncaughtException(e, win = BrowserWindow.getFocusedWindow()) {
@@ -962,7 +829,6 @@ export class Tropy extends EventEmitter {
       log: this.log,
       rtl: isRightToLeft(),
       uuid: this.state.uuid,
-      update: this.updater.release,
       version,
       rendererPreference:
         this.opts.rendererPreference || this.state.rendererPreference,
