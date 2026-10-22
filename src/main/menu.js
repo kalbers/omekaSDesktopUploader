@@ -3,7 +3,6 @@ import { Menu as M } from 'electron'
 import { Icon, Menu as MR } from './res.js'
 import { getLocale } from './locale.js'
 import { error, warn } from '../common/log.js'
-import { channel } from '../common/release.js'
 import { blank } from '../common/util.js'
 
 const SEPARATOR = { type: 'separator' }
@@ -197,20 +196,14 @@ export class ContextMenu extends Menu {
 
   scopes.default = ['history']
 
-  scopes.sidebar = ['project', 'lists', 'tags']
+  scopes.sidebar = ['project', 'lists']
   scopes.sidebar.position = 2
 
   scopes.lists = [...scopes.sidebar]
   scopes.lists.position = 5
 
-  scopes.list = ['project', 'lists', 'list', 'tags']
+  scopes.list = ['project', 'lists', 'list']
   scopes.list.position = 5
-
-  scopes.tags = [...scopes.sidebar]
-  scopes.tags.position = 7
-
-  scopes.tag = [...scopes.sidebar, 'tag']
-  scopes.tag.position = 7
 
   scopes.items = ['items']
   scopes.items.position = 2
@@ -219,7 +212,6 @@ export class ContextMenu extends Menu {
     ...scopes.items,
     'item',
     'item-read-only',
-    'item-transcribe',
     'item-rotate']
   scopes.item.position = 2
 
@@ -242,16 +234,6 @@ export class ContextMenu extends Menu {
     'photo-read-only']
   scopes['photo-read-only'].position = 2
 
-  scopes.selection = [
-    'photo-read-only',
-    'selection',
-    'selection-rotate']
-  scopes.selection.position = 9
-
-  scopes['selection-read-only'] = [
-    'photo-read-only']
-  scopes['selection-read-only'].position = 5
-
   scopes.note = ['note']
   scopes.note.position = 2
 
@@ -268,7 +250,6 @@ export class ContextMenu extends Menu {
     ...scopes.items,
     'item-bulk',
     'item-bulk-read-only',
-    'item-transcribe',
     'item-rotate']
   scopes['item-bulk'].position = 2
 
@@ -281,7 +262,6 @@ export class ContextMenu extends Menu {
     'item-list',
     'item',
     'item-read-only',
-    'item-transcribe',
     'item-rotate']
   scopes['item-list'].position = 2
 
@@ -290,7 +270,6 @@ export class ContextMenu extends Menu {
     'item-bulk-list',
     'item-bulk-read-only',
     'item-bulk',
-    'item-transcribe',
     'item-rotate']
   scopes['item-bulk-list'].position = 2
 
@@ -309,9 +288,6 @@ export class ContextMenu extends Menu {
 
   scopes['item-bulk-read-only'] = ['item-bulk-read-only']
   scopes['item-bulk-read-only'].position = 2
-
-  scopes['item-tag'] = ['item-tag']
-  scopes['item-tag'].position = 2
 
   scopes['item-view'] = ['item-view']
   scopes['item-view'].position = 2
@@ -422,96 +398,6 @@ Menu.ItemCompiler = {
     }
   },
 
-  'export': (item, app, win, event) => {
-    let plugins = app.plugins.available('export')
-
-    if (plugins.length > 0) {
-      item.submenu = [
-        ...item.submenu,
-        { type: 'separator' },
-        ...plugins.map(({ id, name }) => ({
-          label: name,
-          click: createResponder('app:export-item', app, win, {
-            target: event?.target,
-            plugin: id
-          })
-        }))
-      ]
-    }
-  },
-
-  'extract': (item, app, win, event) => {
-    let plugins = app.plugins.available('extract')
-
-    if (plugins.length > 0) {
-      item.submenu = [
-        ...item.submenu,
-        { type: 'separator' },
-        ...plugins.map(({ id, name }) => ({
-          label: name,
-          click: createResponder('app:extract-photo', app, win, {
-            target: event?.target,
-            plugin: id
-          })
-        }))
-      ]
-    }
-  },
-
-  'transcribe': compileTranscriptionMenu,
-  'item-transcribe': compileTranscriptionMenu,
-
-  'import': (item, app, win) => {
-    let plugins = app.plugins.available('import')
-
-    if (plugins.length > 0) {
-      item.submenu = [
-        ...item.submenu,
-        { type: 'separator' },
-        ...plugins.map(({ id, name }) => ({
-          label: name,
-          click: createResponder('app:import-plugin', app, win, {
-            plugin: id
-          })
-        }))
-      ]
-    }
-  },
-
-  'tag': (item, app, win, event) => {
-    let { target } = event
-    let tags = app.getTags(win)
-
-    if (!tags.length) {
-      item.enabled = false
-
-    } else {
-      item.submenu = [
-        ...item.submenu,
-        ...tags.map(tag => ({
-          type: 'checkbox',
-          label: tag.name,
-          checked: target.tags.includes(tag.id),
-          click: createResponder('app:toggle-item-tag', app, win, {
-            id: target.id,
-            tag: tag.id
-          })
-        }))
-      ]
-
-      if (target.tags.length) {
-        item.submenu[0] = {
-          ...item.submenu[0],
-          checked: false,
-          enabled: true,
-          click: createResponder('app:clear-item-tags', app, win, {
-            id: target.id
-          })
-        }
-      }
-    }
-  },
-
   'line-wrap': (item, app, win, event) => {
     item.checked = !!event.target.wrap
   },
@@ -608,34 +494,6 @@ Menu.ItemConditions = {
 
   isProjectOpen({ app, win }) {
     return app.getProject(win) != null
-  }
-}
-
-function compileTranscriptionMenu(item, app, win, event) {
-  if (channel === 'latest') {
-    item.enabled = false
-    item.visible = false
-    return
-  }
-
-  let plugins = app.plugins.available('transcribe')
-
-  let builtin = item.submenu[0]
-  let command = builtin.command
-  builtin.enabled = false
-
-  if (plugins.length > 0) {
-    item.submenu = [
-      ...item.submenu,
-      { type: 'separator' },
-      ...plugins.map(({ id, name }) => ({
-        label: name,
-        click: createResponder(command, app, win, {
-          target: event?.target,
-          plugin: id
-        })
-      }))
-    ]
   }
 }
 

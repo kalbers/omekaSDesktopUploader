@@ -14,7 +14,7 @@ export class Prune extends Command {
   static check(file, state) {
     let [id,, ext] = Cache.split(file)
     return ext !== Cache.extname() ||
-      !((id in state.photos || (id in state.selections)))
+      !(id in state.photos)
   }
 
   *exec() {
@@ -23,7 +23,7 @@ export class Prune extends Command {
     let state = yield select()
     let stale = []
 
-    assert(state.photos != null && state.selections != null,
+    assert(state.photos != null,
       'cannot prune project cache without state')
 
     info(`pruning cache ${cache.name}`)

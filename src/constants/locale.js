@@ -1,17 +1,8 @@
+// Only locales with string, menu, and keymap files in res/ belong here.
+// To add a translation, add its files and list it below ('zh' style aliases
+// are filtered from supportedLanguages).
 const LOCALE = {
-  'cn': 'cn',
-  'zh': 'cn',
-  'de': 'de',
-  'en': 'en',
-  'es': 'es',
-  'fr': 'fr',
-  'it': 'it',
-  'ja': 'ja',
-  'nl-NL': 'nl-NL',
-  'pt': 'pt',
-  'pt-BR': 'pt-BR',
-  'ru': 'ru',
-  'uk': 'uk'
+  en: 'en'
 }
 
 export const supportedLanguages =

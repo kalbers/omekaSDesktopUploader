@@ -3,7 +3,6 @@ export default {
   UPDATE: 'ui.update',
 
   PANEL: {
-    METADATA: 'metadata',
-    TAGS: 'tags'
+    METADATA: 'metadata'
   }
 }

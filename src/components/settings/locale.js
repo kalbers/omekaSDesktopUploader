@@ -10,6 +10,9 @@ export function LocaleSettings({ options = supportedLanguages }) {
     event.locale
   ), ['cmd', 'app:switch-locale'])
 
+  // Nothing to choose from until translations are added.
+  if (options.length < 2) return null
+
   return (
     <FormSelect
       id="prefs.app.locale.locale"

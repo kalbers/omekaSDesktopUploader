@@ -34,6 +34,16 @@
     margin: (12px + 38px) auto (28px - 12px); // 60px spacing after btn-xl
   }
 
+  .edition {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+    color: $new-project-form-text-color;
+    margin: -4px 0 $space-md;
+  }
+
   h1 {
     font-size: 32px;
     font-weight: 600;

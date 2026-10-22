@@ -44,11 +44,6 @@ function itemsReducer(state = {}, { type, payload, meta, error }) {
     case ITEM.BULK.UPDATE:
       return bulk.update(state, payload, meta)
 
-    case ITEM.TAG.INSERT:
-      return nested.add('tags', state, payload, meta)
-    case ITEM.TAG.REMOVE:
-      return nested.remove('tags', state, payload, meta)
-
     case ITEM.PHOTO.ADD:
       return nested.add('photos', state, payload, meta)
     case ITEM.PHOTO.REMOVE:

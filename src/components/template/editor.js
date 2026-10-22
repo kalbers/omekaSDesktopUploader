@@ -226,7 +226,7 @@ class TemplateEditor extends React.PureComponent {
   }
 
   static defaultProps = {
-    types: [tropy.Item, tropy.Photo, tropy.Selection]
+    types: [tropy.Item, tropy.Photo]
   }
 }
 

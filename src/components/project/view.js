@@ -91,7 +91,6 @@ export const ProjectView = ({
   let data = useSelector(state => state.metadata)
   let columns = useSelector(getAllColumns)
   let templates = useSelector(state => state.ontology.template)
-  let tags = useSelector(state => state.tags)
 
   let [
     handleEdit,
@@ -187,7 +186,6 @@ export const ProjectView = ({
               onPhotoRotate={handlePhotoRotate}
               photos={photos}
               sort={sort}
-              tags={tags}
               templates={templates}/>
           )}
         </section>

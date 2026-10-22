@@ -7,8 +7,8 @@ import { normalize } from '../common/os.js'
 import { blank, empty, pick, pMap } from '../common/util.js'
 import { props } from '../common/export.js'
 
-const skel = (id, selections = [], notes = [], transcriptions = []) => ({
-  id, selections, notes, transcriptions
+const skel = (id, notes = []) => ({
+  id, notes
 })
 
 async function load(db, ids, { basePath } = {}) {
@@ -63,21 +63,6 @@ async function load(db, ids, { basePath } = {}) {
     ),
 
     db.each(
-      ...select('id', 'photo_id')
-        .from('selections')
-        .outer.join('trash', { using: 'id' })
-        .where({ photo_id: ids, deleted: null })
-        .order('photo_id')
-        .order('position'),
-      ({ id: sid, photo_id: id }) => {
-        if (id in photos)
-          photos[id].selections.push(sid)
-        else
-          photos[id] = skel(id, [sid])
-      }
-    ),
-
-    db.each(
       ...select('id', 'note_id')
         .from('notes')
         .join('photos', { using: 'id' })
@@ -87,21 +72,7 @@ async function load(db, ids, { basePath } = {}) {
         if (id in photos)
           photos[id].notes.push(nid)
         else
-          photos[id] = skel(id, [], [nid])
-      }
-    ),
-
-    db.each(
-      ...select('id', 'transcription_id')
-        .from('transcriptions')
-        .join('photos', { using: 'id' })
-        .where({ id: ids, deleted: null })
-        .order(['created', 'id']),
-      ({ id, transcription_id: tid }) => {
-        if (id in photos)
-          photos[id].transcriptions.push(tid)
-        else
-          photos[id] = skel(id, [], [], [tid])
+          photos[id] = skel(id, [nid])
       }
     )
   ])

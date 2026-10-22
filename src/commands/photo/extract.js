@@ -1,7 +1,7 @@
 import { basename, extname } from 'node:path'
 import { clipboard, nativeImage } from 'electron'
 import { Command } from '../command.js'
-import { call, put, select } from 'redux-saga/effects'
+import { call, select } from 'redux-saga/effects'
 import { PHOTO, MIME } from '../../constants/index.js'
 import { Cache } from '../../common/cache.js'
 import { addOrientation } from '../../common/iiif.js'
@@ -10,8 +10,6 @@ import Esper from '../../esper/index.js'
 import { fail, save } from '../../dialog.js'
 import { toBuffer, toFile } from '../../image/index.js'
 import { dc, dcterms } from '../../ontology/ns.js'
-import * as act from '../../actions/index.js'
-import win from '../../window.js'
 
 
 export class Extract extends Command {
@@ -19,14 +17,10 @@ export class Extract extends Command {
     try {
       let { cache } = this.options
       let { meta, payload } = this.action
-      var { target, plugin } = meta
+      var { target } = meta
 
-      if (plugin)
-        target = ':plugin:'
-
-      let [photo, selection, filename] = yield select(state => ([
+      let [photo, filename] = yield select(state => ([
         state.photos[payload.id],
-        state.selections[payload.selection],
         getSuggestedFilename(state, payload)
       ]))
 
@@ -35,7 +29,7 @@ export class Extract extends Command {
       if (!target)
         return
 
-      var image = selection || photo
+      var image = photo
       let src = Cache.url(cache.root, 'full', photo)
 
       let { buffer, ...raw } = yield call(Esper.instance.extract, src, {
@@ -47,16 +41,6 @@ export class Extract extends Command {
         case ':clipboard:': {
           let png = yield call(toBuffer, 'png', buffer, { raw })
           clipboard.writeImage(nativeImage.createFromBuffer(png))
-          break
-        }
-        case ':plugin:': {
-          let res = yield call(win.plugins.extract, plugin, { buffer, ...raw })
-          if (res?.note)
-            yield put(act.note.create({
-              text: res.note,
-              photo: photo.id,
-              selection: selection?.id
-            }))
           break
         }
         default:
@@ -81,21 +65,9 @@ export class Extract extends Command {
 
 function getSuggestedFilename(state, props) {
   let photo = state.photos[props.id]
-  let selection = state.selections[props.selection]
 
   let name = getTitle(state.metadata[photo.id]) ||
     basename(photo.filename, extname(photo.filename))
-
-  if (selection) {
-    let { x, y, width, height } = selection
-    let title = getTitle(state.metadata[selection.id])
-
-    if (title) {
-      name += ` - ${title}`
-    } else {
-      name += ` ${x}-${y} ${width}x${height}`
-    }
-  }
 
   switch (photo.mimetype) {
     case MIME.AVIF:

@@ -1,7 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Thumbnail } from '../photo/thumbnail.js'
-import { TagColors } from '../tag/colors.js'
 import { pick } from '../../common/util.js'
 
 const StackLines = ({ count }) => (
@@ -12,7 +11,7 @@ const StackLines = ({ count }) => (
     </div>
   ))
 
-export const CoverImage = React.memo(({ cover, photos, tags, ...props }) => {
+export const CoverImage = React.memo(({ cover, photos, ...props }) => {
   let id = cover || photos[0]
   let photo = useSelector(state => state.photos[id]) || {}
 
@@ -24,8 +23,6 @@ export const CoverImage = React.memo(({ cover, photos, tags, ...props }) => {
         {...props}
         {...pick(photo, Thumbnail.keys)}
         id={id}/>
-
-      <TagColors tags={tags}/>
     </div>
   )
 })

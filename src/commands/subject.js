@@ -5,7 +5,7 @@ import { Command } from './command.js'
 import { getTemplateDefaultValues } from '../selectors/index.js'
 import * as mod from '../models/index.js'
 import * as act from '../actions/index.js'
-import { ITEM, PHOTO, SELECTION } from '../constants/index.js'
+import { ITEM, PHOTO } from '../constants/index.js'
 
 
 export class Save extends Command {
@@ -124,11 +124,4 @@ export class ItemTemplateChange extends Save {
 }
 
 ItemTemplateChange.register(ITEM.TEMPLATE.CHANGE)
-
-
-export class SelectionTemplateChange extends Save {
-  type = 'selection'
-}
-
-SelectionTemplateChange.register(SELECTION.TEMPLATE.CHANGE)
 

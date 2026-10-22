@@ -7,20 +7,19 @@ import { emit } from '../../dom.js'
 
 export class Open extends Command {
   *exec() {
-    let { id = null, photo, selection } = this.action.payload
+    let { id = null, photo } = this.action.payload
     let item
 
     if (id != null) {
-      ({ item, photo, selection } = yield select(getNoteParent, { id }))
+      ({ item, photo } = yield select(getNoteParent, { id }))
     } else {
-      [item, photo, selection] = yield select(({ nav }) => ([
+      [item, photo] = yield select(({ nav }) => ([
         nav.items[0],
-        nav.photo,
-        nav.selection
+        nav.photo
       ]))
     }
 
-    assert(photo || selection, 'cannot open note without active photo/selection')
+    assert(photo, 'cannot open note without active photo')
 
     let delay = 25
     let [isProjectMode, isMinimized] = yield select(state => ([
@@ -38,7 +37,6 @@ export class Open extends Command {
     return {
       item,
       photo,
-      selection,
       note: id
     }
   }

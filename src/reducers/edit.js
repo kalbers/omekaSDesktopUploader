@@ -1,4 +1,4 @@
-import { EDIT, PROJECT, TAG } from '../constants/index.js'
+import { EDIT, PROJECT } from '../constants/index.js'
 
 export function edit(state = {}, { type, payload, meta }) {
   switch (type) {
@@ -6,8 +6,6 @@ export function edit(state = {}, { type, payload, meta }) {
       return { ...payload }
 
     case PROJECT.SAVE:
-    case TAG.CREATE:
-    case TAG.SAVE:
       return (meta.done) ? {} : state
     case EDIT.CANCEL:
       return {}

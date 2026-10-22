@@ -1,10 +1,8 @@
 export default {
   CONSOLIDATE: 'photo.consolidate',
-  CONTRACT: 'photo.contract',
   CREATE: 'photo.create',
   DELETE: 'photo.delete',
   DUPLICATE: 'photo.duplicate',
-  EXPAND: 'photo.expand',
   EXTRACT: 'photo.extract',
   INSERT: 'photo.insert',
   LOAD: 'photo.load',
@@ -14,7 +12,6 @@ export default {
   ROTATE: 'photo.rotate',
   SAVE: 'photo.save',
   SELECT: 'photo.select',
-  TRANSCRIBE: 'photo.transcribe',
   UPDATE: 'photo.update',
 
   BULK: {
@@ -26,10 +23,6 @@ export default {
     REMOVE: 'photo.note.remove'
   },
 
-  SELECTION: {
-    ADD: 'photo.selection.add',
-    REMOVE: 'photo.selection.remove'
-  },
 
   TEMPLATE: {
     CHANGE: 'photo.template.change',

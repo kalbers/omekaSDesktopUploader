@@ -40,7 +40,6 @@ export function DragPreviewPositioner({
 const dragPreview = {
   [DND.ITEMS]: ItemDragPreview,
   [DND.PHOTO]: PhotoDragPreview,
-  [DND.SELECTION]: PhotoDragPreview,
   [DND.LIST]: ListDragPreview,
   [DND.FIELD]: FieldDragPreview
 }

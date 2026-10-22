@@ -2,7 +2,6 @@ import React from 'react'
 import cx from 'classnames'
 import { CoverImage } from '../cover-image.js'
 import { Editable } from '../../editable.js'
-import { TagColors } from '../../tag/colors.js'
 import { createClickHandler } from '../../util.js'
 import { testFocusChange } from '../../../dom.js'
 import { isMeta } from '../../../keymap.js'
@@ -96,12 +95,6 @@ export class TableCell extends React.PureComponent {
     )
   }
 
-  renderTagColors() {
-    return this.props.isMainColumn && (
-      <TagColors tags={this.props.item.tags}/>
-    )
-  }
-
   render() {
     return (
       <div
@@ -121,7 +114,6 @@ export class TableCell extends React.PureComponent {
             onCancel={this.props.onCancel}
             onChange={this.handleChange}
             onKeyDown={this.handleKeyDown}/>
-          {this.renderTagColors()}
         </div>
       </div>
     )

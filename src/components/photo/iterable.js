@@ -28,8 +28,6 @@ export class PhotoIterable extends React.PureComponent {
       'drop-target': this.props.isSortable,
       'over': this.props.isOver,
       'dragging': this.props.isDragging,
-      'expanded': this.props.isExpanded,
-      'expandable': this.props.isExpandable,
       [this.direction]: this.props.isOver && this.state.offset != null
     }]
   }
@@ -39,7 +37,7 @@ export class PhotoIterable extends React.PureComponent {
   }
 
   get isActive() {
-    return this.props.isSelected && this.props.selection == null
+    return this.props.isSelected
   }
 
   get isDraggable() {
@@ -50,14 +48,6 @@ export class PhotoIterable extends React.PureComponent {
     if (!this.isActive) {
       this.props.onSelect(this.props.photo)
     }
-  }
-
-  contract() {
-    this.props.onContract(this.props.photo)
-  }
-
-  expand() {
-    this.props.onExpand(this.props.photo)
   }
 
   handleConsolidate = (event) => {

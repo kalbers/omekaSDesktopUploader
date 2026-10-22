@@ -9,7 +9,6 @@ describe('AppMenu', () => {
       defaults: { locale: 'en' },
       state: { recent: [], locale: 'en' },
       getHistory: () => ({}),
-      plugins: { available: sinon.stub().returns([]) },
       wm: { windows: {} },
       updater: {}
     })

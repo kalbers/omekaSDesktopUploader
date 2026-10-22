@@ -14,7 +14,6 @@ class ItemTile extends ItemIterable {
           <CoverImage
             cover={this.props.item.cover}
             photos={this.props.item.photos}
-            tags={this.props.item.tags}
             size={this.props.size}
             onMouseDown={this.handleMouseDown}
             onClick={this.handleClick}

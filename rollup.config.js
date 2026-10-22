@@ -154,7 +154,6 @@ export default [
         entries: {
           'views/about': 'src/views/about.js',
           'views/prefs': 'src/views/prefs.js',
-          'views/print': 'src/views/print.js',
           'views/project': 'src/views/project.js'
         },
         implicitlyLoadedAfterOneOf: [
@@ -190,16 +189,6 @@ export default [
         preventAssignment: true,
         values: {
           'process.env.NODE_ENV': JSON.stringify(NODE_ENV)
-        }
-      }),
-      // PATCH jsonld documentLoader redirect handling
-      replace({
-        preventAssignment: true,
-        include: [
-          'node_modules/jsonld/lib/documentLoaders/node.js'
-        ],
-        values: {
-          manual: 'follow'
         }
       }),
       replace({

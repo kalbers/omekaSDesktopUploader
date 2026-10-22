@@ -2,14 +2,11 @@ import React from 'react'
 import { Editable } from '../editable.js'
 import { createClickHandler } from '../util.js'
 import { PhotoIterable } from './iterable.js'
-import { SelectionList } from '../selection/index.js'
-import { pluck } from '../../common/util.js'
 import { TYPE } from '../../constants/index.js'
 import cx from 'classnames'
 import { testFocusChange } from '../../dom.js'
 import { Icon } from '../icons.js'
 import { Button } from '../button.js'
-import { TranscriptionIcon } from '../transcription/icon.js'
 
 
 class PhotoListItem extends PhotoIterable {
@@ -19,10 +16,6 @@ class PhotoListItem extends PhotoIterable {
 
   get isDraggable() {
     return !this.props.isEditing && super.isDraggable
-  }
-
-  get selections() {
-    return pluck(this.props.selections, this.props.photo.selections)
   }
 
   get title() {
@@ -72,51 +65,10 @@ class PhotoListItem extends PhotoIterable {
     onEditCancel()
   }
 
-  handleTwistyButtonClick = (event) => {
-    event.stopPropagation()
-
-    if (this.props.isExpanded) this.contract()
-    else this.expand()
-  }
-
-
-  renderSelectionList() {
-    if (!this.props.isExpanded) return null
-
-    return (
-      <SelectionList
-        active={this.props.selection}
-        data={this.props.data}
-        edit={this.props.edit.selection}
-        isDisabled={this.props.isDisabled}
-        isItemOpen={this.props.isItemOpen}
-        onChange={this.props.onChange}
-        onContextMenu={this.props.onContextMenu}
-        onEdit={this.props.onEdit}
-        onEditCancel={this.props.onEditCancel}
-        onItemOpen={this.props.onItemOpen}
-        onSelect={this.props.onSelect}
-        onSort={this.props.onSelectionSort}
-        photo={this.props.photo}
-        selections={this.selections}/>
-    )
-  }
-
-  renderTwistyButton() {
-    return this.props.isExpandable && (
-      <Button
-        noFocus
-        icon={<Icon name="Chevron9"/>}
-        className="disclosure"
-        onClick={this.handleTwistyButtonClick}/>
-    )
-  }
-
   render() {
     const {
       isDisabled,
       isEditing,
-      isExpandable,
       onEditCancel,
       photo
     } = this.props
@@ -130,7 +82,6 @@ class PhotoListItem extends PhotoIterable {
           onClick={this.handleClick}
           onContextMenu={this.handleContextMenu}
           onMouseDown={this.handleMouseDown}>
-          {this.renderTwistyButton()}
           <div className="thumbnail-container">
             {this.renderThumbnail()}
           </div>
@@ -150,11 +101,8 @@ class PhotoListItem extends PhotoIterable {
                 title="photo.consolidate"
                 onClick={this.handleConsolidate}/>
             )}
-            {isExpandable && <Icon name="Selection"/>}
-            <TranscriptionIcon id={this.props.photo.transcriptions?.at(-1)}/>
           </div>
         </div>
-        {this.renderSelectionList()}
       </li>
     )
   }

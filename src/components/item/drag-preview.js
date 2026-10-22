@@ -5,7 +5,7 @@ export function ItemDragPreview({ item, size = 64 }) {
   let items = item.items
   let count = items.length
 
-  let { cover, photos, tags } = items[0]
+  let { cover, photos } = items[0]
 
   return (
     <div className={cx('item', 'drag-preview', 'center', {
@@ -14,7 +14,6 @@ export function ItemDragPreview({ item, size = 64 }) {
       <CoverImage
         cover={cover}
         photos={photos}
-        tags={tags}
         size={size}/>
       {count > 1 &&
         <div className="badge">{count}</div>}

@@ -18,7 +18,6 @@ import {
 import {
   getActiveItemTemplate,
   getActivePhotoTemplate,
-  getActiveSelectionTemplate
 } from './ontology.js'
 
 const EMPTY = []
@@ -131,23 +130,9 @@ const getPhotoMetadata = memo(
   (metadata, id) => id ? collectMetadata(metadata, [id]) : null
 )
 
-const getSelectionMetadata = memo(
-  ({ metadata }) => metadata,
-  ({ nav }) => nav.selection,
-  (metadata, id) => id ? collectMetadata(metadata, [id]) : null
-)
-
 export const getPhotoFields = memo(
   getActivePhotoTemplate,
   getPhotoMetadata,
-  ({ ontology }) => ontology.props,
-  (template, data, props) =>
-    getMetadataFields(null, { template, data, props })
-)
-
-export const getSelectionFields = memo(
-  getActiveSelectionTemplate,
-  getSelectionMetadata,
   ({ ontology }) => ontology.props,
   (template, data, props) =>
     getMetadataFields(null, { template, data, props })

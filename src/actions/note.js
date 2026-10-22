@@ -11,17 +11,6 @@ export default {
     }
   },
 
-  export(payload, meta = {}) {
-    return {
-      type: NOTE.EXPORT,
-      payload,
-      meta: {
-        cmd: 'project',
-        ...meta
-      }
-    }
-  },
-
   insert(payload, meta = {}) {
     return {
       type: NOTE.INSERT,
@@ -70,14 +59,10 @@ export default {
       }
 
     return (dispatch, getState) => {
-      let { note, photo, item, selection } = payload
+      let { note, photo, item } = payload
 
       if (item == null) {
-        const { photos, selections } = getState()
-
-        if (photo == null) {
-          photo = get(selections, [selection, 'photo'])
-        }
+        const { photos } = getState()
 
         item = get(photos, [photo, 'item'])
 
@@ -88,7 +73,7 @@ export default {
 
       dispatch({
         type: NOTE.SELECT,
-        payload: { note, photo, item, selection },
+        payload: { note, photo, item },
         meta: { log: 'trace', ...meta }
       })
     }

@@ -1,4 +1,4 @@
-import { array, blank, list as lst, uniq } from '../common/util.js'
+import { list as lst, uniq } from '../common/util.js'
 import { select } from '../common/query.js'
 import { NAV } from '../constants/index.js'
 
@@ -12,29 +12,21 @@ const mod = {
   subject: modSubject
 }
 
-const skel = (id, lists = [], photos = [], tags = []) => ({
-  id, lists, photos, tags
+const skel = (id, lists = [], photos = []) => ({
+  id, lists, photos
 })
 
 const SEARCH = `
   SELECT item_id AS id
-    FROM fts_transcriptions t
-      LEFT OUTER JOIN selections USING (id)
-      LEFT OUTER JOIN photos p ON (p.id = t.id OR p.id = photo_id)
-    WHERE fts_transcriptions MATCH $query
-  UNION
-  SELECT item_id AS id
     FROM fts_notes n
-      LEFT OUTER JOIN selections USING (id)
-      LEFT OUTER JOIN photos p ON (p.id = n.id OR p.id = photo_id)
+      JOIN photos p ON (p.id = n.id)
     WHERE fts_notes MATCH $query
   UNION
   SELECT coalesce(i.id, p.item_id) AS id
     FROM metadata m
       JOIN fts_metadata ON (value_id = fts_metadata.rowid)
       LEFT OUTER JOIN items i USING (id)
-      LEFT OUTER JOIN selections USING (id)
-      LEFT OUTER JOIN photos p ON (p.id = m.id OR p.id = photo_id)
+      LEFT OUTER JOIN photos p ON (p.id = m.id)
     WHERE fts_metadata MATCH $query`
 
 const SORT = `
@@ -55,7 +47,7 @@ const FTS_PATTERN = /[*+'"{(})^-]| (AND|OR|NOT) /
 const prefix = (query) =>
   (!FTS_PATTERN.test(query)) ? query + '*' : query
 
-function prep({ query, sort, tags }, params = {}) {
+function prep({ query, sort }, params = {}) {
   if (!(sort.column in ORDER)) {
     params.$sort = sort.column
   }
@@ -64,12 +56,6 @@ function prep({ query, sort, tags }, params = {}) {
     query = query.trim()
     if (query.length > 0) {
       params.$query = prefix(query)
-    }
-  }
-
-  if (!blank(tags)) {
-    if (tags.length > 0) {
-      params.$tags = tags.length
     }
   }
 
@@ -100,16 +86,13 @@ mod.item = {
       ${params.$sort ? SORT : ''}
       SELECT DISTINCT id
         FROM items
-          ${params.$tags ? 'JOIN taggings USING (id)' : ''}
           ${params.$sort ?
             'LEFT OUTER JOIN sort USING (id)' :
             'JOIN subjects USING (id)'}
           LEFT OUTER JOIN trash USING (id)
         WHERE
-          ${params.$tags ? `tag_id IN (${lst(options.tags)}) AND` : ''}
           ${params.$query ? `id IN (${SEARCH}) AND` : ''}
           deleted ${trash ? 'NOT' : 'IS'} NULL
-        ${params.$tags ? 'GROUP BY id HAVING COUNT(tag_id) = $tags' : ''}
         ORDER BY ${order} ${dir}, id ${dir}`,
     params)
   },
@@ -157,15 +140,12 @@ mod.item = {
           ${params.$sort ?
             'LEFT OUTER JOIN sort USING (id)' :
             'JOIN subjects USING (id)'}
-          ${params.$tags ? 'JOIN taggings USING (id)' : ''}
           LEFT OUTER JOIN items USING (id)
           LEFT OUTER JOIN trash USING (id)
         WHERE
           list_id = $list AND list_items.deleted IS NULL AND
           ${params.$query ? `id IN (${SEARCH}) AND` : ''}
-          ${params.$tags ? `tag_id IN (${lst(options.tags)}) AND` : ''}
           trash.deleted IS NULL
-        ${params.$tags ? 'GROUP BY id HAVING COUNT(tag_id) = $tags' : ''}
         ORDER BY ${order} ${dir}, id ${dir}`,
     params)
   },
@@ -181,13 +161,10 @@ mod.item = {
           ${params.$sort ?
             'LEFT OUTER JOIN sort USING (id)' :
             'JOIN subjects USING (id)'}
-          ${params.$tags ? 'JOIN taggings USING (id)' : ''}
         WHERE
           (list_items.id IS NULL OR list_items.deleted NOT NULL) AND
           ${params.$query ? `id IN (${SEARCH}) AND` : ''}
-          ${params.$tags ? `tag_id IN (${lst(options.tags)}) AND` : ''}
           trash.deleted IS NULL
-        ${params.$tags ? 'GROUP BY id HAVING COUNT(tag_id) = $tags' : ''}
         ORDER BY ${order} ${dir}, id ${dir}`,
     params)
   },
@@ -216,17 +193,6 @@ mod.item = {
 
         if (id in items) Object.assign(items[id], data)
         else items[id] = Object.assign(skel(id), data)
-      }
-      ),
-
-      db.each(`
-        SELECT id, tag_id AS tag
-          FROM taggings${
-            (ids != null) ? ` WHERE id IN (${ids})` : ''
-          }`,
-      ({ id, tag }) => {
-        if (id in items) items[id].tags.push(tag)
-        else items[id] = skel(id, [], [], [tag])
       }
       ),
 
@@ -278,7 +244,6 @@ mod.item = {
 
     await Promise.all([
       mod.metadata.copy(db, { source, target: id }),
-      mod.item.tags.copy(db, { source, target: id }),
       mod.item.lists.copy(db, { source, target: id })
     ])
 
@@ -290,22 +255,19 @@ mod.item = {
   },
 
   async merge(db, item, items, metadata) {
-    let photos = [], tags = [], lists = [], ids = []
+    let photos = [], lists = [], ids = []
 
     let data = { ...metadata[item.id] }
     delete data.id
 
-    let tmem = new Set()
     let lmem = new Set()
 
-    uniq(item.tags, [], tmem)
     uniq(item.lists, [], lmem)
 
     for (let it of items) {
       ids.push(it.id)
       photos = photos.concat(it.photos)
 
-      uniq(it.tags, tags, tmem)
       uniq(it.lists, lists, lmem)
 
       for (let prop in metadata[it.id]) {
@@ -317,21 +279,19 @@ mod.item = {
 
     await Promise.all([
       mod.photo.merge(db, item.id, photos, item.photos.length),
-      mod.item.tags.set(db, tags.map(tag => ({ id: item.id, tag }))),
       mod.item.lists.merge(db, item.id, ids, lists),
       mod.metadata.update(db, { id: [item.id], data }),
       mod.item.delete(db, ids, 'auto')
     ])
 
     return {
-      photos, tags, lists, data
+      photos, lists, data
     }
   },
 
-  split(db, id, items, data, lists, tags) {
+  split(db, id, items, data, lists) {
     return Promise.all([
       mod.photo.split(db, id, items),
-      mod.item.tags.remove(db, { id, tags }),
       mod.item.lists.remove(db, id, lists),
       mod.metadata.replace(db, { id, data }),
       mod.item.restore(db, items.map(i => i.id))
@@ -373,41 +333,6 @@ mod.item = {
     await mod.item.destroy(db, items)
 
     return items
-  },
-
-  tags: {
-    async add(db, { id, tag }) {
-      return db.run(`
-        INSERT INTO taggings (tag_id, id) VALUES ${
-          id.map(i => `(${tag}, ${i})`).join(',')
-        }`)
-    },
-
-    async set(db, values) {
-      if (values.length) {
-        return db.run(`
-          INSERT INTO taggings (tag_id, id) VALUES ${
-            values.map(({ tag, id }) => `(${tag}, ${id})`).join(',')
-          }`)
-      }
-    },
-
-    async clear(db, id) {
-      return db.run('DELETE FROM taggings WHERE id = ?', id)
-    },
-
-    async remove(db, { id, tags }) {
-      return db.run(`
-        DELETE FROM taggings
-          WHERE id IN (${lst(array(id))}) AND tag_id IN (${lst(tags)})`)
-    },
-
-    async copy(db, { source, target }) {
-      return db.run(`
-        INSERT INTO taggings (tag_id, id)
-          SELECT tag_id, ${Number(target)} AS id
-            FROM taggings WHERE id = ?`, source)
-    }
   },
 
   lists: {

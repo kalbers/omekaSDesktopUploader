@@ -3,7 +3,7 @@ import { by } from '../collate.js'
 import { cat, compose, filter, into, map } from 'transducers.js'
 import { blank, get, homogenize } from '../common/util.js'
 import { expand, tropy } from '../ontology/index.js'
-import { ITEM, PHOTO, SELECTION } from '../constants/index.js'
+import { ITEM, PHOTO } from '../constants/index.js'
 import { value } from '../value.js'
 
 const getResourceList =
@@ -74,14 +74,12 @@ const getTemplatesByType = (type) => memo(
 
 export const getItemTemplates = getTemplatesByType(tropy.Item)
 export const getPhotoTemplates = getTemplatesByType(tropy.Photo)
-export const getSelectionTemplates = getTemplatesByType(tropy.Selection)
 
 export const getAllTemplatesByType = memo(
   getItemTemplates,
   getPhotoTemplates,
-  getSelectionTemplates,
-  (item, photo, selection) => ({
-    item, photo, selection
+  (item, photo) => ({
+    item, photo
   })
 )
 
@@ -139,12 +137,6 @@ export const getPhotoTemplate = memo(
   (template, id) => template[id] || template[PHOTO.TEMPLATE.DEFAULT]
 )
 
-export const getSelectionTemplate = memo(
-  ({ ontology }) => ontology.template,
-  ({ settings }) => settings.templates.selection,
-  (template, id) => template[id] || template[SELECTION.TEMPLATE.DEFAULT]
-)
-
 export const getTemplateValues = (template) =>
   template.fields.reduce((acc, field) => {
     if (!blank(field.value)) {
@@ -175,12 +167,4 @@ export const getActivePhotoTemplate = memo(
   ({ photos }) => photos,
   (template, id, photos) =>
     (id != null && id in photos) ? template[photos[id].template] : null
-)
-
-export const getActiveSelectionTemplate = memo(
-  ({ ontology }) => ontology.template,
-  ({ nav }) => nav.selection,
-  ({ selections }) => selections,
-  (template, id, selections) =>
-    (id != null && id in selections) ? template[selections[id].template] : null
 )

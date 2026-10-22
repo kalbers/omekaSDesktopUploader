@@ -77,10 +77,9 @@ export class Consolidate extends ImportCommand {
   *exec() {
     let { payload, meta } = this.action
 
-    let [project, photos, selections, settings] = yield select(state => [
+    let [project, photos, settings] = yield select(state => [
       state.project,
       getPhotosForConsolidation(state, payload),
-      state.selections,
       state.settings
     ])
 
@@ -113,7 +112,7 @@ export class Consolidate extends ImportCommand {
     yield parallel(photos, function* (photo) {
       try {
         yield self.progress()
-        yield self.consolidate(photo, selections)
+        yield self.consolidate(photo)
 
       } catch (e) {
         warn({ stack: e.stack }, `failed to consolidate photo ${photo.path}`)
@@ -127,7 +126,7 @@ export class Consolidate extends ImportCommand {
     return this.result
   }
 
-  *consolidate(photo, selections = {}) {
+  *consolidate(photo) {
     try {
       let { meta } = this.action
       let { cache, db, overwrite, useLocalTimezone, store } = this.options
@@ -173,15 +172,6 @@ export class Consolidate extends ImportCommand {
             yield call(cache.consolidate, photo.id, image, {
               overwrite
             })
-
-            for (let id of photo.selections) {
-              if (id in selections) {
-                yield call(cache.consolidate, id, image, {
-                  overwrite,
-                  selection: selections[id]
-                })
-              }
-            }
 
             data = { id: photo.id, ...image.toJSON() }
 

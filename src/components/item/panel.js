@@ -6,25 +6,14 @@ import { NoteList, NoteToolbar } from '../note/index.js'
 import { PanelGroup, Panel } from '../panel.js'
 import { PhotoPanel, PhotoToolbar } from '../photo/index.js'
 import { MetadataPanel } from '../metadata/index.js'
-import { TagPanel } from '../tag/index.js'
-import { IconMetadata, IconHangtag } from '../icons.js'
-import { on, off, isInput } from '../../dom.js'
+import { IconMetadata } from '../icons.js'
+import { isInput } from '../../dom.js'
 import { TABS, UI } from '../../constants/index.js'
 
 
 export class ItemPanelGroup extends React.PureComponent {
   panel = React.createRef()
   tab = React.createRef()
-
-  componentDidMount() {
-    on(document, 'global:nextTab', this.toggleTabs)
-    on(document, 'global:prevTab', this.toggleTabs)
-  }
-
-  componentWillUnmount() {
-    off(document, 'global:nextTab', this.toggleTabs)
-    off(document, 'global:prevTab', this.toggleTabs)
-  }
 
   get toolbar() {
     return (
@@ -49,11 +38,6 @@ export class ItemPanelGroup extends React.PureComponent {
         if (this.props.isReadOnly) return
         this.tab.current?.next()
         break
-      case 'left':
-      case 'right':
-        this.toggleTabs()
-        this.panel.current?.focus()
-        break
       default:
         return
     }
@@ -63,17 +47,12 @@ export class ItemPanelGroup extends React.PureComponent {
     event.nativeEvent.stopImmediatePropagation()
   }
 
-  handleTagAddCancel = () => {
-    this.panel.current.focus()
-  }
-
   handleNoteOpen = (note) => {
     if (note != null && !this.props.isItemMode) {
       this.props.onItemOpen({
         id: this.props.items[0].id,
         photos: [this.props.photo.id],
-        notes: [note.id],
-        selection: note.selection
+        notes: [note.id]
       })
     }
   }
@@ -95,14 +74,6 @@ export class ItemPanelGroup extends React.PureComponent {
 
   handleZoomChange = (zoom) => {
     this.props.onUiUpdate({ panel: { zoom } })
-  }
-
-  toggleTabs = () => {
-    this.handleTabChange(
-      this.props.panel.tab === UI.PANEL.METADATA ?
-        UI.PANEL.TAGS :
-        UI.PANEL.METADATA
-    )
   }
 
   render() {
@@ -132,13 +103,13 @@ export class ItemPanelGroup extends React.PureComponent {
           <Toolbar>
             <Toolbar.Left>
               <TabNav
-                active={panel.tab}
+                active={UI.PANEL.METADATA}
                 justified
                 tabs={this.props.tabs}
                 onChange={this.handleTabChange}/>
             </Toolbar.Left>
           </Toolbar>
-          <TabPane active={panel.tab}>
+          <TabPane active={UI.PANEL.METADATA}>
             {(tab, props) => {
               if (this.props.items.length === 0) return null
 
@@ -154,15 +125,6 @@ export class ItemPanelGroup extends React.PureComponent {
                       onCancel={this.props.onEditCancel}
                       onMetadataSave={this.props.onMetadataSave}
                       onPhotoSave={this.props.onPhotoSave}/>
-                  )
-                case UI.PANEL.TAGS:
-                  return (
-                    <TagPanel
-                      {...props}
-                      ref={this.tab}
-                      isDisabled={isDisabled || isReadOnly}
-                      onCancel={this.handleTagAddCancel}
-                      onContextMenu={this.props.onContextMenu}/>
                   )
               }
             }}
@@ -216,11 +178,6 @@ export class ItemPanelGroup extends React.PureComponent {
         name: UI.PANEL.METADATA,
         label: 'panel.metadata.tab',
         icon: <IconMetadata/>
-      },
-      {
-        name: UI.PANEL.TAGS,
-        label: 'panel.tags.tab',
-        icon: <IconHangtag/>
       }
     ]
   }

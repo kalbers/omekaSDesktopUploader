@@ -5,7 +5,6 @@ import { Titlebar } from '../toolbar.js'
 import { ActivityPane } from '../activity.js'
 import { Resizable } from '../resizable.js'
 import { ListLeafNode, ListTree, TrashListNode } from '../list/index.js'
-import { TagList } from '../tag/index.js'
 import { Sidebar, SidebarBody } from '../sidebar.js'
 import { ProjectName } from './name.js'
 import { TABS, LIST, SASS } from '../../constants/index.js'
@@ -16,7 +15,6 @@ import * as act from '../../actions/index.js'
 
 import {
   getActivities,
-  getAllTags,
   getListSubTree
 } from '../../selectors/index.js'
 
@@ -24,10 +22,6 @@ import {
 class ProjectSidebar extends React.PureComponent {
   get isEditing() {
     return has(this.props.edit, 'project')
-  }
-
-  get hasActiveTags() {
-    return this.props.tagSelection.length > 0
   }
 
   get hasSelection() {
@@ -145,7 +139,7 @@ class ProjectSidebar extends React.PureComponent {
   }
 
   handleClick = () => {
-    if (this.hasSelection || this.hasActiveTags) {
+    if (this.hasSelection) {
       return this.handleSelect()
     }
 
@@ -185,7 +179,7 @@ class ProjectSidebar extends React.PureComponent {
   }
 
   handleListSelect = (list) => {
-    if (list > 0 && (!this.isListSelected(list) || this.hasActiveTags)) {
+    if (list > 0 && !this.isListSelected(list)) {
       this.props.onSelect({ list }, { throttle: true })
       return true
     }
@@ -222,8 +216,7 @@ class ProjectSidebar extends React.PureComponent {
   handleContextMenu = (event, scope = 'sidebar', target) => {
     this.props.onContextMenu(event, scope, {
       ...target,
-      isReadOnly: this.props.project.isReadOnly,
-      tagColor: this.props.tagColor
+      isReadOnly: this.props.project.isReadOnly
     })
   }
 
@@ -303,26 +296,6 @@ class ProjectSidebar extends React.PureComponent {
               </nav>
             </section>
 
-            <section>
-              <h2><FormattedMessage id="sidebar.tags"/></h2>
-              <nav>
-                <TagList
-                  color={this.props.tagColor}
-                  edit={this.props.edit.tag}
-                  isReadOnly={this.props.project.isReadOnly}
-                  keymap={this.props.keymap.TagList}
-                  selection={this.props.tagSelection}
-                  tags={this.props.tags}
-                  onContextMenu={this.handleContextMenu}
-                  onCreate={this.props.onTagCreate}
-                  onDropItems={this.props.onItemTagAdd}
-                  onEditCancel={this.props.onEditCancel}
-                  onRemove={this.props.onTagDelete}
-                  onSave={this.props.onTagSave}
-                  onSelect={this.props.onTagSelect}/>
-              </nav>
-            </section>
-
           </SidebarBody>
           <ActivityPane
             activities={this.props.activities}
@@ -336,8 +309,7 @@ class ProjectSidebar extends React.PureComponent {
     activities: [],
     edit: {},
     keymap: {},
-    root: LIST.ROOT,
-    tags: []
+    root: LIST.ROOT
   }
 }
 
@@ -353,9 +325,6 @@ const ProjectSidebarContainer = connect(
     list: state.nav.list,
     lists: state.lists,
     listwalk: getListSubTree(state, { root: root || LIST.ROOT }),
-    tagColor: state.settings.tagColor,
-    tagSelection: state.nav.tags,
-    tags: getAllTags(state),
     width: state.ui.sidebar.width
   }),
 
@@ -370,10 +339,6 @@ const ProjectSidebarContainer = connect(
 
     onEditCancel() {
       dispatch(act.edit.cancel())
-    },
-
-    onItemTagAdd(...args) {
-      dispatch(act.item.tags.create(...args))
     },
 
     onListCollapse(...args) {
@@ -419,22 +384,6 @@ const ProjectSidebarContainer = connect(
 
     onSelect(...args) {
       dispatch(act.nav.select(...args))
-    },
-
-    onTagCreate(data) {
-      dispatch(act.tag.create(data))
-    },
-
-    onTagDelete(tag) {
-      dispatch(act.tag.delete(tag.id))
-    },
-
-    onTagSave(data, id) {
-      dispatch(act.tag.save({ ...data, id }))
-    },
-
-    onTagSelect(...args) {
-      dispatch(act.tag.select(...args))
     }
   })
 )(ProjectSidebar)

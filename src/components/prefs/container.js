@@ -7,8 +7,8 @@ import { VocabBrowser } from '../vocab/browser.js'
 import { Pane, Footer } from './pane.js'
 import { AppSettings } from '../settings/app.js'
 import { ProjectSettings } from '../project/settings.js'
-import { PluginConfig } from '../plugin/config.js'
-import { useIpcEvent, useIpcSend } from '../../hooks/use-ipc.js'
+import { OmekaSettings } from '../settings/omeka.js'
+import { useIpcSend } from '../../hooks/use-ipc.js'
 import * as act from '../../actions/index.js'
 import { Button } from '../button.js'
 import { IconPlus } from '../icons.js'
@@ -26,14 +26,6 @@ export function PrefsContainer() {
 
   let handleVocabImport = useCallback(() => {
     dispatch(act.ontology.import())
-  }, [dispatch])
-
-  let handlePluginInstall = useIpcEvent(null, [
-    'cmd', 'app:install-plugin'
-  ])
-
-  let handlePluginUninstall = useCallback((...args) => {
-    dispatch(act.plugin.uninstall(...args))
   }, [dispatch])
 
   let handleContextMenu = useCallback((event) => {
@@ -57,7 +49,7 @@ export function PrefsContainer() {
             <NavItem name="project" icon="Maze" isDisabled={!project?.id}/>
             <NavItem name="template" icon="Document"/>
             <NavItem name="vocab" icon="Book"/>
-            <NavItem name="plugins" icon="Plugin"/>
+            <NavItem name="omeka" icon="Plugin"/>
           </Nav>
         </Header>
         <Body>
@@ -81,16 +73,8 @@ export function PrefsContainer() {
                 onClick={handleVocabImport}/>
             </Footer>
           </Pane>
-          <Pane name="plugins">
-            <PluginConfig
-              onOpenLink={handleOpenLink}
-              onUninstall={handlePluginUninstall}/>
-            <Footer>
-              <Button
-                isDefault
-                text="prefs.plugins.install"
-                onClick={handlePluginInstall}/>
-            </Footer>
+          <Pane name="omeka">
+            <OmekaSettings/>
           </Pane>
         </Body>
       </div>

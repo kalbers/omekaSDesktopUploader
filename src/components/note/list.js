@@ -23,8 +23,7 @@ export const NoteList = ({
     if (!(note == null || note.id === selection?.id))
       onSelect({
         note: note.id,
-        photo: note.photo,
-        selection: note.selection
+        photo: note.photo
       }, { throttle: event?.repeat })
   })
 

@@ -117,21 +117,6 @@ open.images = (opts) => open({
   ...opts
 })
 
-open.items = (opts) => open({
-  filters: [
-    {
-      name: t('dialog', 'filter', 'images'),
-      extensions: IMAGE.EXT
-    },
-    {
-      name: t('dialog', 'filter', 'items'),
-      extensions: ['json', 'jsonld']
-    }
-  ],
-  properties: ['openFile', 'multiSelections'],
-  ...opts
-})
-
 open.image = (opts) => open.images({
   properties: ['openFile'],
   ...opts
@@ -228,14 +213,6 @@ save.template = (opts) => save({
   ...opts
 })
 
-save.items = (opts) => save({
-  filters: [{
-    name: t('dialog', 'filter', 'jsonld'),
-    extensions: ['json', 'jsonld']
-  }],
-  ...opts
-})
-
 save.image = (opts) => save({
   filters: [{
     name: t('dialog', 'filter', 'images'),
@@ -248,14 +225,6 @@ save.vocab = (opts) => save({
   filters: [{
     name: t('dialog', 'filter', 'rdf'),
     extensions: ['n3']
-  }],
-  ...opts
-})
-
-save.notes = (opts) => save({
-  filters: [{
-    name: t('dialog', 'filter', 'notes'),
-    extensions: ['json', 'jsonld', 'md', 'markdown', 'html', 'txt']
   }],
   ...opts
 })

@@ -24,8 +24,7 @@ export const NoteListItem = ({
     onContextMenu?.(event, 'note', {
       notes: [note.id],
       item: note.item,
-      photo: note.photo,
-      selection: note.selection
+      photo: note.photo
     })
   })
 

@@ -1,7 +1,6 @@
 import { createSelector as memo } from 'reselect'
 import { seq, compose, cat, map, keep } from 'transducers.js'
 import { getVisiblePhotos } from './photos.js'
-import { getVisibleSelections } from './selections.js'
 
 const getNotes = ({ notes }) => notes
 const getSelectedNoteId = ({ nav }) => nav.note
@@ -10,26 +9,19 @@ export const getSelectedNote = memo(
   getNotes, getSelectedNoteId, (notes, id) => notes[id]
 )
 
-export const getNoteParent = ({ notes, photos, selections }, { id }) => {
-  let { photo, selection } = notes[id]
-
-  if (photo == null) {
-    photo = selections[selection].photo
-  }
-
+export const getNoteParent = ({ notes, photos }, { id }) => {
+  let { photo } = notes[id]
   let { item } = photos[photo]
 
-  return { item, photo, selection }
+  return { item, photo }
 }
 
 export const getVisibleNotes = memo(
   getNotes,
   getVisiblePhotos,
-  getVisibleSelections,
 
-  (notes, ...parents) =>
-    seq(parents, compose(
-      cat,
+  (notes, photos) =>
+    seq(photos, compose(
       map(parent => parent.notes),
       keep(),
       cat,
@@ -56,9 +48,9 @@ export const getNextNoteSelection = memo(
     if (next == null)
       return prev
 
-    if (next.photo === cursor.photo && next.selection === cursor.selection)
+    if (next.photo === cursor.photo)
       return next
-    if (prev.photo === cursor.photo && prev.selection === prev.selection)
+    if (prev.photo === cursor.photo)
       return prev
 
     return next
@@ -68,17 +60,13 @@ export const getNextNoteSelection = memo(
 
 export const getNotesMap = (state, props) =>
   props.notes.reduce((nmap, noteId) => {
-    let { photo, selection } = state.notes[noteId]
-
-    let id = (selection != null) ? selection : photo
-    let type = (selection != null) ? 'selection' : 'photo'
+    let { photo: id } = state.notes[noteId]
 
     if (nmap.has(id))
       nmap.get(id).notes.push(noteId)
     else
       nmap.set(id, {
         id,
-        type,
         notes: [noteId]
       })
 

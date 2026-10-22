@@ -12,7 +12,7 @@ export function *search(db) {
       sort: getSortColumn(state)
     }))
 
-    var { list, tags, trash, query } = nav
+    var { list, trash, query } = nav
 
     let START = Date.now()
 
@@ -30,13 +30,13 @@ export function *search(db) {
 
       case (list != null):
         if (list < 0)
-          result = yield call(mod.item.unlisted, db, { tags, query, sort })
+          result = yield call(mod.item.unlisted, db, { query, sort })
         else
-          result = yield call(mod.item.list, db, list, { tags, query, sort })
+          result = yield call(mod.item.list, db, list, { query, sort })
         break
 
       default:
-        result = yield call(mod.item.all, db, { tags, sort, query })
+        result = yield call(mod.item.all, db, { sort, query })
     }
 
     let ms = Date.now() - START
@@ -45,7 +45,6 @@ export function *search(db) {
         ms,
         list,
         query,
-        tags: tags.length > 0,
         trash
       }, `SLOW: *search query "${query}" took ${ms}ms`)
     }
@@ -56,7 +55,6 @@ export function *search(db) {
     warn({
       list,
       query,
-      tags: tags.length > 0,
       stack: e.stack,
       trash
     }, '*search failed')

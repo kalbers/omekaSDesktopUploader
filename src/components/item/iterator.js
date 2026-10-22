@@ -92,7 +92,6 @@ export class ItemIterator extends React.Component {
     let target = {
       id: item.id,
       photos: item.photos,
-      tags: item.tags,
       list
     }
 
@@ -266,7 +265,6 @@ export class ItemIterator extends React.Component {
       item,
       index,
       photos: this.props.photos,
-      tags: this.props.tags,
       isSelected: this.isSelected(item),
       isReadOnly: this.props.isReadOnly,
       isVertical: this.isVertical,

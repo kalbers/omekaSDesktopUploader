@@ -1,6 +1,6 @@
 import { FormElement } from '../form.js'
 import { TemplateSelect } from '../template/select.js'
-import { IconItemSmall, IconPhoto, IconSelection } from '../icons.js'
+import { IconItemSmall, IconPhoto } from '../icons.js'
 import { useEvent } from '../../hooks/use-event.js'
 import { tropy } from '../../ontology/ns.js'
 
@@ -33,14 +33,6 @@ export function TemplateSettings({ config, onChange }) {
         name="photo"
         type={tropy.Photo}
         value={config.photo}
-        tabIndex={0}
-        onChange={handleTemplateChange}/>
-      <TemplateSelect
-        icon={<IconSelection/>}
-        isRequired
-        name="selection"
-        type={tropy.Selection}
-        value={config.selection}
         tabIndex={0}
         onChange={handleTemplateChange}/>
     </FormElement>

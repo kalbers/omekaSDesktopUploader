@@ -1,8 +1,6 @@
 import { Container, ColorMatrixFilter, Sprite, Rectangle } from 'pixi.js'
 import { AdjustmentFilter } from 'pixi-filters'
 import { SharpenFilter } from './filter/index.js'
-import { SelectionLayer, SelectionOverlay } from './selection.js'
-import { TextLayer } from './text-layer.js'
 import { constrain } from './util.js'
 import { getResolution } from '../dom.js'
 import { deg, isHorizontal } from '../common/math.js'
@@ -49,15 +47,6 @@ export class Photo extends Container {
     this.current = {}
 
     this.handleResolutionChange(resolution)
-
-    this.selections = new SelectionLayer()
-    this.addChild(this.selections)
-
-    this.overlay = new SelectionOverlay()
-    this.addChild(this.overlay)
-
-    this.textLayer = new TextLayer()
-    this.addChild(this.textLayer)
   }
 
   get adjust() {
@@ -244,28 +233,11 @@ export class Photo extends Container {
   }
 
   sync(props, state = {}) {
-    let { width, height } = props.selection || state
+    let { width, height } = state
 
     this.#width = width
     this.#height = height
 
-    this.selections.sync(props, state)
-    this.overlay.sync(props, state)
     this.tool = state.quicktool || props.tool
-    this.textLayer.sync(props, state)
-  }
-
-  update(dragState, textSelection) {
-    if (this.selections.visible) {
-      this.selections.update(dragState)
-    }
-
-    if (this.overlay.visible) {
-      this.overlay.update()
-    }
-
-    if (this.textLayer.visible) {
-      this.textLayer.update(dragState, textSelection)
-    }
   }
 }

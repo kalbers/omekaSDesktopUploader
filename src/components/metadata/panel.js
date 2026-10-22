@@ -5,22 +5,19 @@ import { MetadataSection } from './section.js'
 import { ScrollContainer } from '../scroll/container.js'
 import { PhotoInfo } from '../photo/info.js'
 import { ItemInfo } from '../item/info.js'
-import { SelectionInfo } from '../selection/info.js'
 import * as act from '../../actions/index.js'
 
 import {
-  getActiveSelection,
   getItemFields,
   getPhotoFields,
   getSelectedItemTemplate,
   getSelectedItems,
-  getSelectedPhoto,
-  getSelectionFields
+  getSelectedPhoto
 } from '../../selectors/index.js'
 
 
 class MetadataPanel extends React.PureComponent {
-  fields = [null, null, null]
+  fields = [null, null]
 
   get isEmpty() {
     return this.props.items.length === 0
@@ -34,21 +31,17 @@ class MetadataPanel extends React.PureComponent {
     return this.props.photo != null && !this.props.photo.pending
   }
 
-  get hasSelectionFields() {
-    return this.props.selection != null && !this.props.selection.pending
-  }
-
   next = (i = 0) => {
-    for (let ii = i + 3; i < ii; ++i) {
-      let fields = this.fields[i % 3]
+    for (let ii = i + 2; i < ii; ++i) {
+      let fields = this.fields[i % 2]
       let next = (fields != null) && fields.next()
       if (next) return fields.edit(next.property.id)
     }
   }
 
-  prev = (i = 2) => {
-    for (let ii = i - 2; i >= ii; --i) {
-      let fields = this.fields[i % 3]
+  prev = (i = 1) => {
+    for (let ii = i - 1; i >= ii; --i) {
+      let fields = this.fields[i % 2]
       let prev = (fields != null) && fields.prev()
       if (prev) return fields.edit(prev.property.id)
     }
@@ -62,32 +55,20 @@ class MetadataPanel extends React.PureComponent {
     this.fields[1] = photo
   }
 
-  setSelectionFields = (selection) => {
-    this.fields[2] = selection
-  }
-
   handleAfterItemFields = () => {
     this.next(1)
   }
 
   handleBeforeItemFields = () => {
-    this.prev(2)
+    this.prev(1)
   }
 
   handleAfterPhotoFields = () => {
-    this.next(2)
+    this.next(0)
   }
 
   handleBeforePhotoFields = () => {
     this.prev(0)
-  }
-
-  handleAfterSelectionFields = () => {
-    this.next(0)
-  }
-
-  handleBeforeSelectionFields = () => {
-    this.prev(1)
   }
 
   handleItemTemplateChange = (template, hasChanged) => {
@@ -108,25 +89,12 @@ class MetadataPanel extends React.PureComponent {
     }
   }
 
-  handleSelectionTemplateChange = (template, hasChanged) => {
-    if (hasChanged) {
-      this.props.onTemplateChange('selection', {
-        id: [this.props.selection.id],
-        template: template.id
-      })
-    }
-  }
-
   handleItemContextMenu = (event, data = {}) => {
     this.handleContextMenu(event, { ...data, type: 'item' })
   }
 
   handlePhotoContextMenu = (event, data = {}) => {
     this.handleContextMenu(event, { ...data, type: 'photo' })
-  }
-
-  handleSelectionContextMenu = (event, data = {}) => {
-    this.handleContextMenu(event, { ...data, type: 'selection' })
   }
 
   handleContextMenu(event, data = {}) {
@@ -197,37 +165,11 @@ class MetadataPanel extends React.PureComponent {
     )
   }
 
-  renderSelectionFields() {
-    return this.hasSelectionFields && (
-      <MetadataSection
-        isDisabled={this.props.isDisabled}
-        template={this.props.selection.template}
-        title="panel.metadata.selection"
-        onTemplateChange={this.handleSelectionTemplateChange}
-        onContextMenu={this.handleSelectionContextMenu}>
-        <MetadataList
-          ref={this.setSelectionFields}
-          edit={this.props.edit}
-          fields={this.props.fields.selection}
-          isDisabled={this.props.isDisabled}
-          onEdit={this.props.onEdit}
-          onCancel={this.props.onCancel}
-          onContextMenu={this.handleSelectionContextMenu}
-          onChange={this.props.onMetadataSave}
-          onAfter={this.handleAfterSelectionFields}
-          onBefore={this.handleBeforeSelectionFields}
-          onCreate={this.props.onMetadataAdd}/>
-        <SelectionInfo selection={this.props.selection}/>
-      </MetadataSection>
-    )
-  }
-
   render() {
     return (
       <ScrollContainer>
         {this.renderItemFields()}
         {this.renderPhotoFields()}
-        {this.renderSelectionFields()}
       </ScrollContainer>
     )
   }
@@ -238,12 +180,10 @@ const MetadataPanelContainer = connect(
     edit: state.edit.field,
     fields: {
       item: getItemFields(state),
-      photo: getPhotoFields(state),
-      selection: getSelectionFields(state)
+      photo: getPhotoFields(state)
     },
     items: getSelectedItems(state),
     photo: getSelectedPhoto(state),
-    selection: getActiveSelection(state),
     template: getSelectedItemTemplate(state)
   }),
 

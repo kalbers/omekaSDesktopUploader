@@ -11,9 +11,6 @@ import { SASS, ITEM } from '../../constants/index.js'
 import {
   selectCachePrefix,
   getEsperViewState,
-  getActiveSelection,
-  getPhotoSelections,
-  getActiveTranscription
 } from '../../selectors/index.js'
 
 const { LAYOUT } = ITEM
@@ -59,15 +56,12 @@ class Item extends React.PureComponent {
     })
   }
 
-  handleEsperChange = ({ photo, selection, view, esper }) => {
+  handleEsperChange = ({ photo, view, esper }) => {
     if (esper != null) {
       this.props.onUiUpdate({ esper })
     }
     if (photo != null) {
       this.props.onPhotoSave(photo)
-    }
-    if (selection != null) {
-      this.props.onSelectionSave(selection)
     }
     if (view != null) {
       this.props.onEsperChange({ view })
@@ -112,18 +106,12 @@ class Item extends React.PureComponent {
               isPanelVisible={this.props.esper.panel}
               keymap={this.props.keymap.Esper}
               photo={this.props.photo}
-              selection={this.props.selection}
-              selections={this.props.selections}
               tool={this.props.esper.tool}
-              transcription={this.props.transcription}
-              overlay={this.props.esper.overlay}
-              overlayPanel={this.props.esper.overlayPanel}
               onContextMenu={this.handleContextMenu}
               onChange={this.handleEsperChange}
               onMaximize={this.handleMaximize}
               onPhotoError={this.props.onPhotoError}
-              onSelect={this.props.onPhotoSelect}
-              onSelectionCreate={this.props.onSelectionCreate}/>
+              onSelect={this.props.onPhotoSelect}/>
           </Resizable>
         )}
         {settings.maximize !== 'esper' && (
@@ -146,21 +134,10 @@ export const ItemContainer = connect(
     esper: state.ui.esper,
     view: getEsperViewState(state),
     keymap: state.keymap,
-    selection: getActiveSelection(state),
-    selections: getPhotoSelections(state),
-    settings: state.settings,
-    transcription: getActiveTranscription(state)
+    settings: state.settings
   }),
 
   dispatch => ({
-    onSelectionCreate(...args) {
-      dispatch(act.selection.create(...args))
-    },
-
-    onSelectionSave(...args) {
-      dispatch(act.selection.save(...args))
-    },
-
     onEsperChange(...args) {
       dispatch(act.esper.update(...args))
     },

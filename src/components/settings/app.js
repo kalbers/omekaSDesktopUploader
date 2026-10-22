@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useEvent } from '../../hooks/use-event.js'
 import { Form } from '../form.js'
 import { DeveloperSettings } from './dev.js'
-import { ExportSettings } from './export.js'
-import { PrintSettings } from './print.js'
 import { InterfaceSettings } from './interface.js'
 import { ImportSettings } from './import.js'
 import { LocaleSettings } from './locale.js'
@@ -37,14 +35,6 @@ export function AppSettings() {
       <hr/>
       <InterfaceSettings
         config={settings}
-        onChange={handleSettingsUpdate}/>
-      <hr/>
-      <ExportSettings
-        config={settings.export}
-        onChange={handleSettingsUpdate}/>
-      <hr/>
-      <PrintSettings
-        config={settings.print}
         onChange={handleSettingsUpdate}/>
       <hr/>
       <DeveloperSettings/>

@@ -15,7 +15,6 @@ import { autosave } from './note.js'
 import { persist, restore, storage } from './storage.js'
 import { watch } from './watch.js'
 import { handleDatabaseErrors } from './db.js'
-import { transcribe } from './transcriptions.js'
 import ARGS, { update } from '../args.js'
 import { open as openProject } from '../common/project.js'
 import { Migrations } from '../res.js'
@@ -108,7 +107,6 @@ export function *open(opts, action) {
 function *setup({ db, project }) {
   try {
     yield every(has('search'), search, db)
-    yield fork(transcribe)
 
     yield all([
       call(restore, 'nav', project.id),
@@ -122,13 +120,10 @@ function *setup({ db, project }) {
     yield all([
       put(act.history.drop()),
       put(act.list.load()),
-      put(act.tag.load()),
       put(act.item.load()),
       put(act.photo.load()),
       put(act.metadata.load()),
-      put(act.selection.load()),
       put(act.note.load()),
-      put(act.transcriptions.load())
     ])
 
     yield fork(autosave, db)
@@ -163,9 +158,7 @@ function *teardown({ db, project, store }) {
     yield call(mod.list.prune, db)
     yield call(mod.value.prune, db)
     yield call(mod.photo.prune, db)
-    yield call(mod.selection.prune, db)
     yield call(mod.note.prune, db)
-    yield call(mod.transcription.prune, db)
     yield call(mod.subject.prune, db)
     yield call(store.prune, db)
   }

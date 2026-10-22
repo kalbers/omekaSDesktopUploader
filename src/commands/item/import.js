@@ -1,16 +1,11 @@
-import fs from 'node:fs'
-import { dirname, extname, join, isAbsolute } from 'node:path'
 import { ImportCommand } from '../import.js'
 import { DuplicateError } from '../../common/error.js'
-import { normalize, eachItem } from '../../common/import.js'
 import { info, warn } from '../../common/log.js'
 import { Image } from '../../image/index.js'
 import { fail } from '../../dialog.js'
-import { fromHTML } from '../../editor/serialize.js'
 import * as act from '../../actions/index.js'
 import * as mod from '../../models/index.js'
 import { ITEM, NAV } from '../../constants/index.js'
-import win from '../../window.js'
 
 import {
   all,
@@ -22,18 +17,12 @@ import {
 } from 'redux-saga/effects'
 
 import {
-  findTag,
   getItemTemplate,
-  getPhotoTemplate,
-  getSelectionTemplate
+  getPhotoTemplate
 } from '../../selectors/index.js'
-
-const { readFile } = fs.promises
 
 export class Import extends ImportCommand {
   *exec() {
-    let { payload, meta } = this.action
-
     // Subtle: push items to this.result early to support
     // undo after cancelled (partial) import!
     this.result = []
@@ -44,42 +33,25 @@ export class Import extends ImportCommand {
     yield this.progress({ progress: 0 })
     yield put(act.nav.update({ mode: NAV.MODE.PROJECT, query: '' }))
 
-    if (meta.plugin) {
-      yield call(win.plugins.exec, {
-        id: meta.plugin,
-        action: 'import'
-      }, payload, meta)
-    }
+    let files = yield call(this.getFilesToImport)
 
-    if (payload.data) {
-      yield * this.importFromJSON(payload.data)
+    if (files.length === 0)
+      return this.result
 
-    } else {
-      let files = yield call(this.getFilesToImport)
+    yield this.progress({ total: files.length })
 
-      if (files.length === 0)
-        return this.result
+    let maxFail = 15
+    let failures = 0
 
-      yield this.progress({ total: files.length })
+    for (let file of files) {
+      try {
+        yield * this.importFromImage(file)
 
-      let maxFail = 15
-      let failures = 0
+      } catch (e) {
+        warn({ stack: e.stack }, `failed to import "${file}"`)
 
-      for (let file of files) {
-        try {
-          if ((/json(ld)?$/i).test(extname(file))) {
-            let text = yield call(readFile, file, 'utf-8')
-            yield * this.importFromJSON(JSON.parse(text), dirname(file))
-
-          } else
-            yield * this.importFromImage(file)
-
-        } catch (e) {
-          warn({ stack: e.stack }, `failed to import "${file}"`)
-
-          if (++failures < maxFail) {
-            fail(e, this.action.type)
-          }
+        if (++failures < maxFail) {
+          fail(e, this.action.type)
         }
       }
     }
@@ -97,8 +69,7 @@ export class Import extends ImportCommand {
       density: this.action.meta.density || state.settings.density,
       templates: {
         item: getItemTemplate(state),
-        photo: getPhotoTemplate(state),
-        selection: getSelectionTemplate(state)
+        photo: getPhotoTemplate(state)
       },
       useLocalTimezone: state.settings.timezone
     })))
@@ -180,143 +151,6 @@ export class Import extends ImportCommand {
     }
   }
 
-  *importFromJSON(data, rel) {
-    let graph = yield call(normalize, data)
-
-    if (graph.length > 1)
-      yield this.progress({ total: graph.length - 1 })
-
-    for (let item of eachItem(graph)) {
-      yield * this.importJSONItem(item, rel)
-    }
-  }
-
-  *importJSONItem(obj, rel) {
-    try {
-      let { db, basePath, templates } = this.options
-      let { list } = this.action.payload
-      let item
-      let photos = []
-      let selections = []
-      let notes = []
-      let transcriptions = []
-      let tags
-
-      yield this.progress()
-
-      if (obj.tags.length) {
-        tags = yield * this.findOrCreateTags(obj.tags)
-      }
-
-      yield call(db.transaction, async tx => {
-        item = await mod.item.create(
-          tx,
-          obj.template || templates.item.id,
-          obj.data)
-
-        if (tags) {
-          await mod.item.tags.set(
-            tx,
-            tags.map(tag => ({ id: item.id, tag })))
-          item.tags = [...tags]
-        }
-
-        if (list) {
-          await mod.list.items.add(tx, list, [item.id])
-          item.lists.push(list)
-        }
-
-        for (let i = 0; i < obj.photos.length; ++i) {
-          let { template, image, data } = obj.photos[i]
-
-          if (!template)
-            template = templates.photo.id
-
-          if (rel && image.protocol === 'file' && !isAbsolute(image.path))
-            image.path = join(rel, image.path)
-
-          let photo = await mod.photo.create(tx, { basePath, template }, {
-            item: item.id,
-            image,
-            data,
-            position: i + 1
-          })
-
-          await importNotes(tx, obj.photos[i].notes, photo, notes)
-          await importTranscriptions(
-            tx,
-            obj.photos[i].transcriptions,
-            photo,
-            transcriptions
-          )
-
-          for (let s of obj.photos[i].selections) {
-            let selection = await mod.selection.create(tx, {
-              ...s,
-              photo: photo.id,
-              template: s.template || templates.selection.id
-            })
-
-            await importNotes(tx, s.notes, selection, notes)
-            await importTranscriptions(
-              tx,
-              s.transcriptions,
-              selection,
-              transcriptions
-            )
-
-            photo.selections.push(selection.id)
-            selections.push(selection)
-          }
-
-          item.photos.push(photo.id)
-
-          photos.push(photo)
-        }
-      })
-
-      this.result.push(item.id)
-
-      yield all([
-        put(act.note.insert(notes)),
-        put(act.transcriptions.insert(transcriptions)),
-        put(act.selection.insert(selections)),
-        put(act.photo.insert(photos)),
-        put(act.item.insert(item)),
-        put(act.metadata.load([
-          item.id,
-          ...photos.map(p => p.id),
-          ...selections.map(s => s.id)
-        ]))
-      ])
-
-    } catch (e) {
-      warn({ stack: e.stack }, 'skipping item due to import error')
-    }
-  }
-
-  *findOrCreateTags(names) {
-    let tagIds = []
-    let state = yield select()
-    let { db } = this.options
-
-    for (let name of names) {
-      let tag = findTag(state, { name })
-
-      // TODO remove and re-create tags on undo/redo.
-      // Currently the tags remain after an undo.
-
-      if (!tag) {
-        tag = yield call(mod.tag.create, db, { name })
-        yield put(act.tag.insert(tag))
-      }
-
-      tagIds.push(tag.id)
-    }
-
-    return tagIds
-  }
-
   get redo() {
     return (this.result && this.result.length > 0) ?
         act.item.restore(this.result) :
@@ -332,34 +166,3 @@ export class Import extends ImportCommand {
 
 Import.register(ITEM.IMPORT)
 
-
-const importNotes = async (db, notes, parent, result = []) => {
-  for (let { html, language } of notes) {
-    let { state, text } = fromHTML(html)
-    let note = await mod.note.create(db, {
-      id: parent.id,
-      state,
-      text,
-      language
-    })
-
-    parent.notes.push(note.id)
-    result.push(note)
-  }
-  return result
-}
-
-const importTranscriptions =
-  async (db, transcriptions, parent, result = []) => {
-    for (let { text, alto } of transcriptions) {
-      let transcription = await mod.transcription.create(db, {
-        parent: parent.id,
-        data: alto,
-        text
-      })
-
-      parent.transcriptions.push(transcription.id)
-      result.push(transcription)
-    }
-    return result
-  }

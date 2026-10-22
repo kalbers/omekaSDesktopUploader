@@ -40,6 +40,9 @@ export const NewProject = ({
     <div className="new-project">
       <Titlebar isOptional/>
       <figure/>
+      <p className="edition">
+        <FormattedMessage id="project.new.edition"/>
+      </p>
       <h1><FormattedMessage id="project.new.title"/></h1>
       <form onSubmit={handleProjectCreate}>
         <h2><FormattedMessage id="project.new.name"/></h2>

@@ -48,12 +48,6 @@ en:
           one {1 Note}
           other {# Notes}}
       create: Add Note
-  print:
-    item: Item
-    photo: Photo
-    notes: Notes
-    note: Note {idx, number}
-    tags: Tags
   about:
       version: Version {version}
       rrchnm:
@@ -99,6 +93,7 @@ en:
       Your project file is locked and cannot be modified.
       To unlock, change the file permissions and open the project again.
     new:
+      edition: Omeka Desktop Upload
       title: Create a new project
       name: Enter a name for the project
       type:
@@ -128,6 +123,25 @@ en:
           other {# notes}}
   prefs:
     title: Tropy Preferences
+    omeka:
+      label: Omeka S
+      url: API URL
+      urlHint: The address of your Omeka S installation.
+      keyIdentity: Key identity
+      keyCredential: Key credential
+      encrypted: The credential is stored encrypted by your operating system.
+      unencrypted: >-
+        Encryption is not available on this system. The credential is
+        stored in a file readable only by you.
+      template: Resource template
+      templateHint: Applied to uploaded items. Test the connection to load the list.
+      templateNone: None
+      test: Test Connection
+      testing: Connecting …
+      connected: >-
+        Connected. {count, number} properties available.
+      save: Save
+      saved: Settings saved.
     app:
       label: Settings
       style:
@@ -145,18 +159,6 @@ en:
             15px: Large
             16px: Very Large
         frameless: Use custom titlebar (requires restart)
-      print:
-        mode: Print
-        modes:
-          item: One Item per Page
-          photo: One Photo per Page
-          selection: One Selection per Page
-        photos: Include photos
-        optimize: Optimize photo size and quality
-        metadata: Include metadata
-        notes: Include notes
-        onlyNotes: Include only photos with notes
-        overflow: Allow content to take up more than one page
       locale:
         locale: Locale
         locales:
@@ -181,7 +183,6 @@ en:
         label: Import file name as
         force: Overwrite embedded photo metadata
       debug: Enable Developer Mode
-      api: Enable Developer API
       localtime: Assume Exif timestamps use local timezone
       dup:
         label: During import
@@ -192,18 +193,6 @@ en:
       density:
         label: Default density (ppi)
         title: Used for PDF, SVG and other scalable formats
-      export:
-        label: Export
-        note:
-          format:
-            html: Notes as HTML
-            markdown: Notes as Markdown
-          copy:
-            label: Copy notes as
-            option:
-              text: Plain text
-              markdown: Markdown
-              html: HTML source code
       ui:
         label: Interface
         option:
@@ -281,15 +270,6 @@ en:
           one {# Property}
           other {# Properties}
         }
-    plugins:
-      label: Plugins
-      settings: Settings
-      enable: Enable
-      disable: Disable
-      install: Install Plugin
-      uninstall: Uninstall
-      noInfo: Unknown author
-      homepage: More
   format:
     ppi: Pixels per inch (ppi)
   item:
@@ -435,14 +415,6 @@ en:
         buttons:
           - Skip
           - Import Anyway
-      plugin:
-        uninstall:
-          detail: >-
-            Are you sure you want to delete the plugin?
-            This will permanently remove the plugin and its configuration.
-          buttons:
-            - Cancel
-            - Delete
       template:
         import:
           message: >-
@@ -530,6 +502,12 @@ en:
       order: Sort Selections
 
   activity:
+    omeka:
+      upload: >-
+        {hasProgressBar, select,
+          true {Uploading item {progress, number} of {total, number} to Omeka S …}
+          other {Uploading to Omeka S …}
+        }
     cache:
       prune: Optimizing project cache …
       purge: Purging old caches …
@@ -567,7 +545,6 @@ en:
         }
       load: Loading items …
       merge: Merging item …
-      print: Processing items …
       restore: Restoring item …
       save: Saving items …
       tag:
@@ -717,11 +694,3 @@ en:
           Tropy {version} is ready to be installed.
           Do you want to install and restart now?
         confirm: Restart Now
-  plugin:
-    name: Name
-    plugin: Plugin
-    options: Options
-    hooks:
-      export: Export
-      import: Import
-      transcribe: OCR

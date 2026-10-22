@@ -9,9 +9,7 @@ import notes from '../fixtures/notes.js'
 import ontology from '../fixtures/ontology.js'
 import photos from '../fixtures/photos.js'
 import projects from '../fixtures/projects.js'
-import selections from '../fixtures/selections.js'
 import tags from '../fixtures/tags.js'
-import transcriptions from '../fixtures/transcriptions.js'
 
 const ROOT = join(import.meta.dirname, '../fixtures')
 
@@ -25,9 +23,7 @@ global.F = {
   ontology,
   photos,
   projects,
-  selections,
   tags,
-  transcriptions,
 
   get appDir() {
     return join(ROOT, '../..')
@@ -48,12 +44,6 @@ global.F = {
   schema(name) {
     return {
       path: join(ROOT, '../../db/schema', `${name}.sql`)
-    }
-  },
-
-  plugins(...args) {
-    return {
-      path: join(ROOT, 'plugins', ...args)
     }
   },
 

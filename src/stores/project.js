@@ -27,11 +27,8 @@ import {
   projectFiles,
   qr,
   recent,
-  selections,
   settings,
   sidebar,
-  tags,
-  transcriptions,
   ui
 } from '../reducers/index.js'
 
@@ -67,11 +64,8 @@ export const create = () => {
       projectFiles,
       qr,
       recent,
-      selections,
       settings,
       sidebar,
-      tags,
-      transcriptions,
       ui
     },
     middleware: (getDefaultMiddleWare) => ([

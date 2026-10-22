@@ -42,81 +42,33 @@ export class PhotoIterator extends React.Component {
     return this.props.current === photo.id
   }
 
-  isActive(selection) {
-    return this.props.selection === selection
-  }
-
-  isExpandable(photo) {
-    return photo != null &&
-      photo.selections != null && photo.selections.length > 0
-  }
-
-  isExpanded(photo) {
-    return photo != null &&
-      !!this.props.expandedPhotos[photo.id]
-  }
-
   get keymap() {
     return this.props.keymap.PhotoIterator
   }
 
   select = (photo, { throttle } = {}) => {
-    if (photo == null || (
-      this.isSelected(photo) && this.isActive(photo.selection)
-    )) {
+    if (photo == null || this.isSelected(photo)) {
       return
     }
 
     this.props.onSelect({
       photo: photo.id,
-      item: photo.item,
-      selection: photo.selection
+      item: photo.item
     }, { throttle })
   }
 
-  contract = (photo) => {
-    if (this.isExpandable(photo) && this.isExpanded(photo)) {
-      this.props.onContract([photo.id])
-
-      if (this.isSelected(photo)) {
-        this.props.onSelect({
-          photo: photo.id,
-          item: photo.item
-        })
-      }
-      return true
-    }
-
-    return false
-  }
-
-  expand = (photo) => {
-    if (this.isExpandable(photo) && !this.isExpanded(photo)) {
-      this.props.onExpand(photo.id)
-      return true
-    }
-
-    return false
-  }
-
   handleItemOpen = (photo) => {
-    if (this.props.isItemOpen) {
-      return this.expand(photo)
-    }
+    if (this.props.isItemOpen) return
 
     this.props.onItemOpen({
       id: photo.item,
-      photos: [photo.id],
-      selection: photo.selection
+      photos: [photo.id]
     })
   }
 
-  handleDelete = ({ id, item, selection }) => {
+  handleDelete = ({ id, item }) => {
     if (!this.props.isDisabled) {
-      this.props.onDelete(selection != null ?
-          { photo: id, selections: [selection] } :
-          { item, photos: [id] }
-      )
+      this.props.onDelete({ item, photos: [id] })
     }
   }
 
@@ -129,8 +81,8 @@ export class PhotoIterator extends React.Component {
     onSort({ item, photos: order })
   }
 
-  handleExtract = ({ id, selection }, meta = {}) => {
-    this.props.onExtract({ id, selection }, meta)
+  handleExtract = ({ id }, meta = {}) => {
+    this.props.onExtract({ id }, meta)
   }
 
   handleSelectPhoto = (photo, event) => {
@@ -146,10 +98,7 @@ export class PhotoIterator extends React.Component {
   }
 
   handleRotate = (by) => {
-    if (this.props.selection != null)
-      this.rotate(by, this.props.selection, 'selection')
-    else
-      this.rotate(by, this.props.current)
+    this.rotate(by, this.props.current)
   }
 
   getAdjacent = (photo) => {
@@ -159,19 +108,15 @@ export class PhotoIterator extends React.Component {
   getIterableProps(photo) {
     return {
       photo,
-      selection: this.props.selection,
       isDisabled: this.props.isDisabled,
-      isExpandable: this.isExpandable(photo),
       isItemOpen: this.props.isItemOpen,
       isSelected: this.isSelected(photo),
       isSortable: this.isSortable,
       isVertical: this.isVertical,
       getAdjacent: this.getAdjacent,
       onContextMenu: this.props.onContextMenu,
-      onContract: this.contract,
       onDropPhoto: this.handleDropPhoto,
       onConsolidate: this.props.onConsolidate,
-      onExpand: this.expand,
       onItemOpen: this.handleItemOpen,
       onSelect: this.handleSelectPhoto
     }
@@ -203,7 +148,6 @@ export class PhotoIterator extends React.Component {
   }
 
   static defaultProps = {
-    expanded: [],
     onBlur: noop
   }
 }

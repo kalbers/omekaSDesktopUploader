@@ -2,8 +2,7 @@ import {
   METADATA,
   ITEM,
   PHOTO,
-  PROJECT,
-  SELECTION
+  PROJECT
 } from '../constants/index.js'
 
 import {
@@ -40,12 +39,6 @@ export function metadata(state = {}, { type, payload, meta, error }) {
           update(state, { ...data, id: ids[0] }, meta) :
           bulk.update(state, [ids, data], meta)
     }
-
-    case SELECTION.CREATE:
-      return (error || !meta.done) ? state : {
-        ...state,
-        [payload.id]: { id: payload.id }
-      }
 
     case ITEM.REMOVE:
     case PHOTO.REMOVE:

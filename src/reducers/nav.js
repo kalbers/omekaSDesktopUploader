@@ -7,7 +7,6 @@ import {
   NAV,
   ITEM,
   LIST,
-  TAG,
   NOTE,
   PHOTO
 } from '../constants/index.js'
@@ -15,7 +14,6 @@ import {
 const reset = {
   items: [],
   photo: null,
-  selection: null,
   note: null
 }
 
@@ -23,7 +21,6 @@ const init = {
   ...reset,
   mode: NAV.MODE.PROJECT,
   query: '',
-  tags: [],
   sort: {},
   columns: [
     { width: 250, id: dc.title },
@@ -38,7 +35,7 @@ const init = {
 export function nav(state = init, { type, payload, meta, error }) {
   switch (type) {
     case NAV.RESTORE:
-      return merge(init, omit(payload || {}, ['query', 'tags']))
+      return merge(init, omit(payload || {}, ['query']))
     case NAV.UPDATE:
       return { ...state, ...payload }
 
@@ -95,96 +92,59 @@ export function nav(state = init, { type, payload, meta, error }) {
       return {
         ...state,
         photo: payload.photo,
-        selection: payload.selection,
         note: payload.note,
         items: select(state.items, payload.items, meta.mod)
       }
 
     case ITEM.OPEN: {
-      let { id, photo, selection, note } = payload
+      let { id, photo, note } = payload
       return (!meta.done || error) ? state : {
         ...state,
         mode: NAV.MODE.ITEM,
         items: select(state.items, [id], 'replace'),
         photo,
-        selection,
         note
       }
     }
     case NOTE.OPEN: {
-      let { item, photo, selection, note } = payload
+      let { item, photo, note } = payload
       return (!meta.done || error) ? state : {
         ...state,
         mode: NAV.MODE.ITEM,
         items: select(state.items, [item], 'replace'),
         photo,
-        selection,
         note
       }
     }
     case EDIT.START:
       if (state.mode === NAV.MODE.PROJECT) return state
-      if (!payload.tag && !payload.list) return state
+      if (!payload.list) return state
 
       return {
         ...state,
         mode: NAV.MODE.PROJECT
       }
 
-    case TAG.DELETE:
-      return (!meta.done || error || !isSelected(state.tags, payload)) ?
-        state : {
-          ...state,
-          tags: select(state.tags, [payload], 'remove')
-        }
-
-    case TAG.SELECT:
-      return {
-        ...state,
-        ...reset,
-        trash: null,
-        imports: null,
-        tags: select(state.tags, [payload], meta.mod)
-      }
-
     case PHOTO.SELECT:
       return payload ? {
         ...state,
         photo: payload.photo,
-        selection: payload.selection,
         note: payload.note,
         items: [payload.item]
-      } : { ...state, photo: null, selection: null }
+      } : { ...state, photo: null }
 
     case NOTE.SELECT:
       return payload ? {
         ...state,
         items: [payload.item],
         photo: payload.photo,
-        selection: payload.selection,
         note: payload.note
       } : { ...state, note: null }
 
     case ITEM.PHOTO.REMOVE:
       return isSelected(state.items, payload.id) &&
         payload.photos.includes(state.photo) ?
-          { ...state, photo: null, selection: null, note: null } : state
-
-    case PHOTO.SELECTION.REMOVE: {
-      let { id, selections } = payload
-
-      if (id !== state.photo)
-        return state
-      if (!selections.includes(state.selection))
-        return state
-      else
-        return {
-          ...state,
-          selection: null,
-          note: null
-        }
-    }
-
+          { ...state, photo: null, note: null } : state
 
     case NAV.SELECT:
       return {
@@ -193,7 +153,6 @@ export function nav(state = init, { type, payload, meta, error }) {
         list: null,
         trash: null,
         imports: null,
-        tags: [],
         ...payload
       }
 

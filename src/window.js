@@ -4,14 +4,10 @@ import { existsSync as exists } from 'node:fs'
 import { basename, join } from 'node:path'
 import { warn } from './common/log.js'
 import { darwin, linux } from './common/os.js'
-import { Plugins } from './common/plugins.js'
 import { delay } from './common/util.js'
 import ARGS, { update } from './args.js'
 import { StyleSheet } from './res.js'
 import debounce from 'lodash.debounce'
-import * as dialog from './dialog.js'
-import * as json from './common/json.js'
-import * as sharp from './image/sharp.js'
 import { WindowControls } from './window-controls.js'
 
 import {
@@ -41,13 +37,6 @@ export function createWindowInstance() {
 export class Window extends EventEmitter {
   type = basename(window.location.pathname, '.html')
 
-  plugins = new Plugins(ARGS.plugins, {
-    dialog,
-    json,
-    sharp,
-    window: this
-  })
-
   unloader = 'close'
   unloaders = []
   hasFinishedUnloading = false
@@ -63,12 +52,7 @@ export class Window extends EventEmitter {
 
   async init() {
     await Promise.all([
-      this.plugins.reload().then(p => p.create()),
-
       new Promise((resolve) => {
-        this.unloaders.push(this.plugins.flush)
-        this.unloaders.push(this.plugins.unload)
-
         this.handleUnload()
         this.handleIpcEvents()
         this.handleEditorCommands()
@@ -155,9 +139,7 @@ export class Window extends EventEmitter {
   }
 
   setFontSize(fontSize = ARGS.fontSize) {
-    if (this.type !== 'print') {
-      this.html.style.fontSize = fontSize
-    }
+    this.html.style.fontSize = fontSize
   }
 
   setScrollBarStyle(scrollbars = ARGS.scrollbars) {
@@ -190,9 +172,6 @@ export class Window extends EventEmitter {
       .on('debug', (_, debug) => {
         this.setArgs({ debug })
       })
-      .on('api', (_, api) => {
-        this.setArgs({ api })
-      })
       .on('scrollbars', (_, scrollbars) => {
         this.setArgs({ scrollbars })
         this.setScrollBarStyle(scrollbars)
@@ -211,15 +190,8 @@ export class Window extends EventEmitter {
       .on('idle', (_, state) => {
         this.emit('idle', state)
       })
-      .on('print', (_, data) => {
-        this.emit('print', data)
-      })
       .on('menu', (_, state) => {
         this.toggle('menu', state)
-      })
-      .on('plugins-reload', async () => {
-        await this.plugins.reload()
-        await this.plugins.create()
       })
       .on('global', (_, action) => {
         // TODO use window instance emitter

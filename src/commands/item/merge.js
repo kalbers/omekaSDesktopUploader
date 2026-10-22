@@ -33,8 +33,7 @@ export class Merge extends Command {
 
     return {
       ...item,
-      photos: [...item.photos, ...m.photos],
-      tags: [...item.tags, ...m.tags]
+      photos: [...item.photos, ...m.photos]
     }
   }
 }
@@ -45,11 +44,11 @@ Merge.register(ITEM.MERGE)
 export class Split extends Command {
   *exec() {
     let { db } = this.options
-    let { item, items, data, lists, tags } = this.action.payload
+    let { item, items, data, lists } = this.action.payload
     let photos = this.getPhotoData(items)
 
     yield call(db.transaction, tx =>
-      mod.item.split(tx, item.id, items, data, lists, tags))
+      mod.item.split(tx, item.id, items, data, lists))
 
     yield all([
       put(act.photo.update(photos)),

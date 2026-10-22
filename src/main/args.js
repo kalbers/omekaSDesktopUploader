@@ -47,7 +47,6 @@ program
   .option('--verbose', 'set debug flag', !!process.env.TROPY_DEBUG)
   .option('--trace', 'set trace flag', !!process.env.TROPY_TRACE)
 
-  .option('-p, --port <number>', 'set API listening port', type.int)
 
 
 export function parse(argv = process.argv.slice(1)) {

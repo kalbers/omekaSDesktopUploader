@@ -67,15 +67,11 @@
 @use "../components/item/panel-group" as *;
 @use "../components/item/panel" as *;
 
-@use "../components/tag/list" as *;
-@use "../components/tag/colors" as *;
 
 @use "../components/photo/list" as *;
 @use "../components/photo/grid" as *;
 @use "../components/photo/panel" as *;
 
-@use "../components/selection/list" as *;
-@use "../components/selection/grid" as *;
 
 @use "../components/note/panel" as *;
 @use "../components/note/list" as *;
@@ -84,16 +80,8 @@
 @use "../components/esper/esper" as *;
 @use "../components/esper/toolbar" as *;
 @use "../components/esper/panel" as *;
-@use "../components/esper/overlay" as *;
 @use "../components/esper/error" as *;
 
-@use "../components/transcription/toolbar" as *;
-@use "../components/transcription/transcription" as *;
-@use "../components/transcription/alto-document" as *;
-@use "../components/transcription/pending" as *;
-@use "../components/transcription/error" as *;
-@use "../components/transcription/panel" as *;
-@use "../components/transcription/versions" as *;
 
 @use "../components/editor/view" as *;
 @use "../components/editor/toolbar" as *;

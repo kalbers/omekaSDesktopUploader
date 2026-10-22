@@ -1,5 +1,5 @@
 import ARGS from '../args.js'
-import { SETTINGS, ITEM, PHOTO, SELECTION, ESPER, NOTE } from '../constants/index.js'
+import { SETTINGS, ITEM, PHOTO, ESPER, NOTE } from '../constants/index.js'
 import { darwin } from '../common/os.js'
 import { merge } from '../common/util.js'
 import { dc } from '../ontology/ns.js'
@@ -8,25 +8,12 @@ const defaults = {
   completions: 'datatype',
   dup: 'prompt',
   density: 72,
-  export: {
-    note: {
-      format: {
-        text: true,
-        html: true,
-        markdown: false
-      },
-      copyFormat: 'text',
-      localize: true
-    }
-  },
   layout: ITEM.LAYOUT.STACKED,
   localtime: true,
   maximize: 'none',
-  tagColor: null,
   templates: {
     item: ITEM.TEMPLATE.DEFAULT,
-    photo: PHOTO.TEMPLATE.DEFAULT,
-    selection: SELECTION.TEMPLATE.DEFAULT
+    photo: PHOTO.TEMPLATE.DEFAULT
   },
   theme: ARGS.theme,
   title: {
@@ -35,15 +22,6 @@ const defaults = {
     force: false
   },
   overlayToolbars: ARGS.frameless,
-  print: {
-    mode: 'photo',
-    photos: true,
-    optimize: true,
-    metadata: true,
-    notes: true,
-    onlyNotes: false,
-    overflow: false
-  },
   invertScroll: true,
   invertZoom: darwin,
   zoomMode: ESPER.MODE.FIT

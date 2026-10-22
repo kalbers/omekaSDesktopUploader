@@ -17,19 +17,17 @@ import {
 
 import {
   crashReport,
-  debug,
   fatal,
   info,
   logger,
-  warn,
-  trace
+  warn
 } from '../common/log.js'
 
 import { darwin, linux } from '../common/os.js'
 import { delay, once } from '../common/util.js'
 import { channel, product, version } from '../common/release.js'
 import { Cache } from '../common/cache.js'
-import { Plugins } from '../common/plugins.js'
+import { OmekaSettings } from './omeka.js'
 
 import { defaultLocale, isRightToLeft, getLocale } from './locale.js'
 import { Strings } from './res.js'
@@ -37,8 +35,7 @@ import { AppMenu, ContextMenu } from './menu.js'
 import { Storage } from './storage.js'
 import { Updater } from './updater.js'
 import dialog from './dialog.js'
-import { Server as ApiServer } from './api.js'
-import { WindowManager, getPath } from './wm.js'
+import { WindowManager } from './wm.js'
 import * as shell from './shell.js'
 import { addIdleObserver } from './idle.js'
 import { migrate } from './migrate.js'
@@ -46,11 +43,10 @@ import * as act from './actions.js'
 import { setProjectFolderIcon } from './project.js'
 
 import {
-  FLASH, HISTORY, TAG, PROJECT, CONTEXT
+  FLASH, HISTORY, PROJECT, CONTEXT
 } from '../constants/index.js'
 
 const H = new WeakMap()
-const T = new WeakMap()
 const P = new WeakMap()
 
 
@@ -59,7 +55,6 @@ export class Tropy extends EventEmitter {
     fontSize: '13px',
     frameless: true,
     debug: false,
-    port: channel === 'latest' ? 2019 : 2029,
     theme: 'system',
     recent: [],
     rendererPreference: null,
@@ -80,11 +75,10 @@ export class Tropy extends EventEmitter {
 
     this.opts = opts
 
-    this.api = new ApiServer(this)
     this.cache = new Cache(opts.cache || join(opts.data, 'cache'))
     this.ctx = new ContextMenu(this)
     this.menu = new AppMenu(this)
-    this.plugins = new Plugins(join(opts.data, 'plugins'))
+    this.omeka = new OmekaSettings(opts.data)
     this.projects = new Map()
     this.store = new Storage(opts.data)
     this.updater = new Updater({
@@ -100,16 +94,13 @@ export class Tropy extends EventEmitter {
     await this.restore()
     this.listen()
     this.wm.start()
-    await this.api.start()
     // await this.loadDevToolExtensions()
     shell.start()
   }
 
   async stop() {
     shell.stop()
-    await this.api.stop()
     this.updater.stop()
-    this.plugins.stop()
     this.persist()
   }
 
@@ -324,11 +315,8 @@ export class Tropy extends EventEmitter {
 
     await Promise.all([
       this.load(),
-      this.cache.init(),
-      this.plugins.init()
+      this.cache.init()
     ])
-
-    this.plugins.watch()
 
     if (this.state.updater) {
       this.updater.start()
@@ -377,75 +365,6 @@ export class Tropy extends EventEmitter {
     return this
   }
 
-  async print(opts, sender) {
-    try {
-      if (!opts.items.length) {
-        info('print aborted: no items submitted')
-        return
-      }
-
-      var win = await this.wm.open('print', {
-        ...this.hash,
-        frameless: false
-      })
-
-      if (process.env.TROPY_PRINT_DEBUG)
-        win.show()
-
-      await Promise.race([
-        once(win, 'ready', 'react:ready'),
-        delay(2000)
-      ])
-
-      sender.focus()
-
-      info(`will print ${opts.items.length} item(s)`)
-      trace({ opts }, 'sending print options...')
-      win.send('print', opts)
-
-      await Promise.race([
-        once(win, 'print:ready'),
-        delay(180_000)
-      ])
-
-      if (opts.pdf) {
-        let path = await dialog.save(sender, {
-          filters: [{
-            name: this.dict.dialog.file.pdf,
-            extensions: ['pdf']
-          }]
-        })
-
-        if (!path) {
-          info('print pdf aborted: no file selected')
-          return
-        }
-
-        if (extname(path).toLowerCase() !== '.pdf') {
-          let xpath = `${path}.pdf`
-          if (!fs.existsSync(xpath))
-            path = xpath
-        }
-
-        info('will print pdf')
-        await WindowManager.printToPDF(win, path, {
-          landscape: opts.landscape
-        })
-
-        info(`saved pdf ${path}`)
-
-      } else {
-        debug('will open print dialog')
-        let status = await WindowManager.print(win)
-        info(`print status: ${status}`)
-      }
-
-    } finally {
-      if (!process.env.TROPY_PRINT_DEBUG)
-        win?.destroy()
-    }
-  }
-
   listen() {
     this.on('app:about', () =>
       this.showAboutWindow())
@@ -471,8 +390,6 @@ export class Tropy extends EventEmitter {
       this.import())
     this.on('app:import-directory', () =>
       this.import({}, { prompt: 'dir' }))
-    this.on('app:import-plugin', (win, { plugin }) =>
-      this.import({}, { plugin }))
 
     this.on('app:rename-project', (win) =>
       this.dispatch(act.edit.start({ project: { name: true } }), win))
@@ -520,8 +437,11 @@ export class Tropy extends EventEmitter {
         win)
     })
 
-    this.on('app:export-item', (win, { target, plugin }) =>
-      this.dispatch(act.item.export(target?.id, { plugin }), win))
+    this.on('app:export-item', (win, { target }) =>
+      this.dispatch(act.item.export(target?.id), win))
+
+    this.on('app:omeka-upload', (win, { target } = {}) =>
+      this.dispatch(act.omeka.upload(target?.id), win))
 
     this.on('app:restore-item', (win, { target }) => {
       this.dispatch(act.item.restore(target.id), win)
@@ -533,14 +453,6 @@ export class Tropy extends EventEmitter {
 
     this.on('app:create-item-photo', (win, { target }) => {
       this.dispatch(act.photo.create({ item: target.id }), win)
-    })
-
-    this.on('app:toggle-item-tag', (win, { id, tag }) => {
-      this.dispatch(act.item.tags.toggle({ id, tags: [tag] }), win)
-    })
-
-    this.on('app:clear-item-tags', (win, { id }) => {
-      this.dispatch(act.item.tags.clear(id), win)
     })
 
     this.on('app:list-item-remove', (win, { target }) => {
@@ -562,16 +474,6 @@ export class Tropy extends EventEmitter {
     this.on('app:rotate-photo-right', (win, { target }) =>
       this.dispatch(act.photo.rotate({ id: target.id, by: 90 }), win))
 
-    this.on('app:rotate-selection-left', (win, { target }) =>
-      this.dispatch(act.photo.rotate({
-        id: target.selection, by: -90, type: 'selection'
-      }), win))
-
-    this.on('app:rotate-selection-right', (win, { target }) =>
-      this.dispatch(act.photo.rotate({
-        id: target.selection, by: 90, type: 'selection'
-      }), win))
-
     this.on('app:rename-photo', (win, { target }) =>
       this.dispatch(act.edit.start({ photo: target.id }), win))
     this.on('app:delete-photo', (win, { target }) =>
@@ -582,25 +484,14 @@ export class Tropy extends EventEmitter {
       this.dispatch(act.photo.duplicate({
         item: target.item, photos: [target.id]
       }), win))
-    this.on('app:extract-photo', (win, { target, plugin }) =>
+    this.on('app:extract-photo', (win, { target }) =>
       this.dispatch(act.photo.extract({
-        id: target.id,
-        selection: target.selection
-      }, { plugin }), win))
+        id: target.id
+      }), win))
     this.on('app:copy-photo', (win, { target }) =>
       this.dispatch(act.photo.extract({
-        id: target.id,
-        selection: target.selection
+        id: target.id
       }, { target: ':clipboard:' }), win))
-    this.on('app:transcribe-photo', (win, { target, plugin }) =>
-      this.dispatch(act.transcriptions.create({
-        photo: target.id,
-        selection: target.selection
-      }, { plugin }), win))
-    this.on('app:transcribe-item', (win, { target, plugin }) =>
-      this.dispatch(act.transcriptions.create({
-        photo: target.photos
-      }, { plugin }), win))
     this.on('app:consolidate-photo-library', () =>
       this.dispatch(act.photo.consolidate(), this.wm.current()))
 
@@ -620,11 +511,6 @@ export class Tropy extends EventEmitter {
         id: target.id
       }), win))
 
-    this.on('app:delete-selection', (win, { target }) =>
-      this.dispatch(act.selection.delete({
-        photo: target.id, selections: [target.selection]
-      }), win))
-
     this.on('app:create-list', (win, { target = {} } = {}) =>
       this.dispatch(act.list.new({ parent: target.id }), win))
 
@@ -634,38 +520,11 @@ export class Tropy extends EventEmitter {
     this.on('app:delete-list', (win, { target }) =>
       this.dispatch(act.list.delete(target.id), win))
 
-    this.on('app:create-tag', (win) =>
-      this.dispatch(act.tag.new(), win))
-
-    this.on('app:rename-tag', (win, { target }) =>
-      this.dispatch(act.tag.edit(target), win))
-
-    this.on('app:save-tag-color', (win, { target }, color) =>
-      this.dispatch(act.tag.save({ id: target.id, color }), win))
-
-    this.on('app:save-default-tag-color', (win, _, tagColor) =>
-      this.dispatch(act.settings.persist({ tagColor }), win))
-
-    this.on('app:export-tags', (win) =>
-      this.dispatch(act.tag.export(), win))
-
-    this.on('app:delete-item-tag', (win, { target }) =>
-      this.dispatch(act.item.tags.delete({
-        id: target.items, tags: [target.id]
-      }), win))
-    this.on('app:delete-tag', (win, { target }) =>
-      this.dispatch(act.tag.delete(target.id), win))
-
     this.on('app:open-note', (win) =>
       this.dispatch(act.note.open(), win))
 
     this.on('app:delete-note', (win, { target }) =>
       this.dispatch(act.note.delete(target.notes), win))
-
-    this.on('app:copy-note', (win, { target }) =>
-      this.dispatch(
-        act.note.export(target.notes, { target: ':clipboard:' }),
-        win))
 
     this.on('app:copy-item-link', (win, { target }) =>
       this.copyProtocolURL(this.getProject(win), {
@@ -678,17 +537,6 @@ export class Tropy extends EventEmitter {
         item: target.item,
         photo: target.id
       }))
-
-    this.on('app:export-note', (win, { target }) =>
-      this.dispatch(act.note.export(target.notes), win))
-
-    this.on('app:export-notes', (win) =>
-      this.dispatch(act.note.export(), win))
-
-    this.on('app:copy-notes', (win) =>
-      this.dispatch(
-        act.note.export(undefined, { target: ':clipboard:' }),
-        win))
 
     this.on('app:toggle-line-wrap', (win, { target }) =>
       this.dispatch(act.notepad.update({
@@ -745,15 +593,6 @@ export class Tropy extends EventEmitter {
       info('toggling dev/debug mode...')
       this.state.debug = !this.state.debug
       this.wm.broadcast('debug', this.state.debug)
-      this.emit('app:reload-menu')
-    })
-
-    this.on('app:toggle-api', async () => {
-      info('toggling dev api...')
-      this.state.api = !this.api.status
-      await this.api.stop()
-      await this.api.start()
-      this.wm.broadcast('api', this.api.status)
       this.emit('app:reload-menu')
     })
 
@@ -827,26 +666,8 @@ export class Tropy extends EventEmitter {
       shell.show(join(this.opts.data, 'state.json'))
     })
 
-    this.on('app:open-plugins-folder', () => {
-      shell.show(this.plugins.configFile)
-    })
-
     this.on('app:open-cache-folder', () => {
       shell.show(this.cache.root)
-    })
-
-    this.on('app:install-plugin', (win) => {
-      dialog
-        .open(win, {
-          defaultPath: getPath('downloads', 'home'),
-          filters: [{
-            name: this.dict.dialog.file.plugin,
-            extensions: Plugins.ext
-          }]
-        })
-        .then(plugins => {
-          if (plugins) return this.plugins.install(...plugins)
-        })
     })
 
     this.on('app:reset-ontology-db', async () => {
@@ -866,21 +687,6 @@ export class Tropy extends EventEmitter {
       this.showOpenDialog(null)
     })
 
-    this.on('app:print', () => {
-      this.dispatch(act.item.print(), this.wm.current())
-    })
-
-    this.on('app:print-pdf', () => {
-      this.dispatch(act.item.print(null, { pdf: true }), this.wm.current())
-    })
-
-    this.on('app:print-pdf-landscape', () => {
-      this.dispatch(act.item.print(null, {
-        pdf: true,
-        landscape: true
-      }), this.wm.current())
-    })
-
     this.on('app:zoom-in', () => {
       this.state.zoom = this.wm.zoom(this.state.zoom + 0.25)
     })
@@ -891,11 +697,6 @@ export class Tropy extends EventEmitter {
 
     this.on('app:zoom-reset', () => {
       this.state.zoom = this.wm.zoom(1)
-    })
-
-    this.plugins.on('change', () => {
-      this.wm.broadcast('plugins-reload')
-      this.emit('app:reload-menu')
     })
 
     app.on('child-process-gone', (_, details) => {
@@ -921,6 +722,8 @@ export class Tropy extends EventEmitter {
       })
     }
 
+    this.omeka.listen()
+
     ipc.on('cmd', (event, cmd, ...args) => {
       this.emit(cmd, BrowserWindow.fromWebContents(event.sender), ...args)
     })
@@ -933,10 +736,6 @@ export class Tropy extends EventEmitter {
 
     ipc.on('close-project', (_, path) => {
       this.getProjectWindow(path)?.close()
-    })
-
-    ipc.handle('print', async (event, opts) => {
-      await this.print(opts, BrowserWindow.fromWebContents(event.sender))
     })
 
     ipc.on('error', (event, error) => {
@@ -979,10 +778,6 @@ export class Tropy extends EventEmitter {
 
     ipc.on(HISTORY.CHANGED, (event, history) => {
       this.setHistory(history, BrowserWindow.fromWebContents(event.sender))
-    })
-
-    ipc.on(TAG.CHANGED, (event, tags) => {
-      this.setTags(tags, BrowserWindow.fromWebContents(event.sender))
     })
 
     ipc.on(CONTEXT.SHOW, (event, payload) => {
@@ -1093,7 +888,7 @@ export class Tropy extends EventEmitter {
         break
 
       case 'project': {
-        // tropy://project(/:alias)/items/:id(/:photo)(/:selection)
+        // tropy://project(/:alias)/items/:id(/:photo)
         let [, alias = 'current', type, id, photo] =
           url.pathname.split('/')
 
@@ -1155,13 +950,10 @@ export class Tropy extends EventEmitter {
 
   get hash() {
     return {
-      api: this.api.status,
       data: this.opts.data,
       debug: this.debug,
       dev: this.dev,
       cache: this.cache.root,
-      plugins: this.plugins.root,
-      port: this.api.port,
       fontSize: this.state.fontSize,
       frameless: this.state.frameless,
       theme: this.state.theme,
@@ -1263,14 +1055,6 @@ export class Tropy extends EventEmitter {
           project.isReadOnly ? this.dict.window.project.readOnly : ''
         ].join(''))
     }
-  }
-
-  getTags(win = BrowserWindow.getFocusedWindow()) {
-    return T.get(win) || []
-  }
-
-  setTags(tags, win = BrowserWindow.getFocusedWindow()) {
-    return T.set(win, tags)
   }
 
   async loadDevToolExtensions() {

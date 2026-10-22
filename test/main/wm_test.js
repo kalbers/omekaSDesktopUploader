@@ -2,15 +2,12 @@ import fs from 'node:fs'
 import { join } from 'node:path'
 import { app, BrowserWindow } from 'electron'
 import { WindowManager } from '#internal/main/wm.js'
-import { Plugins } from '#internal/common/plugins.js'
 
 
 describe('WindowManager', () => {
   describe('instance', () => {
     let wm = new WindowManager({ preload: F.preload })
-    let plugins = new Plugins(join(app.getPath('userData'), 'plugins'))
 
-    before(() => plugins.init())
     before(() => wm.start())
     before(() => fs.promises.copyFile(
       F.db('ontology.db').path,
@@ -24,7 +21,7 @@ describe('WindowManager', () => {
 
     // TODO open project window with and without project file
 
-    for (let type of ['about', 'prefs', 'print', 'project']) {
+    for (let type of ['about', 'prefs', 'project']) {
       describe(`open('${type}')`, function () {
         // Integration tests with on-the-fly code instrumentation take some time!
         this.timeout(process.env.CI ? 40000 : 20000)
@@ -33,7 +30,6 @@ describe('WindowManager', () => {
 
         before(async () => {
           win = await wm.open(type, {
-            plugins: plugins.root,
             log: join(app.getPath('userData'), `wm-test-${type}.log`),
             data: app.getPath('userData')
           })

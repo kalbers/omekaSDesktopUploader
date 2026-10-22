@@ -16,20 +16,11 @@ export default {
   SPLIT: 'item.split',
   UPDATE: 'item.update',
   PREVIEW: 'item.preview',
-  PRINT: 'item.print',
 
   BULK: {
     UPDATE: 'item.bulk.update'
   },
 
-  TAG: {
-    CREATE: 'item.tag.create',
-    DELETE: 'item.tag.delete',
-    INSERT: 'item.tag.insert',
-    REMOVE: 'item.tag.remove',
-    CLEAR: 'item.tag.clear',
-    TOGGLE: 'item.tag.toggle'
-  },
 
   PHOTO: {
     ADD: 'item.photo.add',

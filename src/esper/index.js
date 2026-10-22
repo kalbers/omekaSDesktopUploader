@@ -15,7 +15,6 @@ import { debug, error, info, warn } from '../common/log.js'
 import { isClockwise, isHorizontal, deg, rad } from '../common/math.js'
 import { delay, restrict } from '../common/util.js'
 import { Photo, FILTERS } from './photo.js'
-import { Selection } from './selection.js'
 import { Loader } from './loader.js'
 import { ESPER, SASS } from '../constants/index.js'
 import ARGS from '../args.js'
@@ -28,7 +27,6 @@ import {
   coords,
   equal,
   isDoubleClickSupported,
-  normalizeRectangle,
   setScaleMode
 } from './util.js'
 
@@ -240,10 +238,8 @@ export default class Esper extends EventEmitter {
         this.photo.eventMode = 'static'
         this.photo.addEventListener('mousedown', this.handleMouseDown)
 
-        if (!props.selection) {
-          if (state.width !== texture.width || state.height !== texture.height)
-            this.emit('photo-error', props.photo, false)
-        }
+        if (state.width !== texture.width || state.height !== texture.height)
+          this.emit('photo-error', props.photo, false)
       } catch (e) {
         warn({ stack: e.stack }, `esper: failed loading ${state.src}`)
         this.emit('photo-error', props.photo, true)
@@ -299,7 +295,7 @@ export default class Esper extends EventEmitter {
     photo.sync(props, state)
 
     let next = {
-      pivot: center(props.selection || state),
+      pivot: center(state),
       rotation: rad(angle),
       x,
       y,
@@ -399,8 +395,6 @@ export default class Esper extends EventEmitter {
 
       for (let tween of this.tweens)
         tween.update(now)
-
-      this.photo?.update(this.drag.current, this.textSelection)
 
     } catch (e) {
       this.halt()
@@ -710,10 +704,6 @@ export default class Esper extends EventEmitter {
 
     this.resume()
 
-    if (target instanceof Selection) {
-      return this.emit('selection-activate', event.target.data)
-    }
-
     let tool = this.photo?.tool
     let modifier = event.shiftKey ? 'SHIFT' : isMeta(event) ? 'META' : null
 
@@ -729,13 +719,11 @@ export default class Esper extends EventEmitter {
       data,
       modifier,
       target,
-      textSelection: this.textSelection,
       tool,
       origin: {
         pos: { x: target.x, y: target.y },
         mov: data.getLocalPosition(target.parent)
       },
-      selection: data.getLocalPosition(target),
       limit: this.getPanLimits()
     }
   }
@@ -744,10 +732,6 @@ export default class Esper extends EventEmitter {
     switch (this.drag.current?.tool) {
       case ESPER.TOOL.PAN:
         this.handlePanMove()
-        break
-      case ESPER.TOOL.ARROW:
-      case ESPER.TOOL.SELECT:
-        this.handleSelectMove()
         break
     }
   }
@@ -762,10 +746,6 @@ export default class Esper extends EventEmitter {
       switch (tool) {
         case ESPER.TOOL.PAN:
           this.handlePanStop()
-          break
-        case ESPER.TOOL.ARROW:
-        case ESPER.TOOL.SELECT:
-          this.handleSelectStop()
           break
         case ESPER.TOOL.ZOOM_IN:
           this.emit('zoom-in', origin.mov, false)
@@ -793,39 +773,6 @@ export default class Esper extends EventEmitter {
 
   handlePanStop() {
     this.emit('change')
-  }
-
-  handleSelectMove() {
-    let { data, modifier, target, selection, textSelection, tool } = this.drag.current
-    let { x, y } = data.getLocalPosition(target)
-
-    selection.width = x - selection.x
-    selection.height = y - selection.y
-
-    switch (tool) {
-      case ESPER.TOOL.ARROW:
-        this.emit(
-          'select-text',
-          normalizeRectangle(selection, true),
-          modifier,
-          textSelection)
-        break
-    }
-  }
-
-  handleSelectStop() {
-    let { modifier, selection, textSelection, tool } = this.drag.current
-    selection = normalizeRectangle(selection, true)
-
-    switch (tool) {
-      case ESPER.TOOL.ARROW:
-        this.emit('select-text', selection, modifier, textSelection)
-        break
-      case ESPER.TOOL.SELECT:
-        if (selection.width && selection.height)
-          this.emit('selection-create', selection)
-        break
-    }
   }
 
   handleWheel = (event) => {

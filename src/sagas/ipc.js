@@ -1,8 +1,8 @@
 import { eventChannel } from 'redux-saga'
 import { ipcRenderer } from 'electron'
 import { warn } from '../common/log.js'
-import { getHistory, getAllTags } from '../selectors/index.js'
-import { PROJECT, TAG, HISTORY } from '../constants/index.js'
+import { getHistory } from '../selectors/index.js'
+import { PROJECT, HISTORY } from '../constants/index.js'
 
 import {
   call,
@@ -27,10 +27,6 @@ const filters = {
     }
 
     return summary
-  },
-
-  *[TAG.CHANGED]() {
-    return yield select(getAllTags)
   },
 
   *[PROJECT.UPDATE]() {

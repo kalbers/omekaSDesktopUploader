@@ -140,7 +140,6 @@ class TableRow extends ItemIterable {
 
 const MainCellProps = [
   'photos',
-  'tags',
   'size'
 ]
 

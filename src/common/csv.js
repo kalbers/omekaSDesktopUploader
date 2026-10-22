@@ -7,3 +7,10 @@ export function join(values, comma = ',') {
     .map(value => encode(value))
     .join(comma)
 }
+
+// Excel only detects UTF-8 reliably when there is a byte order mark.
+const BOM = '﻿'
+
+export function toCSV(header, rows) {
+  return BOM + [header, ...rows].map(row => join(row)).join('\r\n') + '\r\n'
+}

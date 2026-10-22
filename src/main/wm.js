@@ -1,10 +1,7 @@
-import assert from 'node:assert'
 import { EventEmitter } from 'node:events'
-import { writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { URL } from 'node:url'
 import { get } from './gsettings.js'
-import { papersize } from './papersize.js'
 import dialog from './dialog.js'
 import { debug, error, trace, warn } from '../common/log.js'
 import { darwin, linux, win32 } from '../common/os.js'
@@ -102,7 +99,7 @@ export class WindowManager extends EventEmitter {
         }
       }
 
-      if (args.frameless && type !== 'print') {
+      if (args.frameless) {
         opts.frame = false
       } else {
         opts.frame = !args.frameless
@@ -661,10 +658,6 @@ export class WindowManager extends EventEmitter {
       minimizable: false,
       resizable: false
     },
-    print: {
-      width: 600,
-      height: 300
-    },
     project: {
       width: 1280,
       height: 720,
@@ -722,33 +715,6 @@ export class WindowManager extends EventEmitter {
       warn({ stack: e.stack }, 'failed to get GNOME button-layout')
       return null
     }
-  }
-
-  static print(win, opts = {}) {
-    return new Promise((resolve, reject) => {
-      win.webContents.print(opts, (success, reason) => {
-        if (success)
-          resolve('successful')
-        else
-          (/cancell?ed/i).test(reason) ? resolve(reason) : reject(reason)
-      })
-    })
-  }
-
-  static async printToPDF(win, path, { pageSize, landscape = false } = {}) {
-    assert(path?.length > 0, 'missing PDF output file')
-
-    if (!pageSize)
-      pageSize = await papersize()
-
-    let data = await win.webContents.printToPDF({
-      pageSize,
-      landscape
-    })
-
-    await writeFile(path, data)
-
-    return path
   }
 
   static preferReducedMotion() {

@@ -22,12 +22,6 @@ export default {
     }
   },
 
-  contract(payload, meta = {}) {
-    return {
-      type: PHOTO.CONTRACT, payload, meta
-    }
-  },
-
   create(payload, meta) {
     return {
       type: PHOTO.CREATE,
@@ -59,22 +53,11 @@ export default {
   },
 
   error(payload, meta = {}) {
-    return (dispatch, getState) => {
+    return (dispatch) => {
       let id = payload
-      let { selections } = getState()
-
-      if (id in selections)
-        id = selections[id].photo
-
       meta.consolidate = true
 
       return dispatch(update({ id, broken: true }, meta))
-    }
-  },
-
-  expand(payload, meta = {}) {
-    return {
-      type: PHOTO.EXPAND, payload, meta
     }
   },
 
@@ -83,18 +66,6 @@ export default {
       type: PHOTO.EXTRACT,
       payload,
       meta: { cmd: 'project', ...meta }
-    }
-  },
-
-  transcribe(payload, meta) {
-    return {
-      type: PHOTO.TRANSCRIBE,
-      payload,
-      meta: {
-        cmd: 'project',
-        ...meta,
-        concurrency: 1
-      }
     }
   },
 
@@ -142,19 +113,16 @@ export default {
 
   select(payload, meta) {
     return (dispatch, getState) => {
-      let { item, photo, selection, note } = payload
+      let { item, photo, note } = payload
 
       if (note == null && photo != null) {
-        note = (selection != null) ?
-          getState().selections[selection].notes[0] :
-          getState().photos[photo].notes[0]
+        note = getState().photos[photo].notes[0]
       }
 
       dispatch({
         type: PHOTO.SELECT,
         payload: {
           photo,
-          selection,
           note,
           item
         },
@@ -191,24 +159,6 @@ export default {
     remove(payload, meta) {
       return {
         type: PHOTO.NOTE.REMOVE,
-        payload,
-        meta: { ...meta }
-      }
-    }
-  },
-
-  selections: {
-    add(payload, meta) {
-      return {
-        type: PHOTO.SELECTION.ADD,
-        payload,
-        meta: { ...meta }
-      }
-    },
-
-    remove(payload, meta) {
-      return {
-        type: PHOTO.SELECTION.REMOVE,
         payload,
         meta: { ...meta }
       }

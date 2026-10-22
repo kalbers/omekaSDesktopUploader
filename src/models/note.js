@@ -13,15 +13,13 @@ async function load(db, ids) {
     SELECT
         note_id AS note,
         photos.id AS photo,
-        selections.id AS selection,
         state,
         text,
         language,
         datetime(modified, "localtime") AS modified,
         datetime(created, "localtime") AS created
       FROM notes
-        LEFT OUTER JOIN photos USING (id)
-        LEFT OUTER JOIN selections USING (id)
+        JOIN photos USING (id)
       WHERE ${conditions.join(' AND ')}
       ORDER BY created ASC`,
 

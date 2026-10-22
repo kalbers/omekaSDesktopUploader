@@ -1,16 +1,8 @@
 export default {
   101: {
     id: 101,
-    selections: [
-      201,
-      202
-    ],
     notes: [
       301
-    ],
-    transcriptions: [
-      401,
-      402
     ],
     item: 1,
     template: 'https://tropy.org/v1/templates/photo',

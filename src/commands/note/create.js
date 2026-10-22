@@ -11,14 +11,13 @@ import { fromHTML } from '../../editor/serialize.js'
 export class Create extends Command {
   *exec() {
     let { db } = this.options
-    let { state, text, photo, selection } = this.action.payload
+    let { state, text, photo } = this.action.payload
 
     if (photo == null) {
-      ({ photo, selection } = yield select(({ nav }) => nav))
+      ({ photo } = yield select(({ nav }) => nav))
     }
 
-    let type = (selection != null) ? 'selection' : 'photo'
-    let id = (selection != null) ? selection : photo
+    let id = photo
 
     if (state == null) {
       ({ state, text } = fromHTML(text))
@@ -31,8 +30,8 @@ export class Create extends Command {
     // keep the non-serialized state object intact!
     note.state = state
 
-    yield put(act[type].notes.add({ id, notes: [note.id] }))
-    yield put(act.note.select({ note: note.id, photo, selection }))
+    yield put(act.photo.notes.add({ id, notes: [note.id] }))
+    yield put(act.note.select({ note: note.id, photo }))
 
     if (text && containsRTL(text))
       yield put(act.notepad.update({
@@ -63,13 +62,12 @@ export class Delete extends Command {
       let next = yield select(getNextNoteSelection)
       yield put(act.note.select(next && {
         note: next.id,
-        photo: next.photo,
-        selection: next.selection
+        photo: next.photo
       }))
     }
 
-    for (let { id, type, notes } of map.values()) {
-      yield put(act[type].notes.remove({ id, notes }))
+    for (let { id, notes } of map.values()) {
+      yield put(act.photo.notes.remove({ id, notes }))
     }
 
     yield call(db.transaction, tx => mod.note.delete(tx, payload))

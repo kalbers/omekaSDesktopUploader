@@ -5,7 +5,7 @@ import { ITEM } from '../../constants/index.js'
 
 export class Open extends Command {
   *exec() {
-    let { id, photo, selection, note } = this.action.payload
+    let { id, photo, note } = this.action.payload
 
     let [item, nav] = yield select(state => ([
       state.items[id],
@@ -18,9 +18,7 @@ export class Open extends Command {
     }
 
     if (!note) {
-      let obj = yield select(state => (
-        state.selections[selection] || state.photos[photo]
-      ))
+      let obj = yield select(state => state.photos[photo])
 
       if (obj?.notes)
         note = obj.notes.includes(nav.note) ?
@@ -30,7 +28,6 @@ export class Open extends Command {
     return {
       id,
       photo,
-      selection,
       note
     }
   }

@@ -143,7 +143,7 @@ export function configure({ arch, platform, out = join(ROOT, 'dist') }) {
   const INCLUDE = [
     '/db{,/{migrate,schema}{,/**/*}}',
     '/lib{,/**/*}',
-    '/res{,/{menu,shaders,cursors,images,plugins,keymaps,strings,views,workers}{,/**/*}}',
+    '/res{,/{menu,shaders,cursors,images,keymaps,strings,views,workers}{,/**/*}}',
     '/res/icons{,/{about,colors,cover,mime,prefs,project,window}{,/**/*}}',
     '/package.json',
     '/LICENSE'
@@ -233,7 +233,7 @@ export function configure({ arch, platform, out = join(ROOT, 'dist') }) {
       unpack: `**/{${[
         'lib/node/**/*',
         'lib/sharp-libvips-*/**/*',
-        'res/{icons,keymaps,plugins,views}/**/*',
+        'res/{icons,keymaps,views}/**/*',
         'package.json',
         'LICENSE*'
       ].join(',')}}`

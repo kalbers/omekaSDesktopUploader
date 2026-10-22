@@ -172,70 +172,12 @@ export default {
     }
   },
 
-  print(payload, meta) {
-    return {
-      type: ITEM.PRINT,
-      payload,
-      meta: { cmd: 'project', ...meta }
-    }
-  },
-
   bulk: {
     update(payload, meta) {
       return {
         type: ITEM.BULK.UPDATE,
         payload,
         meta: meta
-      }
-    }
-  },
-
-  tags: {
-    toggle(payload, meta = {}) {
-      return {
-        type: ITEM.TAG.TOGGLE,
-        payload,
-        meta: { cmd: 'project', history: 'add', search: true, ...meta }
-      }
-    },
-
-    clear(payload, meta = {}) {
-      return {
-        type: ITEM.TAG.CLEAR,
-        payload,
-        meta: { cmd: 'project', history: 'add', search: true, ...meta }
-      }
-    },
-
-    create(payload, meta) {
-      return {
-        type: ITEM.TAG.CREATE,
-        payload,
-        meta: { cmd: 'project', history: 'add', search: true, ...meta }
-      }
-    },
-
-    insert(payload, meta) {
-      return {
-        type: ITEM.TAG.INSERT,
-        payload,
-        meta: { ...meta }
-      }
-    },
-
-    delete(payload, meta) {
-      return {
-        type: ITEM.TAG.DELETE,
-        payload,
-        meta: { cmd: 'project', history: 'add', search: true, ...meta }
-      }
-    },
-
-    remove(payload, meta) {
-      return {
-        type: ITEM.TAG.REMOVE,
-        payload,
-        meta: { ...meta }
       }
     }
   },
