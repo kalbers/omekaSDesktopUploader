@@ -94,3 +94,9 @@ Both are AGPL, so the fork stays AGPL and must keep upstream copyright/AUTHORS.
 - Removed: orphaned files, dead icons/constants/helpers, flash notifications, unused dependencies (cross-zip, save-dev, install, babel import-assertions plugin), unused SCSS variables, dead strings/keymaps for removed features, Tropy README/CITATION/INSTALL (rewritten for this app).
 - Deliberately kept: inert expansion support in components/scroll (woven into layout math); generic helpers unrelated to removed features; the inert tags/selections/transcriptions DB tables; db/test SQL scripts; AUTHORS (upstream credit).
 - Linux package rebuilt and smoke-tested (open .odu, item view, no log errors).
+
+## Dublin Core Terms only (decided 2026-10-22)
+- Interface offers only dcterms among bundled vocabularies (src/ontology/visibility.js hides the rest from the Add field list, vocabulary browser, template editor property list and template pickers). Hidden resources stay in the ontology DB, so existing data still displays (old dc: values show as italic extra fields). Vocabularies/templates the user imports remain visible.
+- Ontology migration 2610221500 points the Dublin Core and Photo templates at dcterms; default item template is now "Dublin Core"; list columns, default sort, import file-name field and photo auto date/description use dcterms.
+- Item/Photo sections now offer only their own template type.
+- Future multi-vocabulary idea: populate vocabularies and resource templates from the connected Omeka S site.

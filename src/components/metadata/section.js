@@ -18,6 +18,7 @@ export const MetadataSection = (props) => {
           isDisabled={props.isDisabled}
           isMixed={props.isMixed}
           isRequired
+          type={props.type}
           value={props.template}
           onChange={props.onTemplateChange}/>
       )}

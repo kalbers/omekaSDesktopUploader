@@ -1,6 +1,6 @@
 import { isSelected, select } from '../selection.js'
 import { merge, insert, omit, splice } from '../common/util.js'
-import { dc } from '../ontology/ns.js'
+import { dcterms } from '../ontology/ns.js'
 
 import {
   EDIT,
@@ -23,10 +23,10 @@ const init = {
   query: '',
   sort: {},
   columns: [
-    { width: 250, id: dc.title },
-    { width: 100, id: dc.creator },
-    { width: 100, id: dc.date },
-    { width: 100, id: dc.type },
+    { width: 250, id: dcterms.title },
+    { width: 100, id: dcterms.creator },
+    { width: 100, id: dcterms.date },
+    { width: 100, id: dcterms.type },
     { width: 190, id: NAV.COLUMN.CREATED.id }
   ]
 }

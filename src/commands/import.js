@@ -9,7 +9,7 @@ import { pick } from '../common/util.js'
 import { open, prompt } from '../dialog.js'
 import { Image } from '../image/image.js'
 import { IMAGE } from '../constants/index.js'
-import { dc, dcterms } from '../ontology/ns.js'
+import { dcterms } from '../ontology/ns.js'
 import { date, text } from '../value.js'
 import { getTemplateValues, getTemplateProperties } from '../selectors/index.js'
 
@@ -119,13 +119,13 @@ export class ImportCommand extends Command {
     }
 
     if (type === 'photo') {
-      if (!(dc.date in data || dcterms.date in data)) {
-        data[dc.date] = date(image.date)
+      if (!(dcterms.date in data)) {
+        data[dcterms.date] = date(image.date)
       }
 
       if (image.description && image.description.length < 256) {
-        if (!(dc.description in data || dcterms.description in data)) {
-          data[dc.description] = text(image.description)
+        if (!(dcterms.description in data)) {
+          data[dcterms.description] = text(image.description)
         }
       }
     }

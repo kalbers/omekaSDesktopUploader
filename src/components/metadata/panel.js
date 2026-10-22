@@ -5,6 +5,7 @@ import { MetadataSection } from './section.js'
 import { ScrollContainer } from '../scroll/container.js'
 import { PhotoInfo } from '../photo/info.js'
 import { ItemInfo } from '../item/info.js'
+import { tropy } from '../../ontology/ns.js'
 import * as act from '../../actions/index.js'
 
 import {
@@ -117,6 +118,7 @@ class MetadataPanel extends React.PureComponent {
         isDisabled={this.props.isDisabled}
         isMixed={this.props.template.mixed}
         template={this.props.template.id}
+        type={tropy.Item}
         title="panel.metadata.item"
         onTemplateChange={this.handleItemTemplateChange}
         onContextMenu={this.handleItemContextMenu}>
@@ -143,6 +145,7 @@ class MetadataPanel extends React.PureComponent {
       <MetadataSection
         isDisabled={this.props.isDisabled}
         template={this.props.photo.template}
+        type={tropy.Photo}
         title="panel.metadata.photo"
         onTemplateChange={this.handlePhotoTemplateChange}
         onContextMenu={this.handlePhotoContextMenu}>

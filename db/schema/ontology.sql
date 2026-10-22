@@ -3334,7 +3334,7 @@ CREATE TABLE templates (
 );
 INSERT INTO templates VALUES('https://tropy.org/v1/templates/generic','https://tropy.org/v1/tropy#Item','Tropy Generic','General template to fit a generic archival object','RRCHNM',1,'2019-03-02 21:01:44','2019-03-02 21:01:44','1.0.0');
 INSERT INTO templates VALUES('https://tropy.org/v1/templates/correspondence','https://tropy.org/v1/tropy#Item','Tropy Correspondence','Template meant to focus on correspondence','RRCHNM',1,'2019-03-02 21:01:44','2019-03-02 21:01:44','1.0.0');
-INSERT INTO templates VALUES('https://tropy.org/v1/templates/dc','https://tropy.org/v1/tropy#Item','Dublin Core','Generic template based on the Dublic Core Metadata Element Set','RRCHNM',1,'2019-03-02 21:01:44','2019-03-02 21:01:44','1.0.0');
+INSERT INTO templates VALUES('https://tropy.org/v1/templates/dc','https://tropy.org/v1/tropy#Item','Dublin Core','Generic template based on Dublin Core Terms','RRCHNM',1,'2019-03-02 21:01:44','2019-03-02 21:01:44','1.0.0');
 INSERT INTO templates VALUES('https://tropy.org/v1/templates/photo','https://tropy.org/v1/tropy#Photo','Tropy Photo',NULL,NULL,1,'2019-03-02 21:01:44','2019-03-02 21:01:44','1.0.0');
 INSERT INTO templates VALUES('https://tropy.org/v1/templates/selection','https://tropy.org/v1/tropy#Selection','Tropy Selection',NULL,NULL,1,'2019-03-02 21:01:44','2019-03-02 21:01:44','1.0.0');
 CREATE TABLE domains (
@@ -3383,23 +3383,23 @@ INSERT INTO fields VALUES(19,'https://tropy.org/v1/templates/correspondence','ht
 INSERT INTO fields VALUES(20,'https://tropy.org/v1/templates/correspondence','https://tropy.org/v1/tropy#folder','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,9);
 INSERT INTO fields VALUES(21,'https://tropy.org/v1/templates/correspondence','http://purl.org/dc/elements/1.1/identifier','http://www.w3.org/2001/XMLSchema#string',0,0,'URL or call number',NULL,10);
 INSERT INTO fields VALUES(22,'https://tropy.org/v1/templates/correspondence','http://purl.org/dc/elements/1.1/rights','http://www.w3.org/2001/XMLSchema#string',1,0,NULL,NULL,11);
-INSERT INTO fields VALUES(23,'https://tropy.org/v1/templates/dc','http://purl.org/dc/elements/1.1/title','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,0);
-INSERT INTO fields VALUES(24,'https://tropy.org/v1/templates/dc','http://purl.org/dc/elements/1.1/creator','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,1);
-INSERT INTO fields VALUES(25,'https://tropy.org/v1/templates/dc','http://purl.org/dc/elements/1.1/date','https://tropy.org/v1/tropy#date',0,0,NULL,NULL,2);
-INSERT INTO fields VALUES(26,'https://tropy.org/v1/templates/dc','http://purl.org/dc/elements/1.1/type','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,3);
-INSERT INTO fields VALUES(27,'https://tropy.org/v1/templates/dc','http://purl.org/dc/elements/1.1/source','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,4);
-INSERT INTO fields VALUES(28,'https://tropy.org/v1/templates/dc','http://purl.org/dc/elements/1.1/identifier','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,5);
-INSERT INTO fields VALUES(29,'https://tropy.org/v1/templates/dc','http://purl.org/dc/elements/1.1/rights','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,6);
-INSERT INTO fields VALUES(30,'https://tropy.org/v1/templates/dc','http://purl.org/dc/elements/1.1/subject','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,7);
-INSERT INTO fields VALUES(31,'https://tropy.org/v1/templates/dc','http://purl.org/dc/elements/1.1/language','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,8);
-INSERT INTO fields VALUES(32,'https://tropy.org/v1/templates/dc','http://purl.org/dc/elements/1.1/format','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,9);
-INSERT INTO fields VALUES(33,'https://tropy.org/v1/templates/dc','http://purl.org/dc/elements/1.1/contributor','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,10);
-INSERT INTO fields VALUES(34,'https://tropy.org/v1/templates/dc','http://purl.org/dc/elements/1.1/description','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,11);
-INSERT INTO fields VALUES(35,'https://tropy.org/v1/templates/dc','http://purl.org/dc/elements/1.1/publisher','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,12);
-INSERT INTO fields VALUES(36,'https://tropy.org/v1/templates/dc','http://purl.org/dc/elements/1.1/coverage','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,13);
-INSERT INTO fields VALUES(37,'https://tropy.org/v1/templates/dc','http://purl.org/dc/elements/1.1/relation','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,14);
-INSERT INTO fields VALUES(38,'https://tropy.org/v1/templates/photo','http://purl.org/dc/elements/1.1/title','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,0);
-INSERT INTO fields VALUES(39,'https://tropy.org/v1/templates/photo','http://purl.org/dc/elements/1.1/date','https://tropy.org/v1/tropy#date',0,0,NULL,NULL,1);
+INSERT INTO fields VALUES(23,'https://tropy.org/v1/templates/dc','http://purl.org/dc/terms/title','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,0);
+INSERT INTO fields VALUES(24,'https://tropy.org/v1/templates/dc','http://purl.org/dc/terms/creator','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,1);
+INSERT INTO fields VALUES(25,'https://tropy.org/v1/templates/dc','http://purl.org/dc/terms/date','https://tropy.org/v1/tropy#date',0,0,NULL,NULL,2);
+INSERT INTO fields VALUES(26,'https://tropy.org/v1/templates/dc','http://purl.org/dc/terms/type','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,3);
+INSERT INTO fields VALUES(27,'https://tropy.org/v1/templates/dc','http://purl.org/dc/terms/source','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,4);
+INSERT INTO fields VALUES(28,'https://tropy.org/v1/templates/dc','http://purl.org/dc/terms/identifier','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,5);
+INSERT INTO fields VALUES(29,'https://tropy.org/v1/templates/dc','http://purl.org/dc/terms/rights','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,6);
+INSERT INTO fields VALUES(30,'https://tropy.org/v1/templates/dc','http://purl.org/dc/terms/subject','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,7);
+INSERT INTO fields VALUES(31,'https://tropy.org/v1/templates/dc','http://purl.org/dc/terms/language','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,8);
+INSERT INTO fields VALUES(32,'https://tropy.org/v1/templates/dc','http://purl.org/dc/terms/format','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,9);
+INSERT INTO fields VALUES(33,'https://tropy.org/v1/templates/dc','http://purl.org/dc/terms/contributor','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,10);
+INSERT INTO fields VALUES(34,'https://tropy.org/v1/templates/dc','http://purl.org/dc/terms/description','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,11);
+INSERT INTO fields VALUES(35,'https://tropy.org/v1/templates/dc','http://purl.org/dc/terms/publisher','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,12);
+INSERT INTO fields VALUES(36,'https://tropy.org/v1/templates/dc','http://purl.org/dc/terms/coverage','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,13);
+INSERT INTO fields VALUES(37,'https://tropy.org/v1/templates/dc','http://purl.org/dc/terms/relation','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,14);
+INSERT INTO fields VALUES(38,'https://tropy.org/v1/templates/photo','http://purl.org/dc/terms/title','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,0);
+INSERT INTO fields VALUES(39,'https://tropy.org/v1/templates/photo','http://purl.org/dc/terms/date','https://tropy.org/v1/tropy#date',0,0,NULL,NULL,1);
 INSERT INTO fields VALUES(40,'https://tropy.org/v1/templates/selection','http://purl.org/dc/elements/1.1/title','http://www.w3.org/2001/XMLSchema#string',0,0,NULL,NULL,0);
 CREATE TABLE field_labels (
   field_id  INTEGER  NOT NULL REFERENCES fields ON DELETE CASCADE,
@@ -3453,5 +3453,6 @@ INSERT INTO migrations VALUES(2304131520,'2024-04-30 10:11:41');
 INSERT INTO migrations VALUES(2304171147,'2024-04-30 10:11:41');
 INSERT INTO migrations VALUES(2307061337,'2024-04-30 10:11:41');
 INSERT INTO migrations VALUES(2404301200,'2024-04-30 10:11:41');
+INSERT INTO migrations VALUES(2610221500,'2026-10-22 15:00:00');
 COMMIT;
 PRAGMA foreign_keys=ON;

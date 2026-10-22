@@ -3,19 +3,25 @@ import { by } from '../collate.js'
 import { cat, compose, filter, into, map } from 'transducers.js'
 import { blank, get, homogenize } from '../common/util.js'
 import { expand, tropy } from '../ontology/index.js'
+import {
+  isTemplateVisible,
+  isVocabularyVisible
+} from '../ontology/visibility.js'
 import { ITEM, PHOTO } from '../constants/index.js'
 import { value } from '../value.js'
 
 const getResourceList =
   (res, vocab) =>
-    into([], map(kv => expand(kv[1], vocab)), res)
+    into([], map(r => expand(r, vocab)), Object.values(res))
       .sort(by('prefix', 'label', 'name'))
 
 
 export const getPropertyList = memo(
   ({ ontology }) => ontology.props,
   ({ ontology }) => ontology.vocab,
-  getResourceList
+  (props, vocab) => getResourceList(
+    Object.values(props).filter(p => isVocabularyVisible(p.vocabulary)),
+    vocab)
 )
 
 export const getDatatypeList = memo(
@@ -31,12 +37,14 @@ export const getVocabs = memo(
   ({ ontology }) => ontology.type,
   (vocab, props, klass, types) => into(
     [],
-    map(kv => ({
-      ...kv[1],
-      classes: kv[1].classes.map(id => klass[id] || { id }),
-      datatypes: kv[1].datatypes.map(id => types[id] || { id }),
-      properties: kv[1].properties.map(id => props[id] || { id })
-    })),
+    compose(
+      filter(kv => isVocabularyVisible(kv[0])),
+      map(kv => ({
+        ...kv[1],
+        classes: kv[1].classes.map(id => klass[id] || { id }),
+        datatypes: kv[1].datatypes.map(id => types[id] || { id }),
+        properties: kv[1].properties.map(id => props[id] || { id })
+      }))),
     vocab
   )
 )
@@ -67,7 +75,7 @@ const getTemplatesByType = (type) => memo(
     [],
     compose(
       map(kv => kv[1]),
-      filter(t => t.type === type)),
+      filter(t => t.type === type && isTemplateVisible(t.id))),
     templates
   ).sort(by('name', 'id'))
 )
@@ -106,6 +114,7 @@ export const selectTemplatesByType = memo(
   (templates, type) =>
     Object.values(templates)
       .filter(t => type == null || t.type === type)
+      .filter(t => isTemplateVisible(t.id))
       .sort(by('name', 'id')))
 
 export const getTemplateList = memo(

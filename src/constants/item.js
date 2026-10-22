@@ -34,6 +34,6 @@ export default {
 
   TEMPLATE: {
     CHANGE: 'item.template.change',
-    DEFAULT: 'https://tropy.org/v1/templates/generic'
+    DEFAULT: 'https://tropy.org/v1/templates/dc'
   }
 }

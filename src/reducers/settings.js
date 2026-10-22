@@ -2,7 +2,7 @@ import ARGS from '../args.js'
 import { SETTINGS, ITEM, PHOTO, ESPER, NOTE } from '../constants/index.js'
 import { darwin } from '../common/os.js'
 import { merge } from '../common/util.js'
-import { dc } from '../ontology/ns.js'
+import { dcterms } from '../ontology/ns.js'
 
 const defaults = {
   completions: 'datatype',
@@ -17,8 +17,8 @@ const defaults = {
   },
   theme: ARGS.theme,
   title: {
-    item: dc.title,
-    photo: dc.title,
+    item: dcterms.title,
+    photo: dcterms.title,
     force: false
   },
   overlayToolbars: ARGS.frameless,

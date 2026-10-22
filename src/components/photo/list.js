@@ -3,7 +3,7 @@ import { Scroll } from '../scroll/index.js'
 import { PhotoListItem } from './list-item.js'
 import { PhotoIterator } from './iterator.js'
 import { SASS } from '../../constants/index.js'
-import { dc } from '../../ontology/ns.js'
+import { dcterms } from '../../ontology/ns.js'
 import cx from 'classnames'
 import { match } from '../../keymap.js'
 
@@ -87,7 +87,7 @@ class PhotoList extends PhotoIterator {
               photo={photo}
               data={data}
               edit={edit}
-              title={dc.title}
+              title={dcterms.title}
               isEditing={this.isEditing(photo)}
               onChange={onChange}
               onEdit={this.edit}
