@@ -1,6 +1,7 @@
 import { isSelected, select } from '../selection.js'
 import { merge, insert, omit, splice } from '../common/util.js'
 import { dcterms } from '../ontology/ns.js'
+import { upgradeColumns, upgradeSort } from '../ontology/legacy.js'
 
 import {
   EDIT,
@@ -31,11 +32,18 @@ const init = {
   ]
 }
 
+// Saved layouts may refer to Dublin Core Elements columns
+const upgrade = (state) => ({
+  ...state,
+  columns: upgradeColumns(state.columns),
+  sort: upgradeSort(state.sort)
+})
+
 // eslint-disable-next-line complexity
 export function nav(state = init, { type, payload, meta, error }) {
   switch (type) {
     case NAV.RESTORE:
-      return merge(init, omit(payload || {}, ['query']))
+      return upgrade(merge(init, omit(payload || {}, ['query'])))
     case NAV.UPDATE:
       return { ...state, ...payload }
 

@@ -100,3 +100,8 @@ Both are AGPL, so the fork stays AGPL and must keep upstream copyright/AUTHORS.
 - Ontology migration 2610221500 points the Dublin Core and Photo templates at dcterms; default item template is now "Dublin Core"; list columns, default sort, import file-name field and photo auto date/description use dcterms.
 - Item/Photo sections now offer only their own template type.
 - Future multi-vocabulary idea: populate vocabularies and resource templates from the connected Omeka S site.
+
+## Upgrading data from earlier builds (2610221600)
+- Project migration converts metadata dc: -> dcterms: and Tropy Generic/Correspondence items -> Dublin Core template (runs once when a project is opened; if both properties existed, dcterms wins).
+- Saved settings (default templates, file-name property) and list layout (columns, sort) from earlier builds are translated on restore (src/ontology/legacy.js).
+- Note: migrations are pending when newer than the latest applied number, not per row; tests that roll back one migration must delete all newer rows.

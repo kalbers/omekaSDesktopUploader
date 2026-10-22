@@ -72,7 +72,8 @@ describe('models.omeka', () => {
       await pre.run('DROP TRIGGER delete_omeka_links_on_subject_delete')
       await pre.run('DROP TRIGGER delete_omeka_links_on_list_delete')
       await pre.run('DROP TABLE omeka_links')
-      await pre.run('DELETE FROM migrations WHERE number = 2610221200')
+      // migrations are pending when newer than the latest applied one
+      await pre.run('DELETE FROM migrations WHERE number >= 2610221200')
       await pre.close()
 
       let [db] = await open(path, { migrate: Migrations.project })
