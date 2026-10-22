@@ -23,7 +23,7 @@ export class Uploader {
   constructor({
     api,
     links,
-    readFile,
+    locateFile,
     template,
     convertRules,
     logger,
@@ -31,7 +31,7 @@ export class Uploader {
   }) {
     this.api = api
     this.links = links
-    this.readFile = readFile
+    this.locateFile = locateFile
     this.template = template
     this.convertRules = convertRules
     this.logger = logger
@@ -154,7 +154,7 @@ export class Uploader {
 
     let upload = async () => {
       let file = {
-        data: await this.readFile(photo),
+        path: await this.locateFile(photo),
         filename: photo.filename,
         mimetype: photo.mimetype
       }

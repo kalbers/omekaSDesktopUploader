@@ -91,7 +91,7 @@ export class OmekaApi {
       init.headers['Content-Type'] = 'application/json'
       init.body = JSON.stringify(json)
     } else if (form) {
-      init.body = form
+      init.form = form
     }
 
     let res = await this.fetch(`${this.url}${path}?${params}`, init)
@@ -158,16 +158,18 @@ export class OmekaApi {
     })
   }
 
-  createFileMedia(itemId, { data, filename, mimetype }, values = {}) {
-    let form = new FormData()
-
-    form.append('data', JSON.stringify({
-      'o:ingester': 'upload',
-      'file_index': 0,
-      'o:item': { 'o:id': itemId },
-      ...values
-    }))
-    form.append('file[]', new Blob([data], { type: mimetype }), filename)
+  // The file is sent from disk by whoever performs the request, so that
+  // large files are streamed instead of being held in memory.
+  createFileMedia(itemId, { path, filename, mimetype }, values = {}) {
+    let form = {
+      fields: [['data', JSON.stringify({
+        'o:ingester': 'upload',
+        'file_index': 0,
+        'o:item': { 'o:id': itemId },
+        ...values
+      })]],
+      files: [{ name: 'file[]', path, filename, mimetype }]
+    }
 
     return this.request('POST', '/media', { form })
   }

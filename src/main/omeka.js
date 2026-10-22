@@ -1,7 +1,11 @@
+import http from 'node:http'
+import https from 'node:https'
 import { join } from 'node:path'
+import { pipeline } from 'node:stream/promises'
 import { chmod, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { ipcMain as ipc, safeStorage } from 'electron'
 import { warn } from '../common/log.js'
+import { multipart } from './multipart.js'
 
 const DEFAULTS = {
   url: '',
@@ -85,26 +89,44 @@ export class OmekaSettings {
 
   // Performs a request on behalf of a renderer. Multipart bodies arrive as
   // { form: { fields, files } } because FormData can't cross the IPC boundary.
+  // Files are given by path and streamed from disk, never loaded whole.
   async fetch({ url, method = 'GET', headers = {}, body, form }) {
+    if (form)
+      return this.upload({ url, method, headers, form })
+
     let init = { method, headers }
 
-    if (form) {
-      let data = new FormData()
-
-      for (let [name, value] of form.fields)
-        data.append(name, value)
-
-      for (let { name, filename, mimetype, data: bytes } of form.files)
-        data.append(name, new Blob([bytes], { type: mimetype }), filename)
-
-      init.body = data
-
-    } else if (body != null) {
+    if (body != null)
       init.body = body
-    }
 
     let res = await fetch(url, init)
     return { ok: res.ok, status: res.status, text: await res.text() }
+  }
+
+  // Sends a multipart request with node:http(s) because, unlike fetch,
+  // it applies backpressure: files of any size use a constant amount of memory.
+  async upload({ url, method, headers, form }) {
+    let { headers: extra, body } = await multipart(form)
+    let { request } = new URL(url).protocol === 'https:' ? https : http
+
+    return new Promise((resolve, reject) => {
+      let req = request(url, {
+        method,
+        headers: { ...headers, ...extra }
+      }, (res) => {
+        let chunks = []
+        res.on('data', chunk => chunks.push(chunk))
+        res.on('error', reject)
+        res.on('end', () => resolve({
+          ok: res.statusCode >= 200 && res.statusCode < 300,
+          status: res.statusCode,
+          text: Buffer.concat(chunks).toString('utf-8')
+        }))
+      })
+
+      req.on('error', reject)
+      pipeline(body, req).catch(reject)
+    })
   }
 
   listen() {

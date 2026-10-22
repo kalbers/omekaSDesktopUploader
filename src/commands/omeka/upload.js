@@ -77,7 +77,7 @@ export class Upload extends Command {
       links: mod.omeka.store(db, api.baseUrl),
       template: Number(settings.template) || undefined,
       logger: { info, warn, error: warn },
-      readFile: readPhoto
+      locateFile: locatePhoto
     })
 
     info(`uploading ${items.length} items to ${api.baseUrl}`)
@@ -120,9 +120,11 @@ export class Upload extends Command {
 
 Upload.register(OMEKA.UPLOAD)
 
-function readPhoto(photo) {
+// The file itself is streamed from disk when it is sent.
+async function locatePhoto(photo) {
   if (photo.protocol !== 'file')
     throw new Error(`cannot upload ${photo.protocol} photos`)
 
-  return fs.promises.readFile(photo.path)
+  await fs.promises.access(photo.path, fs.constants.R_OK)
+  return photo.path
 }

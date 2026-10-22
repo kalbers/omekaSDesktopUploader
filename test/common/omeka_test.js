@@ -137,6 +137,34 @@ describe('common/omeka', () => {
       ])).to.eql({ [`${DCTERMS}title`]: { id: 1, term: 'dcterms:title' } })
     })
 
+    it('createFileMedia sends the file by path, not by contents', async () => {
+      let seen
+      let api = new OmekaApi({
+        url: 'http://x.org/api', keyIdentity: 'id', keyCredential: 'cred'
+      }, {
+        fetch: async (url, init) => {
+          seen = init
+          return { ok: true, status: 200, text: async () => '{"o:id":5}' }
+        }
+      })
+
+      await api.createFileMedia(3, {
+        path: '/files/big.mov', filename: 'big.mov', mimetype: 'video/quicktime'
+      }, { 'dcterms:title': [] })
+
+      expect(seen.body).to.be.undefined
+      expect(seen.form.files).to.eql([{
+        name: 'file[]',
+        path: '/files/big.mov',
+        filename: 'big.mov',
+        mimetype: 'video/quicktime'
+      }])
+
+      let [[name, json]] = seen.form.fields
+      expect(name).to.eql('data')
+      expect(JSON.parse(json)).to.include({ 'o:ingester': 'upload' })
+    })
+
     it('request sends keys, json, and raises Omeka errors', async () => {
       let seen
       let api = new OmekaApi({
@@ -191,7 +219,7 @@ describe('common/omeka', () => {
       run = (items, opts = {}) => new Uploader({
         api: omeka,
         links,
-        readFile: async () => Buffer.from('img'),
+        locateFile: async () => '/files/img.jpg',
         ...opts
       }).run(items, lists)
     })
@@ -279,7 +307,7 @@ describe('common/omeka', () => {
 
     it('reports a failed photo without losing the item', async () => {
       let { results } = await run([item()], {
-        readFile: async () => { throw new Error('ENOENT') }
+        locateFile: async () => { throw new Error('ENOENT') }
       })
 
       expect(results[0].status).to.eql('partial')
