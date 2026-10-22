@@ -184,17 +184,8 @@ export class Image extends Asset {
     }
   }
 
-  resize = async (size, selection, { page = this.page } = {}) => {
+  resize = async (size, { page = this.page } = {}) => {
     let image = this.do(page)
-
-    if (selection != null) {
-      image = image.extract({
-        left: selection.x,
-        top: selection.y,
-        width: selection.width,
-        height: selection.height
-      })
-    }
 
     if (size) {
       image = image.resize(size)
@@ -214,13 +205,12 @@ export class Image extends Asset {
     ], super.toJSON())
   }
 
-  variants(isSelection = false) {
+  variants() {
     let variants = [48, 512]
 
-    if (!isSelection && (
-      this.page > 0 ||
+    if (this.page > 0 ||
       this.isRemote ||
-      !IMAGE.WEB[this.mimetype])) {
+      !IMAGE.WEB[this.mimetype]) {
       variants.push('full')
     }
 

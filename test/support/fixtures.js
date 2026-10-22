@@ -9,7 +9,6 @@ import notes from '../fixtures/notes.js'
 import ontology from '../fixtures/ontology.js'
 import photos from '../fixtures/photos.js'
 import projects from '../fixtures/projects.js'
-import tags from '../fixtures/tags.js'
 
 const ROOT = join(import.meta.dirname, '../fixtures')
 
@@ -23,7 +22,6 @@ global.F = {
   ontology,
   photos,
   projects,
-  tags,
 
   get appDir() {
     return join(ROOT, '../..')

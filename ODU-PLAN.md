@@ -89,3 +89,8 @@ Both are AGPL, so the fork stays AGPL and must keep upstream copyright/AUTHORS.
 - A project is a single SQLite file, extension `.odu`, which links to files (absolute paths, or relative to the project file / home via the "Link photos" setting). The Standard/managed (folder + copied assets) type, conversion, and Store were removed.
 - Old Tropy projects (.tropy/.tpy) are not supported. Template files keep `.ttp`.
 - Linux registers application/vnd.omeka.desktop-upload.project (*.odu); macOS plist declares the `.odu` type (untested).
+
+## Cleanup pass (done)
+- Removed: orphaned files, dead icons/constants/helpers, flash notifications, unused dependencies (cross-zip, save-dev, install, babel import-assertions plugin), unused SCSS variables, dead strings/keymaps for removed features, Tropy README/CITATION/INSTALL (rewritten for this app).
+- Deliberately kept: inert expansion support in components/scroll (woven into layout math); generic helpers unrelated to removed features; the inert tags/selections/transcriptions DB tables; db/test SQL scripts; AUTHORS (upstream credit).
+- Linux package rebuilt and smoke-tested (open .odu, item view, no log errors).

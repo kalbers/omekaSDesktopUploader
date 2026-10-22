@@ -7,14 +7,11 @@ en:
       prevItem: Alt+ArrowUp
       nextPhoto: Alt+ArrowRight
       prevPhoto: Alt+ArrowLeft
-      nextTab: Ctrl+Tab
-      prevTab: Shift+Ctrl+Tab
       find:
         - CmdOrCtrl+f
         - /
         - Shift+/
       editMetadata: CmdOrCtrl+e
-      addTag: CmdOrCtrl+t
     Esper: &Esper
       zoomIn:
         - CmdOrCtrl-+
@@ -44,8 +41,6 @@ en:
         - CmdOrCtrl+Shift+]
         - CmdOrCtrl+Alt+]
         - r
-      copy:
-        - CmdOrCtrl+c
     Sidebar: &Sidebar
       next: ArrowDown
       prev: ArrowUp
@@ -79,32 +74,10 @@ en:
       delete:
         - Backspace
         - Delete
-      expand:
-        - CmdOrCtrl+ArrowDown
-        - CmdOrCtrl+ArrowRight
-        - ArrowRight
-      contract:
-        - CmdOrCtrl+ArrowUp
-        - CmdOrCtrl+ArrowLeft
-        - ArrowLeft
-        - Escape
       copyPhoto:
         - CmdOrCtrl+Shift+C
       extract:
         - CmdOrCtrl+Shift+X
-      rotateLeft: *rotateLeft
-      rotateRight: *rotateRight
-    SelectionGrid: &SelectionGrid
-      up: ArrowUp
-      down: ArrowDown
-      left: ArrowLeft
-      right: ArrowRight
-      first: Alt+ArrowUp
-      last: Alt+ArrowDown
-      open: Enter
-      delete:
-        - Backspace
-        - Delete
       rotateLeft: *rotateLeft
       rotateRight: *rotateRight
     ItemPanel: &ItemPanel
@@ -169,14 +142,6 @@ en:
         - CmdOrCtrl+Shift+Z
         - CmdOrCtrl+Shift+z
         - CmdOrCtrl+y
-    TagList: &TagList
-      up: ArrowUp
-      down: ArrowDown
-      remove:
-        - Backspace
-        - Delete
-      commit: Enter
-      clear: Escape
   darwin:
     global: *global
     Esper: *Esper
@@ -212,30 +177,9 @@ en:
         - Delete
       enter: Enter
       preview: Space
-      expand:
-        - ArrowRight
-      contract:
-        - ArrowLeft
-        - Escape
-      rotateLeft: *rotateLeft
-      rotateRight: *rotateRight
-    SelectionGrid:
-      up: ArrowUp
-      down: ArrowDown
-      left: ArrowLeft
-      right: ArrowRight
-      first: Alt+ArrowUp
-      last: Alt+ArrowDown
-      open:
-        - Cmd+ArrowDown
-        - Cmd+ArrowRight
-      delete:
-        - Backspace
-        - Delete
       rotateLeft: *rotateLeft
       rotateRight: *rotateRight
     ItemPanel: *ItemPanel
     NoteList: *NoteList
     NotePad: *NotePad
-    TagList: *TagList
   win32: *linux

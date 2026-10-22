@@ -6,7 +6,6 @@ export default {
   ItemPanel: 20,
   PhotoList: 25,
   PhotoGrid: 25,
-  SelectionGrid: 26,
   NoteList: 30,
   Esper: 40,
   EsperPanel: 41,

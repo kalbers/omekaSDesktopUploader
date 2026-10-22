@@ -65,28 +65,3 @@ export function move(pos, { x = 0, y = 0 } = {}) {
   return pos
 }
 
-export function normalizeRectangle({
-  x = 0, y = 0, width = 0, height = 0
-}, round = false) {
-
-  if (width < 0) {
-    x = x + width
-    width = -width
-  }
-
-  if (height < 0) {
-    y = y + height
-    height = -height
-  }
-
-  if (round) {
-    x = Math.round(x)
-    y = Math.round(y)
-    width = Math.round(width)
-    height = Math.round(height)
-  }
-
-  return {
-    x, y, width, height
-  }
-}

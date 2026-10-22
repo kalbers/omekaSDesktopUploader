@@ -1,88 +1,87 @@
-Tropy
-=====
-Bring order to your research —
-use the power of Tropy to organize and describe your research photos
-so you can find your sources whenever you need them.
+Omeka Desktop Upload
+====================
+Organize local files, describe them with metadata, and upload them to an
+[Omeka S][] site through its API.
 
-Visit [tropy.org][] to learn more
-or follow [@tropy@fosstodon.org][] for important announcements.
-To get started, download the latest version of Tropy for your platform,
-check out the [user's manual][docs] and join the discussion on the [forums][].
+Omeka Desktop Upload is based on [Tropy][], an open-source desktop application
+designed and produced by an international team of historians and software
+developers. It keeps Tropy's item, photo, and metadata model and replaces the
+research-management features with an Omeka S uploader.
 
-Interested to work on Tropy or create your own builds?
-Please find more details below.
-Happy hacking!
+[Omeka S]: https://omeka.org/s/
+[Tropy]: https://tropy.org
 
-[tropy.org]: https://tropy.org
-[@tropy@fosstodon.org]: https://fosstodon.org/@tropy
-[docs]: https://docs.tropy.org
-[forums]: https://forums.tropy.org
+Features
+--------
+- Projects are single `.odu` files that link to your files where they are.
+- Items hold one or more photos, described with metadata from templates and
+  vocabularies (Dublin Core and others). Lists organize items.
+- **Upload to Omeka S** sends items, their photos, and their notes to an Omeka S
+  site. Each uploaded resource is remembered, so uploading again updates the
+  existing Omeka items instead of creating duplicates. Lists become item sets.
+- **Export to CSV** writes items in a form the Omeka S *CSV Import* module can
+  map automatically.
+- Omeka S connection settings (API URL, key identity and credential, resource
+  template) are global and found in Preferences. The credential is encrypted
+  with the operating system's keychain when available.
 
-Installation
+Requirements
 ------------
-Visit [tropy.org][] or the [release page][]
-to download the latest version of Tropy.
+Install [Node.js][] 20 or later (the project's `engines` setting) and the
+build tools needed for native modules on your platform.
 
-You can also install Tropy via [Homebrew][], [winget][], or the [AUR][].
-
-For Linux users, we recommended to install Tropy with [Flatpak][].
-
-[![Get Tropy on Flathub](https://flathub.org/api/badge?locale=en)](https://flathub.org/en/apps/org.tropy.Tropy)
-
-[release page]: https://github.com/tropy/tropy/releases/latest
-[Homebrew]: https://brew.sh
-[winget]: https://winget.run
-[AUR]: https://aur.archlinux.org
-[Flatpak]: https://flathub.org/en/apps/org.tropy.Tropy
-
+[Node.js]: https://nodejs.org
 
 Installation from Source
 ------------------------
-Install the latest version of [Node.js][]
-(at least the version that ships with the current [Electron][] release)
-and all dependencies required to use [node-gyp][] on your platform.
+    $ npm ci
 
-Clone this [repository][] and install Tropy's dependencies:
+The bundler expects a native image-processing binding that `npm ci` does not
+place where it looks. Use the prebuilt one:
 
-    $ npm install
-    $ node scripts/rebuild.js --force
+    $ mkdir -p node_modules/sharp/src/build/Release
+    $ cp node_modules/@img/sharp-linux-x64/lib/sharp-linux-x64.node \
+         node_modules/sharp/src/build/Release/
 
-On Linux, use the `--global-libvips` flag when rebuiliding
-to link against the system's libvips.
+(Adjust the package name for other platforms and architectures.) The prebuilt
+image libraries do not read HEIC/HEIF files.
 
-To test that everything works, run:
+Development
+-----------
+    # Compile the bundle (optionally in --watch mode)
+    $ npm run rollup -- --watch
 
+    # Run in dev mode with a throwaway data folder
+    $ npx electron --app . --env development --data tmp --cache tmp/cache \
+        --logs tmp/log
+
+    # Run the tests
     $ npm test
 
-[Node.js]: https://nodejs.org
-[Electron]: https://electronjs.org
-[node-gyp]: https://www.npmjs.com/package/node-gyp
-[repository]: https://github.com/tropy/tropy
+    # View or tail the log file
+    $ npm run log:view
+    $ npm run log:tail
+
+Use `--no-sandbox` if your system's Electron sandbox is not set up (see
+`res/linux/INSTALL`).
 
 Creating Builds
 ---------------
-To create a dev-build for your current platform run `npm run build`.
-This will create a dev-build of Tropy in the `dist` folder.
+Compile the bundle, then run the build script with a recent Node.js (the build
+tool does not run under Electron's embedded Node):
 
-Tropy Development
------------------
-Use the following commands for Tropy development:
+    $ npm run clean && npm run rollup
+    $ npx -y node@22 --disable-warning=ExperimentalWarning \
+        scripts/build.js --platform linux --arch x64
 
-     # Compile the production bundle (optionally in --watch mode)
-     $ npm run rollup -- --watch
+The build is written to `dist/`. Only the Linux build has been tested.
 
-     # Run bundle in dev mode
-     $ npm start
+License and Attribution
+-----------------------
+Omeka Desktop Upload is free software, licensed under the
+[GNU Affero General Public License][agpl], version 3 or (at your option) any
+later version. It is a derivative of Tropy, copyright The Tropy Developers and
+Contributors (see `AUTHORS`), and includes code from the Tropy Omeka S plugin.
+Third-party licenses are listed in the `LICENSE.third-party.txt` file of builds.
 
-     # View or tail the log file
-     $ npm run log:view
-     $ npm run log:tail
-
-Plugin Development
-------------------
-You can extend Tropy's functionality via plugins.
-To find out more, consult the [plugin specification][]
-and clone the [sample plugin][] to get started.
-
-[sample plugin]: https://github.com/tropy/tropy-plugin-example
-[plugin specification]: https://github.com/tropy/tropy/blob/master/res/plugins/README.md
+[agpl]: https://www.gnu.org/licenses/agpl-3.0.html

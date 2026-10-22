@@ -126,23 +126,6 @@ const SIDEBAR = {
   DEFAULT_WIDTH: 240
 }
 
-const TAG = {
-  COLORS: [
-    'red',
-    'orange',
-    'yellow',
-    'green',
-    'blue',
-    'purple',
-    'gray',
-    'brown',
-    'apricot',
-    'dark-green',
-    'light-blue',
-    'lavender'
-  ]
-}
-
 const ESPER = {
   MIN_HEIGHT: 38,
   MIN_WIDTH: 240,
@@ -179,12 +162,6 @@ const ESPER = {
       active: 'grabbing',
       x: 9,
       y: 9
-    },
-    selection: {
-      default: 'crosshairs',
-      active: 'crosshairs',
-      x: 7,
-      y: 7
     },
     zoomIn: {
       default: 'zoom-in',
@@ -249,6 +226,5 @@ export default {
   ROW,
   SCROLLBAR,
   SIDEBAR,
-  TAG,
   TILE
 }

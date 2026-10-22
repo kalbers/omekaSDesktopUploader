@@ -113,30 +113,6 @@ export const ToggleButton = ({
     value={value}/>
 )
 
-export const ToggleButtonGroup = ({
-  id,
-  name,
-  onChange,
-  size = 'md',
-  options,
-  tabIndex,
-  value
-}) => (
-  <ButtonGroup>
-    {options.map(option => (
-      <ToggleButton
-        isChecked={option === value}
-        key={`${option}`}
-        name={name}
-        onChange={onChange}
-        size={size}
-        text={`${id || name}.option.${option}`}
-        tabIndex={tabIndex}
-        value={option}/>
-    ))}
-  </ButtonGroup>
-)
-
 export const PlusMinusControls = ({
   canAdd,
   canRemove,

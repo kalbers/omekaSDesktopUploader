@@ -1,7 +1,6 @@
 en:
   sidebar:
     lists: Lists
-    tags: Tags
     imports: Last Import
     trash: Deleted Items
     unlisted: Unlisted Items
@@ -23,16 +22,8 @@ en:
           =0 {}
           one {Item}
           other {# Items}}
-      selection: Selection
       dropdown:
         placeholder: Add new field …
-    tags:
-      tab: Tags
-      add: >-
-        {count, plural,
-          =0 {Add Tag}
-          one {Add Tag to 1 Item}
-          other {Add Tag to # Items}}
     photo:
       title: >-
         {count, plural,
@@ -40,7 +31,6 @@ en:
           one {1 Photo}
           other {# Photos}}
       create: Add Photos
-      selection: Selection
     note:
       title: >-
         {count, plural,
@@ -167,7 +157,6 @@ en:
         label: Default templates
         item: Item
         photo: Photo
-        selection: Selection
       title:
         label: Import file name as
         force: Overwrite embedded photo metadata
@@ -264,17 +253,12 @@ en:
     modified: Modified
     consolidate: Consolidate Photo
     error: Photo not found
-  selection:
-    size: Size
-    created: Date Added
-    modified: Modified
   settings:
     maximize: Maximize this view
     unmaximize: Restore previous view size
   esper:
     tool:
       pan: Pan Tool
-      select: Selection Tool
       rotate: Rotate
       mirror: Mirror
       edit: Edit Photo
@@ -282,10 +266,6 @@ en:
       fill: Fill
       fit: Fit
       zoom: Zoom
-    overlay:
-      full: Show full text overlay
-      split: Show split-view text overlay
-      panel: Toggle transcription version history
     panel:
       negative: Invert colors
       revert: Revert to Original
@@ -324,7 +304,6 @@ en:
     types:
       "https://tropy.org/v1/tropy#Item": Item Template
       "https://tropy.org/v1/tropy#Photo": Photo Template
-      "https://tropy.org/v1/tropy#Selection": Selection Template
     field:
       property: Property
       label: Label
@@ -400,11 +379,8 @@ en:
       csv: CSV
       templates: Templates
       images: Images
-      notes: Notes
       projects: Projects
       rdf: RDF Vocabularies
-      jsonld: JSON-LD
-
   action:
     project:
       save: Save Project
@@ -429,10 +405,6 @@ en:
       import: Import Items
       restore: Restore Items
       save: Save Item
-      tag:
-        create: Tag
-        toggle: Tag
-        clear: Clear Tags
     metadata:
       save: Save Metadata
     ontology:
@@ -457,18 +429,6 @@ en:
       order: Sort Notes
       restore: Restore Note
       save: Save Note
-    tag:
-      create: Create Tag
-      delete: Delete Tag
-      restore: Create Tag
-      save: Save Tag
-    selection:
-      create: Create Selection
-      delete: Delete Selection
-      restore: Create Selection
-      save: Save Selection
-      order: Sort Selections
-
   activity:
     omeka:
       upload: >-
@@ -493,12 +453,6 @@ en:
       order: Sorting list …
       restore: Restoring list …
       save: Saving list …
-    tag:
-      create: Creating tag …
-      delete: Deleting tag …
-      load: Loading tags …
-      restore: Restoring tag …
-      save: Saving tag …
     item:
       create: Creating item …
       delete: Deleting item …
@@ -515,10 +469,6 @@ en:
       merge: Merging item …
       restore: Restoring item …
       save: Saving items …
-      tag:
-        create: Tagging item
-        toggle: Tagging item …
-        clear: Clearing item tags …
     metadata:
       load: Loading metadata …
       save: Saving metadata …
@@ -548,11 +498,6 @@ en:
           true {Duplicating photo {progress, number} of {total, number} …}
           other {Duplicating photos …}
         }
-      transcribe: >-
-        {hasProgressBar, select,
-          true {Transcribing photo {progress, number} of {total, number} …}
-          other {Transcribing photos …}
-        }
       load: Loading photos …
       move: Moving photos …
       order: Sorting photos …
@@ -565,15 +510,6 @@ en:
       load: Loading notes …
       order: Sorting notes …
       restore: Restoring notes …
-    selection:
-      create: Creating photo selection …
-      load: Loading photo selections …
-      extract: Extracting selection …
-    api:
-      photo:
-        extract: Extracting photo …
-      selection:
-        extract: Extracting selection …
   editor:
     commands:
       bold: Bold
@@ -596,16 +532,6 @@ en:
       right: Align Right
       sinkListItem: Sink list item
       liftListItem: Lift list item
-  transcription:
-    error: Transcription failed
-    retry: Try Again
-    pending: Transcription pending…
-    title: >-
-      {name, select,
-        true {{name}}
-        other {Transcription}
-      }
-
   error:
     cache:
       prune: Failed to optimize project cache.
@@ -616,9 +542,6 @@ en:
       export: Failed to export items.
       merge: Failed to merge items.
       import: Failed to import item.
-      tag:
-        save: Failed to save tag.
-        create: Failed to tag item. Tags must be unique per item.
       template:
         change: Failed to change item template.
     list:
@@ -635,11 +558,6 @@ en:
       extract: Failed to export photo.
       template:
         change: Failed to change photo template.
-    selection:
-      create: Failed to create photo selection.
-      extract: Failed to export selection.
-      template:
-        change: Failed to change selection template.
     ontology:
       migrate: Failed to upgrade your ontology database.
       import: Failed to import vocabulary.
@@ -650,14 +568,5 @@ en:
         field:
           add: Failed to add field to template.
           remove: Failed to remove field from template.
-    tag:
-      create: Failed to create tag. Tag names must be unique.
     db:
       SQLITE_CANTOPEN: Cannot find or open database file.
-  flash:
-    update:
-      ready:
-        message: >-
-          Tropy {version} is ready to be installed.
-          Do you want to install and restart now?
-        confirm: Restart Now

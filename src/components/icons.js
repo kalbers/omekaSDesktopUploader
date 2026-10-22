@@ -43,38 +43,7 @@ function i(name, svg) {
 
 
 
-export const IconCircle = i('Circle', (
-  <svg width="10" height="10">
-    <circle className="border" fill="currentColor" cx="5" cy="5" r="5"/>
-    <circle className="color" fill="currentColor" cx="5" cy="5" r="4"/>
-  </svg>
-))
-
-export const IconCrescentCircle = i('CrescentCircle', (
-  <svg width="7" height="10">
-    <path className="border" fill="currentColor" d="M2,0A4.947,4.947,0,0,0,.614.219,5.968,5.968,0,0,1,1.5,1.05h.008l1.68.945A5.964,5.964,0,0,1,4,5a5.964,5.964,0,0,1-.812,3.005l-1.68.945-.011,0a5.968,5.968,0,0,1-.883.827A4.947,4.947,0,0,0,2,10,5,5,0,0,0,2,0Z"/>
-    <path className="color" fill="currentColor" d="M2,1a3.947,3.947,0,0,0-.492.05A5.97,5.97,0,0,1,3,5,5.97,5.97,0,0,1,1.508,8.95,3.947,3.947,0,0,0,2,9,4,4,0,0,0,2,1Z"/>
-  </svg>
-))
-
-
 /* 12 x 12 */
-
-export const IconArrowTurn = i('ArrowTurn', (
-  <svg width="12" height="12">
-    <g className="line" fill="currentColor">
-      <path d="M6.5,10A.5.5,0,0,1,6,9.5V2.707L8.293,5,9,4.293,5.854,1.146a.5.5,0,0,0-.708,0L2,4.293,2.707,5,5,2.707V9.5A1.5,1.5,0,0,0,6.5,11H10V10Z"/>
-    </g>
-  </svg>
-))
-
-export const IconFilterSmall = i('FilterSmall', (
-  <svg width="12" height="12">
-    <g className="line" fill="currentColor">
-      <path d="M11,1v.586L7.293,5.293,7,5.586v4L5.586,11H5V5.586l-.293-.293L1,1.586V1H11m1-1H0V2L4,6v6H6l2-2V6l4-4V0Z"/>
-    </g>
-  </svg>
-))
 
 export const IconGridSmall = i('GridSmall', (
   <svg width="12" height="12">
@@ -108,28 +77,6 @@ export const IconPlusSmall = i('PlusSmall', (
     <g className="line" fill="currentColor">
       <polygon points="12 5 7 5 7 0 6 0 6 5 1 5 1 6 6 6 6 11 7 11 7 6 12 6 12 5"/>
     </g>
-  </svg>
-))
-
-export const IconSelectionOverlay = i('SelectionOverlay', (
-  <svg width="12" height="12" viewBox="0 0 12 12">
-    <rect x="1" width="11" height="11" fill="#5c93e5" opacity="0.5"/>
-    <rect x="1" width="11" height="11" fill="#fff" opacity="0.5"/>
-    <path d="M11,1v9H2V1h9m1-1H1V11H12V0Z" fill="#5c93e5"/>
-  </svg>
-))
-
-export const IconTranscriptionOverlay = i('TranscriptionOverlay', (
-  <svg width="12" height="12" viewBox="0 0 12 12">
-    <path d="M1,0V11H12V0Z" opacity="0.5"/>
-    <path d="M2,1v9h9V1ZM9,5H8V4H7V7H8V8H5V7H6V4H5V5H4V3H9Z" fill="#fff"/>
-  </svg>
-))
-
-export const IconTranscriptionFailedOverlay = i('TranscriptionFailedOverlay', (
-  <svg width="12" height="12" viewBox="0 0 12 12">
-    <path d="M1,0V11H12V0Z" opacity="0.5"/>
-    <path d="M2,1v9h9V1ZM8.924,7.076a.6.6,0,1,1-.848.848L6.5,6.349,4.924,7.924a.6.6,0,0,1-.848-.848L5.651,5.5,4.076,3.924a.6.6,0,0,1,.848-.848L6.5,4.651,8.076,3.076a.6.6,0,0,1,.848.848L7.349,5.5Z" fill="#fff"/>
   </svg>
 ))
 
@@ -192,14 +139,6 @@ export const IconBookLock = i('BookLock', (
   </svg>
 ))
 
-export const IconBookTemplate = i('BookTemplate', (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <g className="line" fill="currentColor">
-      <path d="M14,0H4a.994.994,0,0,0-.716.306L1.305,2.284A.994.994,0,0,0,1,3V15a1,1,0,0,0,1,1H7V15H2V3H12V5h1V3a1,1,0,0,0-1-1H3L4,1H14V5h1V1a1,1,0,0,0-1-1ZM12.707,6H8V16h8V9.293L12.707,6ZM9,15V7h3v3h3v5Zm4-6V7.707L14.293,9ZM11,9H10v1h1V9Zm3,2H10v1h4V11Zm0,2H10v1h4V13Z"/>
-    </g>
-  </svg>
-))
-
 export const IconBulletList = i('BulletList', (
   <svg width="16" height="16" viewBox="0 0 16 16">
     <g className="line" fill="currentColor">
@@ -212,14 +151,6 @@ export const IconChevron7 = i('Chevron7', (
   <svg width="16" height="16" viewBox="0 0 16 16">
     <g className="line" fill="currentColor">
       <polygon points="5.707,10 8.5,7.207 11.293,10 12,9.293 8.5,5.793 5,9.293"/>
-    </g>
-  </svg>
-))
-
-export const IconChevron9 = i('Chevron9', (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <g className="line" fill="currentColor">
-      <polygon points="4.707 10 8.5 6.207 12.293 10 13 9.293 8.5 4.793 4 9.293 4.707 10"/>
     </g>
   </svg>
 ))
@@ -350,15 +281,6 @@ export const IconHand = i('Hand', (
   </svg>
 ))
 
-export const IconHangtag = i('Hangtag', (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <g className="line" fill="currentColor">
-      <path d="M6.086,1l8.5,8.5L9.5,14.586L1,6.086V1H6.086 M6.5,0h-6C0.224,0,0,0.224,0,0.5v6l9.146,9.146c0.098,0.098,0.226,0.146,0.354,0.146c0.128,0,0.256-0.049,0.354-0.146l5.793-5.793c0.195-0.195,0.195-0.512,0-0.707L6.5,0L6.5,0z"/>
-      <circle cx="4" cy="4" r="1.25"/>
-    </g>
-  </svg>
-))
-
 export const IconHue = i('Hue', (
   <svg width="16" height="16" viewBox="0 0 16 16">
     <g className="line" fill="currentColor">
@@ -434,14 +356,6 @@ export const IconMaze = i('Maze', (
   </svg>
 ))
 
-export const IconMerge = i('Merge', (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <g className="line" fill="currentColor">
-      <path d="M15,5v6H1V5H15m1-1H0v8H16V4Z"/>
-    </g>
-  </svg>
-))
-
 export const IconMetadata = i('Metadata', (
   <svg width="16" height="16" viewBox="0 0 16 16">
     <g className="line" fill="currentColor">
@@ -466,26 +380,10 @@ export const IconMinusCircle = i('MinusCircle', (
   </svg>
 ))
 
-export const IconMinusCircles = i('MinusCircles', (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <g className="line" fill="currentColor">
-      <path d="M3,4H8V5H3ZM2,4.5a3.5,3.5,0,1,1,6.92.733,5.465,5.465,0,0,1,1.027-.205A4.428,4.428,0,0,0,10,4.5,4.5,4.5,0,1,0,5.22,8.972a5.455,5.455,0,0,1,.391-.983C5.573,7.99,5.538,8,5.5,8A3.5,3.5,0,0,1,2,4.5Zm13,6A4.5,4.5,0,1,1,10.5,6,4.5,4.5,0,0,1,15,10.5Zm-1,0A3.5,3.5,0,1,0,10.5,14,3.5,3.5,0,0,0,14,10.5ZM8,10v1h5V10Z"/>
-    </g>
-  </svg>
-))
-
 export const IconMirror = i('Mirror', (
   <svg width="16" height="16" viewBox="0 0 16 16">
     <g className="line" fill="currentColor">
       <path d="M9,15H8V0H9ZM2.049,4.384v6.232L5.448,7.5l-3.4-3.116M1,2,7,7.5,1,13V2ZM16,13V2L10,7.5Z"/>
-    </g>
-  </svg>
-))
-
-export const IconNew = i('New', (
-  <svg width="16" height="18">
-    <g className="line" fill="currentColor">
-      <path d="M13,9.276V5.293L8.707,1H0V16H7.76A4.495,4.495,0,1,0,13,9.276ZM9,2.707,11.293,5H9ZM7.276,15H1V2H8V6h4V9.05A4.43,4.43,0,0,0,11.5,9a4.457,4.457,0,0,0-4.224,6ZM11.5,17A3.5,3.5,0,1,1,15,13.5,3.5,3.5,0,0,1,11.5,17ZM14,13v1H12v2H11V14H9V13h2V11h1v2Z"/>
     </g>
   </svg>
 ))
@@ -513,14 +411,6 @@ export const IconO = i('O', (
   <svg width="16" height="16" viewBox="0 0 16 16">
     <g className="line" fill="currentColor">
       <path d="M8,3.8a2.788,2.788,0,0,1,3,2.75v3.9A2.788,2.788,0,0,1,8,13.2a2.788,2.788,0,0,1-3-2.75V6.55A2.788,2.788,0,0,1,8,3.8ZM8,2A4.793,4.793,0,0,0,3,6.75v3.5A4.793,4.793,0,0,0,8,15a4.793,4.793,0,0,0,5-4.75V6.75A4.793,4.793,0,0,0,8,2Zm7-1V0H1V1Z"/>
-    </g>
-  </svg>
-))
-
-export const IconPencil = i('Pencil', (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <g className="line" fill="currentColor">
-      <path d="M14.293,4.293,11.707,1.707a1,1,0,0,0-1.414,0L1,11v4H5l9.293-9.293A1,1,0,0,0,14.293,4.293ZM4.586,14H2V11.414L9.332,4.081l2.587,2.586Zm8.04-8.04L10.039,3.374l.96-.96h0L13.586,5ZM4,12.707,3.293,12,9.5,5.793l.707.707Z"/>
     </g>
   </svg>
 ))
@@ -554,14 +444,6 @@ export const IconPlusCircle = i('PlusCircle', (
   <svg width="16" height="16" viewBox="0 0 16 16">
     <g className="line" fill="currentColor">
       <path d="M8.5,0A7.5,7.5,0,1,0,16,7.5,7.5,7.5,0,0,0,8.5,0Zm0,14A6.5,6.5,0,1,1,15,7.5,6.507,6.507,0,0,1,8.5,14ZM9,7h4V8H9v4H8V8H4V7H8V3H9Z"/>
-    </g>
-  </svg>
-))
-
-export const IconPlusCircles = i('PlusCircles', (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <g className="line" fill="currentColor">
-      <path d="M5,7V5H3V4H5V2H6V4H8V5H6V7ZM2,4.5a3.5,3.5,0,1,1,6.92.733,5.465,5.465,0,0,1,1.027-.205A4.428,4.428,0,0,0,10,4.5,4.5,4.5,0,1,0,5.22,8.972a5.455,5.455,0,0,1,.391-.983C5.573,7.99,5.538,8,5.5,8A3.5,3.5,0,0,1,2,4.5Zm13,6A4.5,4.5,0,1,1,10.5,6,4.5,4.5,0,0,1,15,10.5Zm-1,0A3.5,3.5,0,1,0,10.5,14,3.5,3.5,0,0,0,14,10.5ZM11,10V8H10v2H8v1h2v2h1V11h2V10Z"/>
     </g>
   </svg>
 ))
@@ -607,14 +489,6 @@ export const IconSearch = i('Search', (
   </svg>
 ))
 
-export const IconSelection = i('Selection', (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <g className="line" fill="currentColor">
-      <path d="M0,1H4V2H1V4H0ZM1,6H0v4H1Zm0,6H0v3H4V14H1Zm14,2H12v1h4V12H15Zm0-4h1V6H15ZM12,1V2h3V4h1V1ZM6,2h4V1H6ZM6,15h4V14H6Z"/>
-    </g>
-  </svg>
-))
-
 export const IconSharpen = i('Sharpen', (
   <svg width="16" height="16" viewBox="0 0 16 16">
     <g className="line" fill="currentColor">
@@ -647,14 +521,6 @@ export const IconSpin = i('Spin', (
   </svg>
 ))
 
-export const IconSplit = i('Split', (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <g className="line" fill="none" stroke="currentColor">
-      <path d="M6,5v6H1V5H6M7,4H0v8H7V4Zm8,1v6H10V5h5m1-1H9v8h7V4Z"/>
-    </g>
-  </svg>
-))
-
 export const IconSub = i('Sub', (
   <svg width="16" height="16" viewBox="0 0 16 16">
     <g className="line" fill="currentColor">
@@ -679,57 +545,10 @@ export const IconSup = i('Sup', (
   </svg>
 ))
 
-export const IconTag = i('Tag', (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <circle className="border" fill="currentColor" cx="8" cy="8" r="6"/>
-    <circle className="color" fill="currentColor" cx="8" cy="8" r="5"/>
-  </svg>
-))
-
 export const IconTick = i('Tick', (
   <svg width="16" height="16" viewBox="0 0 16 16">
     <g className="line" fill="currentColor">
       <path d="M7,14a1,1,0,0,1-.8-.4l-3-4A1,1,0,1,1,4.8,8.4l2.152,2.87,5.216-7.825a1,1,0,0,1,1.664,1.11l-6,9a1,1,0,0,1-.8.445Z"/>
-    </g>
-  </svg>
-))
-
-export const IconTranscription = i('Transcription', (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <g className="line" fill="currentColor">
-      <path d="M9,11h2v1H6V11H8V5H6V7H5V4h7V7H11V5H9Zm5-9a1,1,0,0,1,1,1V13a1,1,0,0,1-1,1H3a1,1,0,0,1-1-1V3A1,1,0,0,1,3,2H14m0-1H3A2,2,0,0,0,1,3V13a2,2,0,0,0,2,2H14a2,2,0,0,0,2-2V3a2,2,0,0,0-2-2Z"/>
-    </g>
-  </svg>
-))
-
-export const IconTranscriptionFailed = i('TranscriptionFailed', (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <g className="line" fill="currentColor">
-      <path d="M14,2a1,1,0,0,1,1,1V13a1,1,0,0,1-1,1H3a1,1,0,0,1-1-1V3A1,1,0,0,1,3,2H14m0-1H3A2,2,0,0,0,1,3V13a2,2,0,0,0,2,2H14a2,2,0,0,0,2-2V3a2,2,0,0,0-2-2ZM9.348,8l2.576-2.576a.6.6,0,0,0-.848-.848L8.5,7.152,5.924,4.576a.6.6,0,0,0-.848.848L7.652,8,5.076,10.576a.6.6,0,1,0,.848.848L8.5,8.848l2.576,2.576a.6.6,0,0,0,.848-.848Z"/>
-    </g>
-  </svg>
-))
-
-export const IconTranscriptionLarge = i('TranscriptionLarge', (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <g className="line" fill="currentColor">
-      <path d="M9,11h2v1H6V11H8V4H5V6H4V3h9V6H12V4H9ZM14,1a1,1,0,0,1,1,1V13a1,1,0,0,1-1,1H3a1,1,0,0,1-1-1V2A1,1,0,0,1,3,1H14m0-1H3A2,2,0,0,0,1,2V13a2,2,0,0,0,2,2H14a2,2,0,0,0,2-2V2a2,2,0,0,0-2-2Z"/>
-    </g>
-  </svg>
-))
-
-export const IconTranscriptionSplitView = i('TranscriptionSplitView', (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <g className="line" fill="currentColor">
-      <path d="M6,8v2H7V9H8v3H7v1h3V12H9V9h1v1h1V8Zm8-8H3A2,2,0,0,0,1,2V13a2,2,0,0,0,2,2H14a2,2,0,0,0,2-2V2A2,2,0,0,0,14,0Zm1,13a1,1,0,0,1-1,1H3a1,1,0,0,1-1-1V7H15Zm0-7H2V2A1,1,0,0,1,3,1H14a1,1,0,0,1,1,1Z"/>
-    </g>
-  </svg>
-))
-
-export const IconTranscriptionVersions = i('TranscriptionVersions', (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <g className="line" fill="currentColor">
-      <path d="M16,3H7v-1h9v1ZM14,5h-7v1h7v-1ZM16,10H7v1h9v-1ZM14,13h-7v1h7v-1ZM0,1v2h1v-1h1v4h-1v1h3v-1h-1V2h1v1h1V1H0ZM0,9v2h1v-1h1v4h-1v1h3v-1h-1v-4h1v1h1v-2H0Z"/>
     </g>
   </svg>
 ))
@@ -808,15 +627,6 @@ export const IconArrow = i('Arrow', (
 
 /* 24 x 24 */
 
-export const IconItem = i('Item', (
-  <svg viewBox="0 0 24 24">
-    <g className="line" fill="currentColor">
-      <path d="M16.5,10c1.381,0,2.5-1.119,2.5-2.5C19,6.119,17.881,5,16.5,5S14,6.119,14,7.5C14,8.881,15.119,10,16.5,10z M16.5,6C17.327,6,18,6.673,18,7.5S17.327,9,16.5,9S15,8.327,15,7.5S15.673,6,16.5,6z"/>
-      <path d="M14.667,11.667l-1.952,1.952L9.333,7.762L4,17h5.333h5.333H20L14.667,11.667z M9.333,16H5.732l3.601-6.238l2.515,4.356l0.652,1.129l0.922-0.922l1.245-1.245L17.586,16h-2.919H9.333z"/>
-    </g>
-  </svg>
-))
-
 
 /* 32 x 32 */
 
@@ -841,18 +651,6 @@ export const IconWarningOverlay = i('WarningOverlay', (
 export const IconWarningExtraLarge = i('WarningExtraLarge', (
   <svg width="80" height="80">
     <path className="line" fill="currentColor" d="M40,10.625,71.667,70H8.333L39.976,10.628a.074.074,0,0,1,.024,0h0m0-5a4.947,4.947,0,0,0-4.412,2.647L3.922,67.647A5,5,0,0,0,8.333,75H71.667a5,5,0,0,0,4.411-7.353L44.412,8.272A4.947,4.947,0,0,0,40,5.625ZM40,56.5a3.75,3.75,0,1,0,3.75,3.75A3.75,3.75,0,0,0,40,56.5Zm3.75-25.25a3.75,3.75,0,0,0-7.5,0c0,.095.021.183.028.276l-.028,0L37.5,49.192l.022,0a2.487,2.487,0,0,0,4.962,0h.012L43.74,31.528h-.018C43.729,31.434,43.75,31.345,43.75,31.25Z"/>
-  </svg>
-))
-
-export const IconTranscriptionExtraLarge = i('TranscriptionExtraLarge', (
-  <svg width="80" height="80">
-    <path className="line" fill="currentColor" d="M65,10c2.757,0,5,2.243,5,5v50c0,2.757-2.243,5-5,5H15c-2.757,0-5-2.243-5-5V15c0-2.757,2.243-5,5-5h50M65,5H15c-5.523,0-10,4.477-10,10v50c0,5.523,4.477,10,10,10h50c5.523,0,10-4.477,10-10V15c0-5.523-4.477-10-10-10h0ZM22,20v10h3.5l.8-4.8,1.2-1.2h9.5v31l-1.2,1.2-4.8.8v3h18v-3l-4.8-.8-1.2-1.2v-31h9.5l1.2,1.2.8,4.8h3.5v-10H22Z"/>
-  </svg>
-))
-
-export const IconTranscriptionFailedExtraLarge = i('TranscriptionFailedExtraLarge', (
-  <svg width="80" height="80">
-    <path className="line" fill="currentColor" d="M65,10c2.757,0,5,2.243,5,5v50c0,2.757-2.243,5-5,5H15c-2.757,0-5-2.243-5-5V15c0-2.757,2.243-5,5-5h50M65,5H15c-5.523,0-10,4.477-10,10v50c0,5.523,4.477,10,10,10h50c5.523,0,10-4.477,10-10V15c0-5.523-4.477-10-10-10h0ZM59.621,24.621l-4.242-4.242-15.379,15.379-15.379-15.379-4.242,4.242,15.379,15.379-15.379,15.379,4.242,4.242,15.379-15.379,15.379,15.379,4.242-4.242-15.379-15.379,15.379-15.379Z"/>
   </svg>
 ))
 

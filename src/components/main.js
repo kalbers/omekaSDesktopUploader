@@ -2,7 +2,6 @@ import React from 'react'
 import { Provider, connect } from 'react-redux'
 import { IntlProvider as ReactIntlProvider } from 'react-intl'
 import { DndProvider, ElectronBackend } from './dnd.js'
-import { Flash } from './flash.js'
 import { WindowContext } from './window.js'
 
 const IntlProvider = connect(
@@ -20,10 +19,7 @@ export class Main extends React.Component {
         <DndProvider backend={ElectronBackend}>
           <Provider store={this.props.store}>
             <IntlProvider>
-              <>
-                {this.props.children}
-                <Flash/>
-              </>
+              {this.props.children}
             </IntlProvider>
           </Provider>
         </DndProvider>

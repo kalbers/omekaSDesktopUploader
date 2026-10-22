@@ -1,10 +1,10 @@
 import assert from 'node:assert'
 import { existsSync } from 'node:fs'
 import { chmod, stat } from 'node:fs/promises'
-import { dirname, resolve } from 'node:path'
+import { dirname } from 'node:path'
 import { randomUUID as uuid } from 'node:crypto'
 import { Database } from './db.js'
-import { home, normalize } from './os.js'
+import { home } from './os.js'
 import { into, select, update } from './query.js'
 import { version } from './release.js'
 import { empty } from './util.js'
@@ -180,21 +180,6 @@ export async function unlock(dbFile) {
   return chmod(dbFile, 0o666)
 }
 
-export async function getAssets(db, { basePath }) {
-  let assets = []
-
-  await db.each(assetInfo.query, asset => {
-    asset.path = (
-      (basePath && asset.protocol === 'file') ?
-          resolve(basePath, normalize(asset.path)) : asset.path
-    ).normalize()
-
-    assets.push(asset)
-  })
-
-  return assets
-}
-
 export async function optimize(db) {
   await db.exec("INSERT INTO fts_notes(fts_notes) VALUES ('optimize')")
   await db.exec("INSERT INTO fts_metadata(fts_metadata) VALUES ('optimize')")
@@ -249,11 +234,6 @@ const projectStats =
     notes: select('count(note_id)').from('notes')
 
   }).from('project').limit(1)
-
-const assetInfo =
-  select('id', 'protocol', 'path', 'checksum')
-    .from('photos')
-    .order('protocol, path')
 
 export async function beginProjectAccess(db, user) {
   if (user == null)

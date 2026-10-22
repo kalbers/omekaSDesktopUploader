@@ -45,19 +45,18 @@ export class Cache {
   }
 
   consolidate = async (id, image, {
-    overwrite = true,
-    selection
+    overwrite = true
   } = {}) => {
     try {
       let { page, channels, isOpaque } = image
       let ext = this.extname(image.mimetype)
-      let variants = image.variants(!!selection)
+      let variants = image.variants()
 
       for (let { name, size, quality } of variants) {
         let path = this.path(id, name, ext)
 
         if (overwrite || !(await this.exists(path))) {
-          let dup = await image.resize(size, selection, { page })
+          let dup = await image.resize(size, { page })
 
           switch (ext) {
             case '.png':

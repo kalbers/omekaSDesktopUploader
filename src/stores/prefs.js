@@ -7,7 +7,6 @@ import { seq, debounce, throttle, log } from '../middleware/index.js'
 import {
   context,
   edit,
-  flash,
   history,
   intl,
   keymap,
@@ -30,7 +29,6 @@ export const create = () => {
     reducer: {
       context,
       edit,
-      flash,
       history,
       intl,
       keymap,
