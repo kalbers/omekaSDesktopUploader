@@ -1,7 +1,7 @@
 {
   "name": "omeka-desktop-upload",
   "productName": "Omeka Desktop Upload",
-  "version": "1.17.2",
+  "version": "0.1.0",
   "private": true,
   "author": "The Tropy Developers and Contributors",
   "description": "Upload local files and their metadata to an Omeka S site",

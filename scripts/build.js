@@ -40,8 +40,7 @@ const PLATFORM =
   process.env.npm_config_platform ||
   process.platform
 
-// Icon files still use the upstream artwork names until replaced.
-const ICON_NAME = 'tropy'
+const ICON_NAME = 'omeka-desktop-upload'
 
 const ELECTRON = join(ROOT, 'node_modules', 'electron', 'dist')
 
@@ -163,7 +162,7 @@ export function configure({ arch, platform, out = join(ROOT, 'dist') }) {
 
   switch (platform) {
     case 'linux':
-      INCLUDE.push(`/res/icons/${channel}{,/tropy{,/**/*}}`)
+      INCLUDE.push(`/res/icons/${channel}{,/${ICON_NAME}{,/**/*}}`)
       executableName = qualified.name
       break
     case 'darwin':
@@ -317,7 +316,7 @@ function mergeMacSigningOptions(opts, args) {
 }
 
 async function copyIcons(dst, theme = 'hicolor') {
-  let icons = await readdir(join(ICONS, channel, 'tropy'))
+  let icons = await readdir(join(ICONS, channel, ICON_NAME))
   for (let icon of icons) {
     let ext = extname(icon)
     let variant = basename(icon, ext)
@@ -327,7 +326,7 @@ async function copyIcons(dst, theme = 'hicolor') {
       `${qualified.appId}-symbolic${ext}` : `${qualified.appId}${ext}`
 
     await mkdir(target, { recursive: true })
-    await copyFile(join(ICONS, channel, 'tropy', icon), join(target, file))
+    await copyFile(join(ICONS, channel, ICON_NAME, icon), join(target, file))
   }
 
   for (let type of ['mtpy', 'tpy', 'ttp']) {

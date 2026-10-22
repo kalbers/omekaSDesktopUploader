@@ -110,7 +110,7 @@ export class WindowManager extends EventEmitter {
 
       switch (process.platform) {
         case 'linux':
-          opts.icon = Icon.expand(channel, 'tropy', '512x512.png')
+          opts.icon = Icon.expand(channel, 'omeka-desktop-upload', '512x512.png')
           opts.darkTheme = opts.darkTheme || args.dark
           opts.vibrancy = false
           args.controls = await WindowManager.getButtonLayout()
