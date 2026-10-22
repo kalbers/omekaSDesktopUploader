@@ -32,13 +32,10 @@ Reindex.register(PROJECT.REINDEX)
 
 export class Reload extends Command {
   *exec() {
-    let { db, store } = this.options
+    let { db } = this.options
 
     let project = yield call(load, db)
     project.watch = Storage.load('project.watch', project.id) || {}
-
-    if (project.store !== store.root)
-      yield call(store.init, project.store)
 
     return project
   }
@@ -54,14 +51,13 @@ export class Save extends Command {
 
     let { project } = yield select()
     let original = pick(project, Object.keys(payload))
-    let { basePath, store } = project
+    let { basePath } = project
 
     let isRebaseRequired =
       ('base' in payload) && payload.base !== original.base
 
     if (isRebaseRequired) {
       basePath = resolveBasePath(db, payload.base)
-      payload = { store, ...payload }
     }
 
     this.original = { ...original, basePath: project.basePath }
@@ -79,7 +75,7 @@ export class Save extends Command {
     yield put(act.project.update(changes))
 
     yield call(db.transaction, async tx => {
-      await save(tx, { id, ...payload }, basePath)
+      await save(tx, { id, ...payload })
 
       if (isRebaseRequired) {
         await photo.rebase(tx, basePath, project.basePath)

@@ -25,6 +25,7 @@ import {
 import { darwin, linux } from '../common/os.js'
 import { channel, product, version } from '../common/release.js'
 import { Cache } from '../common/cache.js'
+import { PROJECT_EXT } from '../common/project-ext.js'
 import { OmekaSettings } from './omeka.js'
 
 import { defaultLocale, isRightToLeft, getLocale } from './locale.js'
@@ -37,7 +38,6 @@ import * as shell from './shell.js'
 import { addIdleObserver } from './idle.js'
 import { migrate } from './migrate.js'
 import * as act from './actions.js'
-import { setProjectFolderIcon } from './project.js'
 
 import {
   HISTORY, PROJECT, CONTEXT
@@ -116,9 +116,7 @@ export class Tropy extends EventEmitter {
   async openFile(...files) {
     for (let file of files) {
       switch (extname(file)) {
-        case '.tpy':
-        case '.mtpy':
-        case '.tropy':
+        case '.odu':
           await this.showProjectWindow(file, null)
           break
         case '.ttp':
@@ -143,7 +141,7 @@ export class Tropy extends EventEmitter {
     let files = await dialog.open(win, {
       filters: [{
         name: this.dict.dialog.file.project,
-        extensions: ['tpy', 'tropy', 'mtpy']
+        extensions: [PROJECT_EXT]
       }]
     })
 
@@ -179,7 +177,7 @@ export class Tropy extends EventEmitter {
       if (!file) {
         fixedSize = {
           width: 440 * (this.state.recent.length ? 2 : 1),
-          height: 580,
+          height: 460,
           animate: false
         }
       }
@@ -217,10 +215,6 @@ export class Tropy extends EventEmitter {
         case 'win32':
           app.addRecentDocument(project.path)
           break
-      }
-
-      if (project.isManaged) {
-        setProjectFolderIcon(project.path)
       }
 
       this.state.recent = [

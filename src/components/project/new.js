@@ -3,25 +3,22 @@ import { useDispatch } from 'react-redux'
 import { FormattedMessage } from 'react-intl'
 import { useEvent } from '../../hooks/use-event.js'
 import { Titlebar } from '../toolbar.js'
-import { Button, ToggleButtonGroup } from '../button.js'
-import { FormElement, FormGroup } from '../form.js'
-import { TYPES } from '../../common/project.js'
+import { Button } from '../button.js'
+import { FormElement } from '../form.js'
 import { create } from '../../slices/project-files.js'
 
 
 export const NewProject = ({
-  accept = TYPES,
   onCreated
 }) => {
   let dispatch = useDispatch()
 
   let [name, setName] = useState('')
-  let [type, setType] = useState(accept[0])
 
   let handleProjectCreate = useEvent((event) => {
     event.preventDefault()
 
-    dispatch(create({ name, type }))
+    dispatch(create({ name }))
       .then(action => {
         if (action?.payload?.path)
           onCreated?.(action.payload.path)
@@ -30,10 +27,6 @@ export const NewProject = ({
 
   let handleNameChange = useEvent(e => {
     setName(e.target.value)
-  })
-
-  let handleTypeChange = useEvent(v => {
-    setType(v.type)
   })
 
   return (
@@ -54,19 +47,6 @@ export const NewProject = ({
             type="text"
             value={name}/>
         </FormElement>
-        <h2><FormattedMessage id="project.new.type.label"/></h2>
-        <FormGroup>
-          <ToggleButtonGroup
-            id="project.new.type"
-            name="type"
-            size="lg"
-            options={accept}
-            onChange={handleTypeChange}
-            value={type}/>
-          <p className="form-text">
-            <FormattedMessage id={`project.new.type.hint.${type}`}/>
-          </p>
-        </FormGroup>
         <Button
           isBlock
           isDisabled={!name}

@@ -1,6 +1,5 @@
 import { PROJECT, IDLE } from '../constants/index.js'
 import { Cache } from '../common/cache.js'
-import { Store } from '../asset/index.js'
 import { warn, debug } from '../common/log.js'
 import { ipc } from './ipc.js'
 import { consolidator } from './consolidator.js'
@@ -59,10 +58,8 @@ export function *open(opts, action) {
     project.watch = Storage.load('project.watch', project.id) || {}
 
     let cache = new Cache(ARGS.cache, project.id)
-    let store = new Store(project.store)
 
     yield call(cache.init)
-    yield call(store.init)
 
     yield put(act.project.opened(project))
 
@@ -77,12 +74,12 @@ export function *open(opts, action) {
 
       while (true) {
         let cmd = yield take(commands('project'))
-        yield fork(exec, { db, id: project.id, cache, store }, cmd)
+        yield fork(exec, { db, id: project.id, cache }, cmd)
       }
 
     } finally {
       if (!opts.skipFullSetup)
-        yield call(teardown, { db, project, cache, store })
+        yield call(teardown, { db, project, cache })
     }
   } catch (e) {
     warn({ stack: e.stack }, 'unexpected error in *project.open')
@@ -142,7 +139,7 @@ function *setup({ db, project }) {
   }
 }
 
-function *teardown({ db, project, store }) {
+function *teardown({ db, project }) {
   yield all([
     call(persist, 'nav', project.id),
     call(persist, 'notepad', project.id),
@@ -160,7 +157,6 @@ function *teardown({ db, project, store }) {
     yield call(mod.photo.prune, db)
     yield call(mod.note.prune, db)
     yield call(mod.subject.prune, db)
-    yield call(store.prune, db)
   }
 
   debug('*project.teardown terminated')

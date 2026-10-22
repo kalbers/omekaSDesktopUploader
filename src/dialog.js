@@ -1,12 +1,11 @@
 import assert from 'node:assert'
-import { extname, dirname } from 'node:path'
+import { dirname } from 'node:path'
 import { ipcRenderer as ipc, clipboard } from 'electron'
 import ARGS from './args.js'
 import { counter, get } from './common/util.js'
 import { crashReport, warn } from './common/log.js'
-import { pext } from './common/project.js'
+import { PROJECT_EXT } from './common/project-ext.js'
 import IMAGE from './constants/image.js'
-import { darwin } from './common/os.js'
 
 let seq
 let pending
@@ -129,27 +128,19 @@ open.dir = (opts) => open({
 
 open.project = (path) => {
   let defaultPath
-  let extensions = ['tpy', 'tropy', 'mtpy']
-  let properties = ['openFile']
 
-  if (path) {
-    extensions = [extname(path)]
+  if (path)
     defaultPath = dirname(path)
-
-    if (extensions[0] !== 'tpy' && !darwin)
-      properties = ['openDirectory']
-  }
-
 
   return open({
     filters: [
       {
         name: t('dialog', 'filter', 'projects'),
-        extensions
+        extensions: [PROJECT_EXT]
       }
     ],
     defaultPath,
-    properties
+    properties: ['openFile']
   })
 }
 
@@ -172,16 +163,16 @@ open.templates = (opts) => open({
 })
 
 
-save.project = (type, name = 'Project', opts = {}) => save({
+save.project = (name = 'Project', opts = {}) => save({
   filters: [{
     name: t('dialog', 'filter', 'projects'),
-    extensions: [pext(type)]
+    extensions: [PROJECT_EXT]
   }],
   properties: [
     'createDirectory',
     'showOverwriteConfirmation'
   ],
-  defaultPath: `${name}.${pext(type)}`,
+  defaultPath: `${name}.${PROJECT_EXT}`,
   ...opts
 })
 

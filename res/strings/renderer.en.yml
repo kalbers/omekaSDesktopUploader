@@ -93,14 +93,6 @@ en:
       edition: Omeka Desktop Upload
       title: Create a new project
       name: Enter a name for the project
-      type:
-        label: Choose the project type
-        option:
-          tpy: Advanced
-          managed: Standard
-        hint:
-          tpy: Links to photos at their original location.
-          managed: Copies photos to project folder on import.
       create: Create Project
     stats:
       photos: >-
@@ -220,19 +212,9 @@ en:
           null: Using absolute paths
           project: Relative to the project file
           home: Relative to your home directory
-      store: Managed folder
       name: Name
       id: ID
       path: File
-      type: Project type
-      convert:
-        confirm: Convert
-        hint: Convert this project into a Standard project.
-        detail: >-
-          {errors, plural,
-            =0 {All photos consolidated.}
-            one {1 photo not found; consolidation required.}
-            other {# photos not found; consolidation required.}}
       watch:
         folder: Watch folder
         usePolling: Using file stat polling
@@ -371,16 +353,6 @@ en:
     comment: Comment
 
   dialog:
-    notify:
-      project:
-        convert:
-          title: Conversion complete
-          message: >-
-            Your project was successfully converted and saved.
-            The app will now close the original project file
-            and open the converted project in a new window.
-          buttons:
-            - "OK"
     error:
       title: Error
       buttons:
@@ -640,7 +612,6 @@ en:
       purge: Failed to remove old project caches.
     project:
       created: Project creation failed.
-      convert: Project conversion failed.
     item:
       export: Failed to export items.
       merge: Failed to merge items.

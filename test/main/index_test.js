@@ -12,7 +12,7 @@ describe('main process', () => {
 
 
   before(() => {
-    process.argv = ['tropy', 'file.tpy']
+    process.argv = ['tropy', 'file.odu']
     sinon.stub(process, 'on').returns(process)
     // sinon.spy(args, 'parse')
     sinon.stub(app, 'setPath')

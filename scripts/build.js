@@ -107,6 +107,12 @@ program
           say('make shared icons')
           copyIcons(`${resources}/icons`)
 
+          say('copy mime-db')
+          await mkdir(`${resources}/mime/packages`, { recursive: true })
+          await copyFile(
+            `${ROOT}/res/mime/${appId}.xml`,
+            `${resources}/mime/packages/${appId}.xml`)
+
           say('copy metainfo.xml')
           await copyFile(
             `${ROOT}/res/linux/org.omeka.DesktopUpload.metainfo.xml`,
@@ -139,7 +145,7 @@ export function configure({ arch, platform, out = join(ROOT, 'dist') }) {
     '/db{,/{migrate,schema}{,/**/*}}',
     '/lib{,/**/*}',
     '/res{,/{menu,shaders,cursors,images,keymaps,strings,views,workers}{,/**/*}}',
-    '/res/icons{,/{about,colors,cover,mime,prefs,project,window}{,/**/*}}',
+    '/res/icons{,/{about,colors,cover,prefs,project,window}{,/**/*}}',
     '/package.json',
     '/LICENSE'
   ]
@@ -169,9 +175,6 @@ export function configure({ arch, platform, out = join(ROOT, 'dist') }) {
       icon = join(ICONS, channel, `${ICON_NAME}.icns`)
 
       extraResource.push(icon)
-      extraResource.push(join(ICONS, 'mime', 'mtpy.icns'))
-      extraResource.push(join(ICONS, 'mime', 'tpy.icns'))
-      extraResource.push(join(ICONS, 'mime', 'ttp.icns'))
 
       // macOS 26 (Darwin v25.0.0) support new .icon format
       if (semver.gte(release(), '25.0.0')) {
@@ -184,10 +187,6 @@ export function configure({ arch, platform, out = join(ROOT, 'dist') }) {
     case 'win32':
       icon = join(ICONS, channel, `${ICON_NAME}.ico`)
       extraResource.push(icon)
-      // extraResource.push(join(ICONS, 'mime', 'mtpy.ico'))
-      extraResource.push(join(ICONS, 'mime', 'tpy.ico'))
-      extraResource.push(join(ICONS, 'mime', 'ttp.ico'))
-      extraResource.push(join(ICONS, 'mime', 'folder.ico'))
       executableName = qualified.name
       break
   }
@@ -328,27 +327,11 @@ async function copyIcons(dst, theme = 'hicolor') {
     await mkdir(target, { recursive: true })
     await copyFile(join(ICONS, channel, ICON_NAME, icon), join(target, file))
   }
-
-  for (let type of ['mtpy', 'tpy', 'ttp']) {
-    icons = await readdir(join(ICONS, 'mime', type))
-    for (let icon of icons) {
-      let ext = extname(icon)
-      let variant = basename(icon, ext)
-
-      if ((/@/).test(variant)) continue
-
-      let target = join(dst, theme, variant, 'mimetypes')
-      let file = `${appId}.${type}${ext}`
-
-      await mkdir(target, { recursive: true })
-      await copyFile(join(ICONS, 'mime', type, icon), join(target, file))
-    }
-  }
 }
 
 export function desktop({
   icon = qualified.appId,
-  mimetypes = []
+  mimetypes = ['application/vnd.omeka.desktop-upload.project']
 } = {}) {
   return `#!/usr/bin/env xdg-open
 [Desktop Entry]

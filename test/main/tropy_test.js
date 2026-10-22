@@ -31,7 +31,7 @@ describe('Tropy', () => {
 
   describe('showProjectWindow', () => {
     let win
-    let project = { path: 'x.tpy' }
+    let project = { path: 'x.odu' }
 
     beforeEach(() => {
       win = fakeWindow()
@@ -58,7 +58,7 @@ describe('Tropy', () => {
     })
 
     it('new window if not already open', async () => {
-      await tropy.showProjectWindow('other.tpy', null)
+      await tropy.showProjectWindow('other.odu', null)
 
       expect(win.show).not.to.have.been.called
       expect(tropy.wm.open).to.have.been.calledOnce
@@ -66,11 +66,11 @@ describe('Tropy', () => {
       let call = tropy.wm.open.getCall(0)
 
       expect(call.args[0]).to.eql('project')
-      expect(call.args[1]).to.have.property('file', 'other.tpy')
+      expect(call.args[1]).to.have.property('file', 'other.odu')
     })
 
     it('open in existing window if given', async () => {
-      await tropy.showProjectWindow('other.tpy', win)
+      await tropy.showProjectWindow('other.odu', win)
 
       expect(tropy.wm.open).not.to.have.been.called
 
@@ -80,7 +80,7 @@ describe('Tropy', () => {
       let [type, action] = win.webContents.send.getCall(0).args
 
       expect(type).to.eql('dispatch')
-      expect(action.payload).to.eql('other.tpy')
+      expect(action.payload).to.eql('other.odu')
     })
   })
 })

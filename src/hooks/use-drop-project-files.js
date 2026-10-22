@@ -2,15 +2,7 @@ import { webUtils } from 'electron'
 import { useDrop } from 'react-dnd'
 import { NativeTypes } from 'react-dnd-html5-backend'
 import { hasProjectFiles } from '../components/dnd.js'
-import { getProjectType } from '../common/project.js'
-
-function isProjectFile(path) {
-  try {
-    return getProjectType(path) != null
-  } catch {
-    return false
-  }
-}
+import { isProjectFile } from '../common/project-ext.js'
 
 export function useDropProjectFiles({ onDrop }) {
   return useDrop(() => ({

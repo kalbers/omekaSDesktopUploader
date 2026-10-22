@@ -8,7 +8,7 @@ import { RecentProjects } from './recent.js'
 export const NoProject = React.forwardRef(({
   isOver,
   onProjectOpen,
-  height = 580,
+  height = 460,
   width = 440
 }, ref) => {
   let recent = useArgs('recent')

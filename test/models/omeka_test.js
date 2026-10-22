@@ -5,7 +5,7 @@ import { Migrations } from '#internal/res.js'
 import mod from '#internal/models/omeka.js'
 
 describe('models.omeka', () => {
-  let project = mkprojtmp('omeka.tpy')
+  let project = mkprojtmp('omeka.odu')
   let URL = 'http://localhost/omeka-s/api'
 
   it('remembers and updates links', async () => {
@@ -63,8 +63,8 @@ describe('models.omeka', () => {
 
   describe('migration', () => {
     it('upgrades an existing project', async () => {
-      let path = mktmp('old.tpy')
-      let pre = await create(path, F.schema('project').path, F.appDir, {
+      let path = mktmp('old.odu')
+      let pre = await create(path, F.schema('project').path, {
         autoclose: false
       })
 

@@ -1,217 +1,125 @@
 import { stat, mkdir, writeFile } from 'node:fs/promises'
-import { existsSync } from 'node:fs'
-import { isAbsolute, join } from 'node:path'
+import { join } from 'node:path'
 import { mkprojtmp } from '../support/project.js'
-import { mkdtmp, mktmp } from '../support/tmp.js'
-import { convert, create, load, open, pstat } from '#internal/common/project.js'
+import { mkdtmp } from '../support/tmp.js'
+import {
+  PROJECT_EXT,
+  create,
+  isProjectFile,
+  load,
+  open,
+  pstat
+} from '#internal/common/project.js'
 import { delay } from '#internal/common/util.js'
 
 describe('common/project', () => {
+  describe('isProjectFile', () => {
+    it('accepts the project extension, ignoring case', () => {
+      expect(PROJECT_EXT).to.eql('odu')
+      expect(isProjectFile('a/b/Test.odu')).to.be.true
+      expect(isProjectFile('TEST.ODU')).to.be.true
+    })
+
+    it('rejects everything else, including Tropy projects', () => {
+      for (let path of ['a.tpy', 'a.tropy', 'a.mtpy', 'a.txt', 'a', 'odu'])
+        expect(isProjectFile(path), path).to.be.false
+    })
+  })
 
   describe('create', () => { // Used by mkprojtmp under the hood!
     let tmp = mkdtmp()
+    let project = mkprojtmp('test.odu', { id: 'abc123', name: 'Daedalus' })
 
-    describe('*.tpy', () => {
-      let tpy = mkprojtmp('test.tpy', { id: 'abc123', name: 'Daedalus' })
+    it('creates a single project file', async () => {
+      let { db, path } = project.current
 
-      it('creates a project file', async () => {
-        let { db, path } = tpy.current
+      expect((await stat(path)).isFile()).to.be.true
 
-        expect((await stat(path)).isFile()).to.be.true
+      let row = await db.get('select * from project')
 
-        let project = await db.get('select * from project')
+      expect(row).to.have.property('name', 'Daedalus')
+      expect(row).to.have.property('base', null)
+      expect(row).to.have.property('project_id', 'abc123')
 
-        expect(project).to.have.property('name', 'Daedalus')
-        expect(project).to.have.property('base', null)
-        expect(project).to.have.property('store', null)
-        expect(project).to.have.property('project_id', 'abc123')
-
-        expect(await db.version()).to.be.a('number').above(1601010000)
-      })
+      expect(await db.version()).to.be.a('number').above(1601010000)
     })
 
-    describe('managed', () => {
-      let tpm = mkprojtmp('test.tropy', { name: 'Ariadne' })
-
-      it('creates managed project folders and database', async () => {
-        let { db, path } = tpm.current
-
-        expect((await stat(path)).isDirectory()).to.be.true
-        expect((await stat(join(path, 'project.tpy'))).isFile()).to.be.true
-        expect((await stat(join(path, 'assets'))).isDirectory()).to.be.true
-
-        let project = await db.get('select * from project')
-
-        expect(project).to.have.property('name', 'Ariadne')
-        expect(project).to.have.property('base', 'project')
-        expect(project).to.have.property('store', 'assets')
-
-        expect(project)
-          .to.have.property('project_id')
-          .and.match(/^[0-9a-f-]+$/)
-
-        expect(await db.version()).to.be.a('number').above(2207140000)
-      })
+    it('rejects other file extensions', async () => {
+      for (let name of ['tropy.db', 'old.tpy', 'old.tropy'])
+        await expect(create(join(tmp, name), F.schema('project').path))
+          .to.eventually.be.rejectedWith('project files must end in .odu')
     })
 
-    it('rejects unknown file extensions', () =>
-      expect(create('tropy.db', F.schema('project').path, F.appDir))
-        .to.eventually.be.rejectedWith('unknown project file extension'))
+    it('rejects unknown project bases', () =>
+      expect(create(join(tmp, 'b.odu'), F.schema('project').path, {
+        base: '/somewhere'
+      })).to.eventually.be.rejectedWith('base not supported'))
 
-    it('rejects if file or directory already exists', async () => {
-      let tpy = join(tmp, 'file.tpy')
-      let tpm = join(tmp, 'file.tropy')
+    it('rejects if the file already exists', async () => {
+      let path = join(tmp, 'file.odu')
+      await writeFile(path, '')
 
-      await writeFile(tpy, '')
-      await mkdir(tpm)
-
-      await expect(create(tpy, F.schema('project').path, F.appDir))
+      await expect(create(path, F.schema('project').path))
         .to.eventually.be.rejectedWith('project file exists')
+    })
 
-      await expect(create(tpm, F.schema('project').path, F.appDir))
+    it('rejects if a directory of that name exists', async () => {
+      let path = join(tmp, 'dir.odu')
+      await mkdir(path)
+
+      await expect(create(path, F.schema('project').path))
         .to.eventually.be.rejectedWith('project file exists')
     })
   })
 
   describe('load', () => {
-    describe('*.tpy', () => {
-      let tpy = mkprojtmp('test.tpy', { name: 'Daedalus' })
+    let project = mkprojtmp('test.odu', { name: 'Daedalus' })
 
-      it('returns project info', async () => {
-        let { db } = tpy.current
-        let project = await load(db)
+    it('returns project info', async () => {
+      let { db, path } = project.current
+      let info = await load(db)
 
-        expect(project.name).to.equal('Daedalus')
-        expect(project.base).to.be.null
-        expect(project.store).to.be.null
-        expect(project.isManaged).to.be.false
-      })
+      expect(info.name).to.equal('Daedalus')
+      expect(info.base).to.be.null
+      expect(info.path).to.equal(path)
+      expect(info).not.to.have.property('isManaged')
+      expect(info).not.to.have.property('store')
     })
+  })
 
-    describe('managed', () => {
-      let tpm = mkprojtmp('test.tropy', { name: 'Ariadne' })
+  describe('open', () => {
+    let project = mkprojtmp('test.odu', { name: 'Daedalus' })
 
-      it('returns project info', async () => {
-        let { db } = tpm.current
-        let project = await load(db)
+    it('opens a project file', async () => {
+      let [db, info] = await open(project.current.path)
 
-        expect(project.name).to.equal('Ariadne')
-        expect(project.base).to.equal('project')
-        expect(project.isManaged).to.be.true
-        expect(isAbsolute(project.store)).to.be.true
-      })
+      expect(info.name).to.equal('Daedalus')
+      expect(info.path).to.equal(project.current.path)
+
+      await db.close()
     })
   })
 
   describe('pstat', () => {
-    describe('*.tpy', () => {
-      let tpy = mkprojtmp('test.tpy', { name: 'Daedalus' })
+    let project = mkprojtmp('test.odu', { name: 'Daedalus' })
 
-      // TODO populate db
+    it('returns project stats', async () => {
+      let stats = await pstat(project.current.path)
 
-      it('returns project stats', async () => {
-        let stats = await pstat(tpy.current.path)
-
-        expect(stats).to.have.property('name', 'Daedalus')
-        expect(stats).to.have.property('path', tpy.current.path)
-        expect(stats).to.have.property('items', 0)
-        expect(stats).to.have.property('photos', 0)
-        expect(stats).to.have.property('notes', 0)
-      })
-
-      it('returns null if file not modifed since', async () => {
-        await delay(100)
-        expect(await pstat(tpy.current.path, Date.now())).to.be.null
-      })
+      expect(stats).to.have.property('name', 'Daedalus')
+      expect(stats).to.have.property('path', project.current.path)
+      expect(stats).to.have.property('items', 0)
+      expect(stats).to.have.property('photos', 0)
+      expect(stats).to.have.property('notes', 0)
     })
 
-    describe('managed', () => {
-      let tpm = mkprojtmp('test.tropy', { name: 'Ariadne' })
-
-      it('returns project stats', async () => {
-        let stats = await pstat(tpm.current.path)
-
-        expect(stats).to.have.property('name', 'Ariadne')
-        expect(stats).to.have.property('path', tpm.current.path)
-        expect(stats).to.have.property('items', 0)
-        expect(stats).to.have.property('photos', 0)
-        expect(stats).to.have.property('notes', 0)
-      })
-
-      it('returns null if file not modifed since', async () => {
-        await delay(100)
-        expect(await pstat(tpm.current.path, Date.now())).to.be.null
-      })
-
-      it('returns folder path when given database file', async () => {
-        let stats = await pstat(join(tpm.current.path, 'project.tpy'))
-        expect(stats).to.have.property('path', tpm.current.path)
-      })
+    it('returns null if file not modifed since', async () => {
+      await delay(100)
+      expect(await pstat(project.current.path, Date.now())).to.be.null
     })
-
-    it('rejects files with unknown extensions', () =>
-      expect(pstat('test.txt'))
-        .to.eventually.be.rejectedWith('unknown project file extension'))
 
     it('rejects missing files', () =>
-      expect(pstat('test.tpy'))
+      expect(pstat('test.odu'))
         .to.eventually.be.rejectedWith('ENOENT'))
-  })
-
-  describe('convert', () => {
-    let tpy = mkprojtmp('a.tpy', { name: 'Daedalus' })
-    let tpm = mktmp('b.tropy')
-
-    it('converts *.tpy to *.tropy', async () => {
-
-      // TODO add photos
-
-      await convert(tpy.current.path, tpm, F.appDir)
-      let [db, project] = await open(tpm)
-
-      expect(project.name).to.equal('Daedalus')
-      expect(project.base).to.equal('project')
-      expect(project.isManaged).to.be.true
-      expect(isAbsolute(project.store)).to.be.true
-
-      expect(existsSync(join(tpm, 'project.tpy-wal'))).to.be.ok
-      expect(existsSync(join(tpm, '.DirIcon'))).to.be.ok
-      expect(existsSync(join(tpm, 'folder.ico'))).to.be.ok
-      expect(existsSync(join(tpm, 'desktop.ini'))).to.be.ok
-
-      // TODO check store
-      // TODO check photo paths
-
-      await db.close()
-    })
-
-    it('throws when trying to convert to *.tpy', () =>
-      expect(convert('a.tropy', 'b.tpy'))
-        .to.eventually.be.rejectedWith('not implemented'))
-
-    it('throws when trying to convert to same type', () =>
-      expect(convert('a.tpy', 'b.tpy'))
-        .to.eventually.be.rejectedWith('different types'))
-
-    it('throws when given no source', () =>
-      expect(convert())
-        .to.eventually.be.rejectedWith('type string'))
-
-    it('throws when given no target', () =>
-      expect(convert('test.tpy'))
-        .to.eventually.be.rejectedWith('type string'))
-
-    it('throws when given target only', () =>
-      expect(convert(null, 'test.tropy'))
-        .to.eventually.be.rejectedWith('type string'))
-
-    it('throws when given bad source path', () =>
-      expect(convert('a.txt'))
-        .to.eventually.be.rejectedWith('type string'))
-
-    it('throws when given bad target path', () =>
-      expect(convert('a.tpy', 'b.txt'))
-        .to.eventually.be.rejectedWith('file extension'))
-
   })
 })

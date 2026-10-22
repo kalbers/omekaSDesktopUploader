@@ -3,23 +3,22 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { pMap } from '../common/util.js'
 import { error, warn } from '../common/log.js'
 import { fail, open, save } from '../dialog.js'
-import { Resource, Schema } from '../res.js'
+import { Schema } from '../res.js'
 
 import {
   pstat,
-  convert as convertProject,
   create as createProject
 } from '../common/project.js'
 
 
 export const create = createAsyncThunk(
   'projectFiles/create',
-  async ({ name, type }) => {
+  async ({ name }) => {
     try {
-      let path = await save.project(type, name)
+      let path = await save.project(name)
 
       if (path)
-        await createProject(path, Schema.expand('project'), Resource.base, {
+        await createProject(path, Schema.expand('project'), {
           name,
           overwrite: true
         })
@@ -74,26 +73,6 @@ export const consolidate = createAsyncThunk(
     })
   }
 )
-
-export const convert = createAsyncThunk(
-  'projectFiles/convert',
-  async ({ src, name, type }) => {
-    try {
-      let path = await save.project(type, name)
-      let errors
-
-      if (path)
-        errors = await convertProject(src, path, Resource.base, {
-          overwrite: true
-        })
-
-      return { path, errors }
-
-    } catch (e) {
-      error({ stack: e.stack }, `failed to convert project ${src}`)
-      await fail(e, 'project.convert')
-    }
-  })
 
 const projectFiles = createSlice({
   name: 'projectFiles',

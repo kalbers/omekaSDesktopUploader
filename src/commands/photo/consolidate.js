@@ -129,7 +129,7 @@ export class Consolidate extends ImportCommand {
   *consolidate(photo) {
     try {
       let { meta } = this.action
-      let { cache, db, overwrite, useLocalTimezone, store } = this.options
+      let { cache, db, overwrite, useLocalTimezone } = this.options
       let density = photo.density || this.options.density
 
       let image = yield call([Image, Image.check], {
@@ -162,8 +162,6 @@ export class Consolidate extends ImportCommand {
 
         if (image.buffer) {
           broken = false
-
-          yield call(store.add, image)
 
           let hasChanged = (image.checksum !== photo.checksum) ||
             (image.path !== photo.path)

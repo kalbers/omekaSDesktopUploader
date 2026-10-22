@@ -83,4 +83,9 @@ Both are AGPL, so the fork stays AGPL and must keep upstream copyright/AUTHORS.
 - Build (Linux): `npx -y node@22 --disable-warning=ExperimentalWarning scripts/build.js --platform linux --arch x64` -> `dist/Omeka Desktop Upload-linux-x64/omeka-desktop-upload` (needs `npm run clean && npm run rollup` first; electron-packager fails silently under Electron's embedded Node).
 - Needs the sharp binding copy (see Build notes) and `vendor/sharp/THIRD-PARTY-NOTICES.json` (libvips licence notice for the prebuilt libvips).
 - Icons: build.js uses `ICON_NAME='tropy'` (upstream artwork) until replacement artwork exists.
-- Open: version scheme (still 1.17.2), source/repo URL for AGPL notice in About, macOS plist document types still mention Tropy, Windows installer assets.
+- Done: version 0.1.0, Omeka S logo icons (macOS .icns still to generate on a Mac). Open: source/repo URL for AGPL notice in About, macOS plist document types still mention Tropy, Windows installer assets.
+
+## Project files (decided 2026-10-22)
+- A project is a single SQLite file, extension `.odu`, which links to files (absolute paths, or relative to the project file / home via the "Link photos" setting). The Standard/managed (folder + copied assets) type, conversion, and Store were removed.
+- Old Tropy projects (.tropy/.tpy) are not supported. Template files keep `.ttp`.
+- Linux registers application/vnd.omeka.desktop-upload.project (*.odu); macOS plist declares the `.odu` type (untested).

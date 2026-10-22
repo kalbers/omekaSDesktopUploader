@@ -1,23 +1,23 @@
 import assert from 'node:assert'
 import { existsSync } from 'node:fs'
-import { chmod, cp, stat, mkdir } from 'node:fs/promises'
-import { basename, dirname, extname, join, resolve, relative } from 'node:path'
+import { chmod, stat } from 'node:fs/promises'
+import { dirname, resolve } from 'node:path'
 import { randomUUID as uuid } from 'node:crypto'
 import { Database } from './db.js'
 import { home, normalize } from './os.js'
 import { into, select, update } from './query.js'
 import { version } from './release.js'
-import { empty, pMap } from './util.js'
+import { empty } from './util.js'
 import { info, warn } from './log.js'
+import { PROJECT_EXT, isProjectFile } from './project-ext.js'
 
-import { Asset } from '../asset/asset.js'
-import { Store } from '../asset/store.js'
+export { PROJECT_EXT, isProjectFile }
 
 
 /*
- * Creates a new Tropy project.
+ * Creates a new project file.
  */
-export async function create(path, schema, appDir, {
+export async function create(path, schema, {
   autoclose = true,
   name = 'Omeka Desktop Upload',
   base = null,
@@ -25,36 +25,22 @@ export async function create(path, schema, appDir, {
   overwrite = false
 } = {}) {
   try {
-    let type = getProjectType(path)
-    let dbFile = path
-    let store = null
+    assert(isProjectFile(path), `project files must end in .${PROJECT_EXT}`)
+    assert(BASES.includes(base), `project base not supported: "${base}"`)
 
     await checkProjectPath(path, overwrite)
     info(`creating new project at "${path}"`)
 
-    if (type === MANAGED) {
-      dbFile = join(path, MANAGED_DB_NAME)
-      store = MANAGED_STORE_NAME
-      base = BASE.PROJECT
-
-      await makeProjectDir(path, store, appDir)
-
-    } else {
-      assert(BASES.includes(base),
-        `project base not supported: "${base}"`)
-    }
-
-    var db = new Database(dbFile, 'w+', {
+    var db = new Database(path, 'w+', {
       max: 1,
-      journalMode: type === MANAGED ? 'wal' : 'delete'
+      journalMode: 'delete'
     })
 
     await db.read(schema)
     await db.run(...into('project').insert({
       project_id: id,
       name,
-      base,
-      store
+      base
     }))
 
     if (autoclose) {
@@ -78,122 +64,6 @@ async function checkProjectPath(path, overwrite = false) {
 
     warn(`trashing old project previously at "${path}"`)
     await moveToTrash(path)
-  }
-}
-
-// Creates the folder structure for managed projects.
-async function makeProjectDir(path, store, appDir) {
-  await mkdir(path)
-  await mkdir(join(path, store))
-
-  await cp(
-    join(appDir, 'res/icons/mime/folder/1024x1024.png'),
-    join(path, '.DirIcon'))
-  await cp(
-    join(appDir, 'res/icons/mime/folder.ico'),
-    join(path, 'folder.ico'))
-  await cp(
-    join(appDir, 'res/icons/mime/folder.ini'),
-    join(path, 'desktop.ini'))
-}
-
-
-/*
- * Converts `.tpy` files to managed `.tropy` projects.
- *
- * Returns a list of asset URLs which were not added to the store.
- *
- * If the return value is empty,
- * all assets were successfully added.
- * Otherwise, the conversion was not complete,
- * which typically means the project needs consolidation.
- *
- * Any errors unrelated to adding files to the store,
- * such as failure to write to the database file,
- * will be thrown.
- */
-export async function convert(src, path, appDir, {
-  concurrency = 4,
-  overwrite = false
-} = {}) {
-  try {
-    let type = getProjectType(path)
-
-    assert(type !== getProjectType(src),
-      'different types expected for conversion')
-
-    if (type !== MANAGED)
-      throw new Error(`conversion to "${type}" not implemented`)
-
-    await checkProjectPath(path, overwrite)
-    info(`converting project "${src}" to "${path}"`)
-
-    let dbFile = join(path, MANAGED_DB_NAME)
-    let store = new Store(join(path, MANAGED_STORE_NAME))
-    let errors = []
-
-    await makeProjectDir(path, store.name, appDir)
-
-    // Fetch asset list (using current project base)
-    var db = new Database(src, 'r', { max: 1 })
-
-    let project = await load(db)
-    let assets = await getAssets(db, project)
-
-    await db.close()
-
-    // Copy and open db and enable WAL
-    await cp(src, dbFile, { force: false, errorOnExist: true })
-
-    db = new Database(dbFile, 'w', {
-      max: 1,
-      journalMode: 'wal'
-    })
-
-    // Update project base and store
-    await db.run(
-      ...update('project')
-        .set({
-          base: BASE.PROJECT,
-          store: MANAGED_STORE_NAME
-        })
-        .where({ project_id: project.id }))
-
-    info(`processing ${assets.length} asset(s)`)
-    await pMap(assets, async ({ id, ...props }) => {
-      let asset = new Asset(props)
-
-      try {
-        await asset.check()
-
-        if (!asset.hasChanged) {
-          await store.add(asset) // updates asset path and protocol!
-        } else {
-          errors.push(asset.url)
-          warn({
-            stack: asset.error?.stack,
-            url: asset.url
-          }, 'consolidation required')
-        }
-      } catch (e) {
-        errors.push(asset.url)
-        warn({ stack: e.stack, url: asset.url }, 'consolidation required')
-      }
-
-      // Update all local paths regardless of error status,
-      // because the project has a new base!
-      if (asset.protocol === 'file') {
-        await db.run(
-          ...update('photos')
-            .set({ path: relative(path, asset.path), protocol: 'file' })
-            .where({ id }))
-      }
-    }, { concurrency })
-
-    return errors
-
-  } finally {
-    await db?.close()
   }
 }
 
@@ -223,11 +93,8 @@ export async function open(path, {
   user,
   ...dbOptions
 } = {}) {
-  let type = getProjectType(path)
-  let dbFile = (type === MANAGED) ? join(path, MANAGED_DB_NAME) : path
-
-  let db = await Database.open(dbFile, {
-    journalMode: type === MANAGED ? 'wal' : 'delete',
+  let db = await Database.open(path, {
+    journalMode: 'delete',
     ...dbOptions
   })
 
@@ -263,31 +130,16 @@ export async function open(path, {
 }
 
 /*
- * Returns stats for a Tropy project file.
+ * Returns stats for a project file.
  */
 export async function pstat(path, modifiedSince) {
   try {
-    let type = getProjectType(path)
-    let dbFile
-
-    if (type === MANAGED) {
-      dbFile = join(path, MANAGED_DB_NAME)
-
-    } else {
-      dbFile = path
-
-      if (isManaged(dbFile)) {
-        type = MANAGED
-        path = dirname(dbFile)
-      }
-    }
-
-    let { mtimeMs } = await stat(dbFile)
+    let { mtimeMs } = await stat(path)
 
     if (modifiedSince > mtimeMs)
       return null
 
-    var db = new Database(dbFile, 'r', { max: 1 })
+    var db = new Database(path, 'r', { max: 1 })
     let stats = await db.get(projectStats.query)
 
     stats.path = path
@@ -308,23 +160,12 @@ export async function load(db) {
   project.isReadOnly = db.isReadOnly
   project.basePath = resolveBasePath(db, project.base)
 
-  project.isManaged = project.store != null
-
-  if (project.isManaged) {
-    project.store = resolve(project.basePath, normalize(project.store))
-    project.path = dirname(db.path)
-
-  } else {
-    project.path = db.path
-  }
+  project.path = db.path
 
   return project
 }
 
-export async function save(db, { id, ...props }, basePath) {
-  if (basePath && props.store)
-    props.store = relative(basePath, props.store)
-
+export async function save(db, { id, ...props }) {
   if (!empty(props))
     return db.run(
       ...update('project').set(props).where({ project_id: id })
@@ -379,48 +220,15 @@ export function resolveBasePath(db, base) {
   }
 }
 
-export function getProjectType(path) {
-  switch (extname(path).toLowerCase()) {
-    case '.tpy':
-      return TPY
-    case '.tropy':
-    case '.mtpy':
-    case '.mpy':
-    case '':
-      return MANAGED
-    default:
-      throw new Error(`unknown project file extension ${path}`)
-  }
-}
-
-const isManaged = (dbFile) =>
-  basename(dbFile) === MANAGED_DB_NAME &&
-  getProjectType(dirname(dbFile)) === MANAGED
-
-const TPY = 'tpy'
-const MANAGED = 'managed'
-const MANAGED_DB_NAME = 'project.tpy'
-const MANAGED_STORE_NAME = 'assets'
-
 const BASE = {
   PROJECT: 'project',
   HOME: 'home'
 }
 
-export const TYPES = [MANAGED, TPY]
 export const BASES = [null, BASE.PROJECT, BASE.HOME]
 
-export const pext = (type) => {
-  switch (type) {
-    case TPY: return 'tpy'
-    case MANAGED: return 'tropy'
-    default:
-      throw new Error(`unknown project type ${type}`)
-  }
-}
-
 const projectInfo =
-  select({ id: 'project_id' }, 'name', 'base', 'store', {
+  select({ id: 'project_id' }, 'name', 'base', {
     lastAccess:
       select('opened')
         .from('access')
