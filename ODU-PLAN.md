@@ -77,4 +77,10 @@ Both are AGPL, so the fork stays AGPL and must keep upstream copyright/AUTHORS.
 - [x] 2. Omeka client, link table, settings pane, upload command (verified in app by user)
 - [ ] 3. Tests for command/selector (partially covered)
 - [ ] 4. Removals: [x] plugins+locale files (infra kept, en only) -> [x] exports (CSV items export added; JSON-LD/notes/tags export removed) -> [x] tags (UI+code removed; tags/taggings tables left inert in DB) + local API + print -> [x] transcription (code+UI+alto-xml removed; table left inert) -> [x] selections (region tool, UI, commands, uploads of crops removed; selections table left inert) -> [ ] updater/QR/about/branding links
-- [ ] 5. Rebrand + packaging
+- [x] 5. Rebrand (text/identity) + Linux packaging (dist/Omeka Desktop Upload-linux-x64). Logo/icons still Tropy's; macOS/Windows packaging untested
+
+## Packaging notes
+- Build (Linux): `npx -y node@22 --disable-warning=ExperimentalWarning scripts/build.js --platform linux --arch x64` -> `dist/Omeka Desktop Upload-linux-x64/omeka-desktop-upload` (needs `npm run clean && npm run rollup` first; electron-packager fails silently under Electron's embedded Node).
+- Needs the sharp binding copy (see Build notes) and `vendor/sharp/THIRD-PARTY-NOTICES.json` (libvips licence notice for the prebuilt libvips).
+- Icons: build.js uses `ICON_NAME='tropy'` (upstream artwork) until replacement artwork exists.
+- Open: version scheme (still 1.17.2), source/repo URL for AGPL notice in About, macOS plist document types still mention Tropy, Windows installer assets.

@@ -25,7 +25,6 @@ import {
   author,
   channel,
   exe,
-  name,
   version,
   qualified
 } from '../src/common/release.js'
@@ -40,6 +39,9 @@ const PLATFORM =
   process.env.npm_config_target_platform ||
   process.env.npm_config_platform ||
   process.platform
+
+// Icon files still use the upstream artwork names until replaced.
+const ICON_NAME = 'tropy'
 
 const ELECTRON = join(ROOT, 'node_modules', 'electron', 'dist')
 
@@ -165,7 +167,7 @@ export function configure({ arch, platform, out = join(ROOT, 'dist') }) {
       executableName = qualified.name
       break
     case 'darwin':
-      icon = join(ICONS, channel, `${name}.icns`)
+      icon = join(ICONS, channel, `${ICON_NAME}.icns`)
 
       extraResource.push(icon)
       extraResource.push(join(ICONS, 'mime', 'mtpy.icns'))
@@ -176,12 +178,12 @@ export function configure({ arch, platform, out = join(ROOT, 'dist') }) {
       if (semver.gte(release(), '25.0.0')) {
         icon = [
           icon,
-          join(ROOT, 'res', 'darwin', `${name}${channel === 'latest' ? '' : '-dev'}.icon`)
+          join(ROOT, 'res', 'darwin', `${ICON_NAME}${channel === 'latest' ? '' : '-dev'}.icon`)
         ]
       }
       break
     case 'win32':
-      icon = join(ICONS, channel, `${name}.ico`)
+      icon = join(ICONS, channel, `${ICON_NAME}.ico`)
       extraResource.push(icon)
       // extraResource.push(join(ICONS, 'mime', 'mtpy.ico'))
       extraResource.push(join(ICONS, 'mime', 'tpy.ico'))
