@@ -6,6 +6,8 @@ import { NotePad } from '../note/index.js'
 import * as act from '../../actions/index.js'
 import cx from 'classnames'
 import { SASS, ITEM } from '../../constants/index.js'
+import { isFileType } from '../../asset/mimetypes.js'
+import { FileViewer } from './file-viewer.js'
 
 
 import {
@@ -93,25 +95,29 @@ class Item extends React.PureComponent {
             skip={settings.maximize === 'esper'}
             value={this.size}
             onChange={this.handleEsperResize}>
-            <Esper
-              {...this.props.view}
-              cache={this.props.cache}
-              mode={this.props.view.mode || settings.zoomMode}
-              hasOverlayToolbar={this.hasOverlayToolbars}
-              hasSideBySideLayout={this.hasSideBySideLayout}
-              invertScroll={settings.invertScroll}
-              invertZoom={settings.invertZoom}
-              isDisabled={this.props.isDisabled || !this.props.photo}
-              isReadOnly={this.props.isDisabled || this.props.isReadOnly}
-              isPanelVisible={this.props.esper.panel}
-              keymap={this.props.keymap.Esper}
-              photo={this.props.photo}
-              tool={this.props.esper.tool}
-              onContextMenu={this.handleContextMenu}
-              onChange={this.handleEsperChange}
-              onMaximize={this.handleMaximize}
-              onPhotoError={this.props.onPhotoError}
-              onSelect={this.props.onPhotoSelect}/>
+            {isFileType(this.props.photo?.mimetype) ? (
+              <FileViewer photo={this.props.photo}/>
+            ) : (
+              <Esper
+                {...this.props.view}
+                cache={this.props.cache}
+                mode={this.props.view.mode || settings.zoomMode}
+                hasOverlayToolbar={this.hasOverlayToolbars}
+                hasSideBySideLayout={this.hasSideBySideLayout}
+                invertScroll={settings.invertScroll}
+                invertZoom={settings.invertZoom}
+                isDisabled={this.props.isDisabled || !this.props.photo}
+                isReadOnly={this.props.isDisabled || this.props.isReadOnly}
+                isPanelVisible={this.props.esper.panel}
+                keymap={this.props.keymap.Esper}
+                photo={this.props.photo}
+                tool={this.props.esper.tool}
+                onContextMenu={this.handleContextMenu}
+                onChange={this.handleEsperChange}
+                onMaximize={this.handleMaximize}
+                onPhotoError={this.props.onPhotoError}
+                onSelect={this.props.onPhotoSelect}/>
+            )}
           </Resizable>
         )}
         {settings.maximize !== 'esper' && (

@@ -1,4 +1,4 @@
-import { basename, extname } from 'node:path'
+import { basename } from 'node:path'
 import { call, put, select } from 'redux-saga/effects'
 import { DuplicateError } from '../common/error.js'
 import { Command } from './command.js'
@@ -7,8 +7,7 @@ import * as act from '../actions/index.js'
 import { expand } from '../common/fs.js'
 import { pick } from '../common/util.js'
 import { open, prompt } from '../dialog.js'
-import { Image } from '../image/image.js'
-import { IMAGE } from '../constants/index.js'
+import { isIgnoredFile } from '../asset/ignore.js'
 import { dcterms } from '../ontology/ns.js'
 import { date, text } from '../value.js'
 import { getTemplateValues, getTemplateProperties } from '../selectors/index.js'
@@ -53,19 +52,15 @@ export class ImportCommand extends Command {
       switch (type) {
         case 'dir':
           return open.dir()
-        case 'items':
-          return open.images()
         default:
-          return open.images()
+          return open.files()
       }
     } finally {
       this.resume()
     }
   }
 
-  canImportFile = (file) => (
-    IMAGE.EXT.includes(extname(file.name).slice(1).toLowerCase())
-  )
+  canImportFile = (file) => !isIgnoredFile(file.name)
 
   getFilesToImport = async () => {
     let { payload, meta } = this.action
@@ -81,16 +76,6 @@ export class ImportCommand extends Command {
 
     return [...images, ...urls]
   };
-
-  *openImage(path) {
-    let settings = yield select(state => state.settings)
-
-    return yield call(Image.open, {
-      path,
-      density: settings.density,
-      useLocalTimezone: settings.localtime
-    })
-  }
 
   *getMetadata(image, templates) {
     let data = {}

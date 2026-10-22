@@ -5,7 +5,7 @@ import { fail } from '../../dialog.js'
 import * as mod from '../../models/index.js'
 import * as act from '../../actions/index.js'
 import { PHOTO } from '../../constants/index.js'
-import { Image } from '../../image/image.js'
+import { openAsset } from '../../image/open.js'
 import { warn } from '../../common/log.js'
 import { blank, pluck, splice } from '../../common/util.js'
 
@@ -34,7 +34,7 @@ export class Duplicate extends ImportCommand {
       let { density, template, path, page, protocol } = originals[i]
 
       try {
-        let image = yield call([Image, Image.open], {
+        let image = yield call(openAsset, {
           density: density || settings.density,
           path,
           page,

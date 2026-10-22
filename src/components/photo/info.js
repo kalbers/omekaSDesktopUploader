@@ -9,6 +9,7 @@ import { MetadataField } from '../metadata/field.js'
 import { bytes, datetime, number as num } from '../../format.js'
 import * as act from '../../actions/index.js'
 import { map } from '../../common/util.js'
+import { isFileType } from '../../asset/mimetypes.js'
 
 
 export const PhotoInfo = React.memo(({
@@ -25,9 +26,9 @@ export const PhotoInfo = React.memo(({
     photo.path : `${photo.protocol}://${photo.path}`
 
   let size = [
-    `${num(photo.width)}×${num(photo.height)}`,
+    photo.width > 0 ? `${num(photo.width)}×${num(photo.height)}` : null,
     bytes(photo.size)
-  ].join(', ')
+  ].filter(Boolean).join(', ')
 
   let showPhotoInFolder = useIpcEvent(null, ['shell', 'show', photo])
   let stopEditing = useEvent(() => setEditing(null))
@@ -67,6 +68,11 @@ export const PhotoInfo = React.memo(({
           onEdit={setEditing}/>
       )}
 
+      {isFileType(photo.mimetype) && (
+        <MetadataField
+          label={intl.formatMessage({ id: 'photo.type' })}
+          text={photo.mimetype}/>
+      )}
       <MetadataField
         label={intl.formatMessage({ id: 'photo.size' })}
         text={size}/>

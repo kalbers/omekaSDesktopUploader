@@ -244,6 +244,11 @@ en:
     created: Date Added
     modified: Modified
     template: Template
+  file:
+    open: Open in Default App
+    show: Show in Folder
+    location: Location
+    missing: This file can't be found. Use the warning button in the file list to locate it.
   photo:
     file: File
     size: Size

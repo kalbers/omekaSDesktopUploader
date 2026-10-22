@@ -187,6 +187,86 @@ export const IconCopy = i('Copy', (
   </svg>
 ))
 
+export const IconFile = i('File', (
+  <svg width="16" height="16" viewBox="0 0 16 16">
+    <g className="line" fill="currentColor">
+      <path d="M15,5.293V16H2V0H9.707ZM10,5h3.293L10,1.707Zm4,1H9V1H3V15H14Z"/>
+    </g>
+  </svg>
+))
+
+export const IconFileImage = i('FileImage', (
+  <svg width="16" height="16" viewBox="0 0 16 16">
+    <g className="line" fill="currentColor">
+      <path d="M15,5.293V16H2V0H9.707ZM10,5h3.293L10,1.707Zm4,1H9V1H3V15H14Z"/>
+      <path d="M4.5 13l2.5-4 2 3 1.5-2 2 3z"/>
+    </g>
+  </svg>
+))
+
+export const IconFileText = i('FileText', (
+  <svg width="16" height="16" viewBox="0 0 16 16">
+    <g className="line" fill="currentColor">
+      <path d="M15,5.293V16H2V0H9.707ZM10,5h3.293L10,1.707Zm4,1H9V1H3V15H14Z"/>
+      <path d="M5 8h7v1H5zM5 10h7v1H5zM5 12h4v1H5z"/>
+    </g>
+  </svg>
+))
+
+export const IconFileDocument = i('FileDocument', (
+  <svg width="16" height="16" viewBox="0 0 16 16">
+    <g className="line" fill="currentColor">
+      <path d="M15,5.293V16H2V0H9.707ZM10,5h3.293L10,1.707Zm4,1H9V1H3V15H14Z"/>
+      <path d="M5 7h5v1.5H5zM5 10h7v1H5zM5 12h7v1H5z"/>
+    </g>
+  </svg>
+))
+
+export const IconFileAudio = i('FileAudio', (
+  <svg width="16" height="16" viewBox="0 0 16 16">
+    <g className="line" fill="currentColor">
+      <path d="M15,5.293V16H2V0H9.707ZM10,5h3.293L10,1.707Zm4,1H9V1H3V15H14Z"/>
+      <path d="M10 7.4v3.9a1.6 1.6 0 1 0 1 1.5V9.3l1-.3V7.7z"/>
+    </g>
+  </svg>
+))
+
+export const IconFileVideo = i('FileVideo', (
+  <svg width="16" height="16" viewBox="0 0 16 16">
+    <g className="line" fill="currentColor">
+      <path d="M15,5.293V16H2V0H9.707ZM10,5h3.293L10,1.707Zm4,1H9V1H3V15H14Z"/>
+      <path d="M6 8v5l5-2.5z"/>
+    </g>
+  </svg>
+))
+
+export const IconFileSpreadsheet = i('FileSpreadsheet', (
+  <svg width="16" height="16" viewBox="0 0 16 16">
+    <g className="line" fill="currentColor">
+      <path d="M15,5.293V16H2V0H9.707ZM10,5h3.293L10,1.707Zm4,1H9V1H3V15H14Z"/>
+      <path d="M5 8h7v1H5zM5 10h7v1H5zM5 12h7v1H5zM7.5 8h1v5h-1z"/>
+    </g>
+  </svg>
+))
+
+export const IconFilePresentation = i('FilePresentation', (
+  <svg width="16" height="16" viewBox="0 0 16 16">
+    <g className="line" fill="currentColor" fillRule="evenodd">
+      <path d="M15,5.293V16H2V0H9.707ZM10,5h3.293L10,1.707Zm4,1H9V1H3V15H14Z"/>
+      <path d="M4 8h9v5H4zm1 1v3h7V9z"/>
+    </g>
+  </svg>
+))
+
+export const IconFileArchive = i('FileArchive', (
+  <svg width="16" height="16" viewBox="0 0 16 16">
+    <g className="line" fill="currentColor" fillRule="evenodd">
+      <path d="M15,5.293V16H2V0H9.707ZM10,5h3.293L10,1.707Zm4,1H9V1H3V15H14Z"/>
+      <path d="M7 2h1v1H7zm1 1h1v1H8zM7 4h1v1H7zm1 1h1v1H8zM7 6h1v1H7zm1 1h1v1H8zM6.5 9h3v3h-3zM7.5 10h1v1h-1z"/>
+    </g>
+  </svg>
+))
+
 export const IconDocument = i('Document', (
   <svg width="16" height="16" viewBox="0 0 16 16">
     <g className="line" fill="currentColor">

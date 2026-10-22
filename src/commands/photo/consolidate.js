@@ -8,7 +8,7 @@ import { fail, open, prompt } from '../../dialog.js'
 import * as mod from '../../models/index.js'
 import * as act from '../../actions/index.js'
 import { PHOTO } from '../../constants/index.js'
-import { Image } from '../../image/image.js'
+import { checkAsset } from '../../image/open.js'
 import { info, warn } from '../../common/log.js'
 import { blank } from '../../common/util.js'
 import { getPhotosForConsolidation } from '../../selectors/index.js'
@@ -49,7 +49,7 @@ export class Consolidate extends ImportCommand {
       try {
         this.suspend()
 
-        path = (yield call(open.image, {
+        path = (yield call(open.file, {
           message: photo.path
         }))?.[0]
 
@@ -132,7 +132,7 @@ export class Consolidate extends ImportCommand {
       let { cache, db, overwrite, useLocalTimezone } = this.options
       let density = photo.density || this.options.density
 
-      let image = yield call([Image, Image.check], {
+      let image = yield call(checkAsset, {
         ...photo,
         density,
         useLocalTimezone

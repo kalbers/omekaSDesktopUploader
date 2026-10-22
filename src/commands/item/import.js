@@ -1,7 +1,7 @@
 import { ImportCommand } from '../import.js'
 import { DuplicateError } from '../../common/error.js'
 import { info, warn } from '../../common/log.js'
-import { Image } from '../../image/index.js'
+import { openAsset } from '../../image/open.js'
 import { fail } from '../../dialog.js'
 import * as act from '../../actions/index.js'
 import * as mod from '../../models/index.js'
@@ -88,7 +88,7 @@ export class Import extends ImportCommand {
       let item
       let photos = []
 
-      let image = yield call([Image, Image.open], {
+      let image = yield call(openAsset, {
         path,
         density,
         useLocalTimezone

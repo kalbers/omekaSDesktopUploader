@@ -6,7 +6,7 @@ import { PHOTO } from '../../constants/index.js'
 import { DuplicateError } from '../../common/error.js'
 import { info, warn } from '../../common/log.js'
 import { getPhotoTemplate } from '../../selectors/index.js'
-import { Image } from '../../image/image.js'
+import { openAsset } from '../../image/open.js'
 
 import {
   all,
@@ -71,10 +71,10 @@ export class Create extends ImportCommand {
     try {
       let progress = yield this.progress()
 
-      let { basePath, cache, db, idx, prefs, store, template } = this.options
+      let { basePath, cache, db, idx, prefs, template } = this.options
       let { item } = this.action.payload
 
-      let image = yield call([Image, Image.open], {
+      let image = yield call(openAsset, {
         path,
         density: prefs.density,
         useLocalTimezone: prefs.localtime
@@ -86,8 +86,6 @@ export class Create extends ImportCommand {
       let ids = []
       let photos = []
       let position = idx[0] + progress
-
-      yield call(store.add, image)
 
       yield call(db.transaction, async tx => {
         let count = 0

@@ -1,16 +1,15 @@
-import { extname } from 'node:path'
+import { basename } from 'node:path'
 import { eventChannel } from 'redux-saga'
 import { call, put, select, take, takeEvery } from 'redux-saga/effects'
 import * as act from '../actions/index.js'
 import { Watcher } from '../common/watch.js'
 import { debug, info, warn } from '../common/log.js'
-import { IMAGE, PROJECT } from '../constants/index.js'
+import { PROJECT } from '../constants/index.js'
+import { isIgnoredFile } from '../asset/ignore.js'
 import { Storage } from '../storage.js'
 
 const ignored = (path, stats) =>
-  stats?.isFile() && !IMAGE.EXT.includes(
-    extname(path).slice(1).toLowerCase()
-  )
+  stats?.isFile() && isIgnoredFile(basename(path))
 
 function addedFilesChannel(watcher) {
   return eventChannel(emitter => {

@@ -45,12 +45,10 @@ const isProjectOrTemplateFile = ({ kind, type }) =>
 const hasProjectFiles = (item) =>
   !!item.items.find(isProjectOrTemplateFile)
 
-// Subtle: we assume that there are photo files, if we don't see
-// any project files. This is because we cannot reliably see all
-// files (e.g., in a directory) before the drop event.
-const hasPhotoFiles = (item) =>
-  !hasProjectFiles(item)
-
+// Any file can be imported, and files with unknown extensions have an
+// empty type while dragging, so every file drag is a candidate for import;
+// the import command filters out what it cannot use.
+const hasPhotoFiles = () => true
 
 const getDroppedFiles = (item) => {
   let files = item.files?.map(webUtils.getPathForFile)

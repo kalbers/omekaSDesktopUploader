@@ -5,7 +5,6 @@ import ARGS from './args.js'
 import { counter, get } from './common/util.js'
 import { crashReport, warn } from './common/log.js'
 import { PROJECT_EXT } from './common/project-ext.js'
-import IMAGE from './constants/image.js'
 
 let seq
 let pending
@@ -107,16 +106,12 @@ function open(opts) {
   return show('file', opts)
 }
 
-open.images = (opts) => open({
-  filters: [{
-    name: t('dialog', 'filter', 'images'),
-    extensions: IMAGE.EXT
-  }],
+open.files = (opts) => open({
   properties: ['openFile', 'multiSelections'],
   ...opts
 })
 
-open.image = (opts) => open.images({
+open.file = (opts) => open.files({
   properties: ['openFile'],
   ...opts
 })

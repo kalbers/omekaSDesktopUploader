@@ -1,5 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { Image } from '../image.js'
+import { FileIcon } from './file-icon.js'
+import { isFileType } from '../../asset/mimetypes.js'
 import { selectCachePrefix } from '../../selectors/project.js'
 import { Cache } from '../../common/cache.js'
 import { SASS } from '../../constants/index.js'
@@ -16,6 +18,21 @@ export function Thumbnail({
 }) {
   let dispatch = useDispatch()
   let cache = useSelector(selectCachePrefix)
+
+  // Files which are not images have no thumbnail, just an icon.
+  if (isFileType(props.mimetype)) {
+    return (
+      <figure
+        className="thumbnail file"
+        style={{ '--x': 1, '--y': 1 }}
+        onClick={props.onClick}
+        onContextMenu={props.onContextMenu}
+        onDoubleClick={props.onDoubleClick}
+        onMouseDown={props.onMouseDown}>
+        <FileIcon mimetype={props.mimetype}/>
+      </figure>
+    )
+  }
 
   let src = Cache.url(cache, variant(size), props)
   let rot = Rotation.fromExifOrientation(props.orientation).add(props)
