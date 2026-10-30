@@ -27,54 +27,93 @@ Features
 
 Requirements
 ------------
-Install [Node.js][] 20 or later (the project's `engines` setting) and the
-build tools needed for native modules on your platform.
+- [Node.js][] 22 (see `.nvmrc`; 20 is the minimum the project allows) and npm 10
+  or later. Older versions, such as Node 18, fail to build.
+- Build tools for native modules on your platform.
+- Git, to clone the repository.
 
 [Node.js]: https://nodejs.org
 
-Installation from Source
-------------------------
-    $ npm ci
+Building from Source
+--------------------
+These steps produce a runnable app from a fresh clone. They were tested on
+64-bit Linux; other platforms are untested.
 
-The bundler expects a native image-processing binding that `npm ci` does not
-place where it looks. Use the prebuilt one:
+1. Install the dependencies:
 
-    $ mkdir -p node_modules/sharp/src/build/Release
-    $ cp node_modules/@img/sharp-linux-x64/lib/sharp-linux-x64.node \
-         node_modules/sharp/src/build/Release/
+        $ npm ci
 
-(Adjust the package name for other platforms and architectures.) The prebuilt
-image libraries do not read HEIC/HEIF files.
+2. Put the prebuilt image-processing binding where the bundler looks for it.
+   `npm ci` does not do this, so repeat it after every `npm ci`:
+
+        $ mkdir -p node_modules/sharp/src/build/Release
+        $ cp node_modules/@img/sharp-linux-x64/lib/sharp-linux-x64.node \
+             node_modules/sharp/src/build/Release/
+
+   Adjust the package name for other platforms and architectures. The prebuilt
+   image libraries do not read HEIC/HEIF files.
+
+3. Compile the bundle into `lib/`:
+
+        $ npm run rollup
+
+4. Start the app straight from the source, with a throwaway data folder in
+   `tmp/`:
+
+        $ npx electron --app . --env development --data tmp \
+            --cache tmp/cache --logs tmp/log
+
+   Add `--no-sandbox` if your system's Electron sandbox is not set up (see
+   `res/linux/INSTALL`). You can also pass a `.odu` project file as the last
+   argument to open it.
 
 Development
 -----------
-    # Compile the bundle (optionally in --watch mode)
+    # Recompile the bundle whenever the source changes
     $ npm run rollup -- --watch
 
-    # Run in dev mode with a throwaway data folder
-    $ npx electron --app . --env development --data tmp --cache tmp/cache \
-        --logs tmp/log
-
-    # Run the tests
+    # Check the code and run the tests
+    $ npm run lint
     $ npm test
 
-    # View or tail the log file
+    # View or tail the log file (written to tmp/log/ in dev mode)
     $ npm run log:view
     $ npm run log:tail
 
-Use `--no-sandbox` if your system's Electron sandbox is not set up (see
-`res/linux/INSTALL`).
-
-Creating Builds
----------------
-Compile the bundle, then run the build script with a recent Node.js (the build
-tool does not run under Electron's embedded Node):
+Creating a Distributable Build
+------------------------------
+Compile the bundle, then run the build script with Node.js 22. The build tool
+does not run under Electron's embedded Node, so use a real Node install; if
+your default is not 22, `npx -y node@22` borrows it for one command:
 
     $ npm run clean && npm run rollup
     $ npx -y node@22 --disable-warning=ExperimentalWarning \
         scripts/build.js --platform linux --arch x64
 
-The build is written to `dist/`. Only the Linux build has been tested.
+`npm run clean` removes the generated `lib/` and `dist/` folders (and test
+leftovers) but not `node_modules/`, so the binding from step 2 stays in place.
+If the app or build complains that `sharp-linux-x64.node` is missing, repeat
+step 2.
+
+The app is written to `dist/Omeka Desktop Upload-linux-x64/`. Run it with:
+
+    $ "dist/Omeka Desktop Upload-linux-x64/omeka-desktop-upload"
+
+(adding `--no-sandbox` if needed, as above).
+
+Sharing a Build
+---------------
+Give people the whole `dist/Omeka Desktop Upload-linux-x64/` folder (about
+300 MB), not just the `omeka-desktop-upload` launcher inside it and not this
+repository. Use tar so the executable permissions survive:
+
+    $ cd dist
+    $ tar czf omeka-desktop-upload-linux-x64.tar.gz \
+        "Omeka Desktop Upload-linux-x64"
+
+The recipient unpacks it anywhere and runs `omeka-desktop-upload`. Because
+the app is licensed under the AGPL, anyone you give a build to is entitled to
+the source code.
 
 License and Attribution
 -----------------------
