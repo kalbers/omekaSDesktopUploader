@@ -17,4 +17,5 @@ _book
 .github/styles/*
 !.github/styles/Vocab/tropy
 vendor/code-sign-tool
-vendor/sharp
+vendor/sharp/*
+!vendor/sharp/THIRD-PARTY-NOTICES.json

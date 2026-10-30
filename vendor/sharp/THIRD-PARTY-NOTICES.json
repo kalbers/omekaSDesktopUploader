@@ -1,0 +1,13 @@
+[
+  {
+    "name": "libvips (prebuilt sharp-libvips 1.2.4)",
+    "version": "8.17.3",
+    "license": "LGPL-3.0-or-later",
+    "homepage": "https://www.libvips.org/",
+    "licenseURL": [
+      "https://raw.githubusercontent.com/libvips/libvips/v8.17.3/LICENSE",
+      "https://raw.githubusercontent.com/lovell/sharp-libvips/v1.2.4/THIRD-PARTY-NOTICES.md"
+    ],
+    "licenseNote": "The prebuilt libvips binaries bundle further libraries; their licences are listed in the sharp-libvips third-party notices above."
+  }
+]
